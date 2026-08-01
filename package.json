@@ -11,10 +11,11 @@
     "audit": "python tools/audit.py --audio",
     "generate": "python tools/generate.py",
     "build": "python tools/build_standalone.py",
-    "check": "python tools/audit.py --audio && playwright test",
+    "check": "python tools/build_player.py && python tools/audit.py --audio && playwright test",
     "master": "python tools/master_voices.py",
     "sfx": "python tools/fetch_sfx.py",
-    "build:all": "python tools/fetch_sfx.py && python tools/generate.py && python tools/master_voices.py && python tools/audit.py --audio"
+    "build:all": "python tools/fetch_sfx.py && python tools/generate.py && python tools/master_voices.py && python tools/audit.py --audio",
+    "player": "python tools/build_player.py"
   },
   "devDependencies": {
     "@playwright/test": "^1.49.0"

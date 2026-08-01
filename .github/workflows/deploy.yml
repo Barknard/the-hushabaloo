@@ -24,6 +24,14 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: '3.12' }
+      # The player is generated from the manifest. Rebuilding it here proves the
+      # committed HTML matches its source -- a stale player would otherwise ship.
+      - name: Rebuild player from the manifest
+        run: |
+          python tools/build_player.py
+          git diff --exit-code player/index.html || {
+            echo "::error::player/index.html is stale — run tools/build_player.py and commit"; exit 1; }
+
       - name: Audit block contract and generated audio
         run: python tools/audit.py --audio
 

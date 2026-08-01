@@ -83,11 +83,8 @@ SFX = {
     "creak":           dict(source="cc0", seconds=2.5, lufs=-21),
     "pop":             dict(source="cc0", seconds=2.2, lufs=-19),
     "rain":            dict(source="cc0", seconds=6.0, lufs=-24),
-    "room_tone":       dict(source="cc0", seconds=8.0, lufs=-30),
     "bell":            dict(source="cc0", seconds=2.5, lufs=-22),
-    "amb_house":       dict(source="cc0", seconds=24.0, lufs=-30),
     "amb_attic":       dict(source="cc0", seconds=24.0, lufs=-29),
-    "amb_night":       dict(source="cc0", seconds=24.0, lufs=-31),
     "amb_drips":       dict(source="cc0", seconds=24.0, lufs=-30),
     "raspberry_big":   dict(source="cc0", seconds=2.2, lufs=-17),
     "raspberry_small": dict(source="cc0", seconds=1.4, lufs=-22),
@@ -254,8 +251,6 @@ BLOCKS = [
     ("p7_nar_02", "speech", "NARRATOR",
           "[whispers] And it got very dark. And it got very still. And the three of them sat. And they sat. And they sat. And there wasn't a squeak. And there wasn't a drip. And there wasn't a sound in the world. ... Just like that.", SECTION, "p7"),
 
-    ("p7_sfx_roomtone", "sfx", "room_tone", "", BEAT, "p7"),
-
     ("p7_kip_01", "speech", "KIP",
      "[whispers] I want home.", LINE, "p7"),
 
@@ -390,17 +385,20 @@ BLOCKS = [
 # is still immature -- so these sit far enough down to be felt rather than heard,
 # and spread 7 drops lower still because the story there IS the silence.
 AMBIENCE = {
-    "cover": None,
-    "p1":    ("amb_house", 0.26),   # a house stuffed with noise
-    "p2":    ("amb_house", 0.18),   # ...and quieter now, sounds going missing
-    "p3":    ("amb_attic", 0.30),   # the collection: vast, strange, echoing
-    "p4":    ("amb_attic", 0.30),
-    "p5":    ("amb_attic", 0.26),
-    "p6":    ("amb_drips", 0.28),   # rain loose in the room, heading home
-    "p7":    ("amb_night", 0.13),   # the quietest thing in the book
-    "p8":    ("amb_attic", 0.24),
-    "p9":    ("amb_house", 0.26),   # home again -- the bed from spread 1 returns
-    "final": ("amb_house", 0.16),
+    # Only ONE bed survives, and only where the story motivates it.
+    #
+    # The first pass laid a bed under nearly every spread and it read as white
+    # noise -- correctly, because that is what it was. Measured crest factor
+    # (peak minus RMS, i.e. how much the signal moves) told the story: the fan
+    # and air tones sat at 13-15 dB, a constant floor with no events in it.
+    # amb_drips measures 21.7 dB because things actually happen in it.
+    #
+    # Immersion comes from character, not from a noise floor. A bed with no
+    # events is just hiss with a story wrapped around it.
+    "cover": None, "p1": None, "p2": None, "p3": None, "p4": None, "p5": None,
+    "p6": ("amb_drips", 0.22),   # rain loose in the room, heading home
+    "p7": None,                  # the silence IS the story here. Leave it silent.
+    "p8": None, "p9": None, "final": None,
 }
 
 SPREADS = ["cover", "p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "p9", "final"]

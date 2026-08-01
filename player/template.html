@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Hushabaloo</title>
+<style>
+/* ────────────────────────────────────────────────────────────────
+   Palette. Each spread carries its own --tint, and the page washes
+   that colour behind the art. The tint arc mirrors the story arc:
+   warm and busy at home, deep and vast in the collection, nearly
+   black at the low point, gold at the win, sunrise on the way home.
+   Text always stays high-contrast ink on light paper -- the colour
+   moves in the background, never under the words.
+   ──────────────────────────────────────────────────────────────── */
+:root{
+  --paper:#fffaf0; --ink:#2a2118; --dim:#9a8b74;
+  --glow:#ffc93c; --glow-soft:#ffeeb8;
+  --etta:#e8522e; --kip:#129e8c; --mo:#3f63d4; --hush:#8257c5;
+  --shelf:#a97f4d; --tint:#ffe9a8; --skin:#f2c8a2;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --paper:#1c1610; --ink:#f7ecdb; --dim:#7a6b57;
+         --glow:#ffc93c; --glow-soft:#4d3a12; }
+}
+:root[data-theme="dark"]{ --paper:#1c1610; --ink:#f7ecdb; --dim:#7a6b57; --glow:#ffc93c; --glow-soft:#4d3a12; }
+:root[data-theme="light"]{ --paper:#fffaf0; --ink:#2a2118; --dim:#9a8b74; --glow:#ffc93c; --glow-soft:#ffeeb8; }
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:'Iowan Old Style','Palatino Linotype',Georgia,serif;
+  -webkit-font-smoothing:antialiased; overscroll-behavior:none;
+}
+
+/* ── start gate ─────────────────────────────────────────────── */
+.start-overlay{
+  position:fixed; inset:0; z-index:100;
+  background:radial-gradient(circle at 50% 42%, #2a2118 0%, #140f0a 100%);
+  color:#fffaf0;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:1.5rem; transition:opacity .5s ease, visibility .5s;
+}
+.start-overlay.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.start-door{width:min(46vw,190px);height:auto;filter:drop-shadow(0 0 40px rgba(255,201,60,.4))}
+.start-title{
+  font-size:clamp(2.6rem,11vw,5.2rem); letter-spacing:-.02em; text-align:center;
+  line-height:1; color:var(--glow); text-shadow:0 0 34px rgba(255,201,60,.35);
+}
+.start-sub{
+  color:#cbb894; font-size:clamp(1.05rem,4vw,1.4rem); font-style:italic;
+  text-align:center; padding:0 1.5rem;
+}
+.start-btn{
+  margin-top:.4rem; width:118px;height:118px;border-radius:50%;border:none;cursor:pointer;
+  background:var(--glow); color:#2a2118; font-size:2.8rem; line-height:118px;
+  box-shadow:0 0 0 0 rgba(255,201,60,.6); animation:pulse 2.4s infinite;
+}
+@keyframes pulse{70%{box-shadow:0 0 0 30px rgba(255,201,60,0)}100%{box-shadow:0 0 0 0 rgba(255,201,60,0)}}
+.start-hint{color:#8d7d64;font-size:.95rem;font-family:system-ui,sans-serif}
+
+/* ── book ───────────────────────────────────────────────────── */
+.book{position:fixed;inset:0;bottom:82px;overflow:hidden}
+.page{
+  position:absolute; inset:0; overflow-y:auto; overflow-x:hidden;
+  padding:clamp(1.2rem,4vw,2.4rem) clamp(1rem,5vw,3rem) 3rem;
+  opacity:0; transform:translateX(30px); pointer-events:none;
+  transition:opacity .5s ease, transform .5s ease;
+  display:flex; flex-direction:column; align-items:center; gap:1.3rem;
+  background:
+    radial-gradient(ellipse 120% 60% at 50% 0%, var(--tint) 0%, transparent 62%),
+    var(--paper);
+}
+.page.active{opacity:1;transform:none;pointer-events:auto}
+.page.prev{transform:translateX(-30px)}
+.art{width:100%;max-width:600px;height:auto;display:block}
+.art.small{max-width:400px}
+
+/* Two panes. A picture book's premise is that you see the picture WHILE you hear
+   the words -- so the art never scrolls away from the verse it belongs to. */
+.art-pane{width:100%;display:flex;justify-content:center;flex:none;
+  position:sticky; top:0; z-index:2; padding:.35rem 0 .9rem;
+  background:linear-gradient(to bottom,
+    var(--paper) 0%, var(--paper) 90%, transparent 100%);}
+.text-pane{width:100%;display:flex;flex-direction:column;align-items:center;gap:1.1rem}
+
+/* Wide and landscape: an actual open two-page spread. Art holds the left page,
+   verse scrolls on the right, exactly like a book lying open. */
+@media (min-width:900px) and (orientation:landscape){
+  .page{flex-direction:row;align-items:flex-start;gap:clamp(1rem,3vw,2.5rem);
+        padding-top:clamp(1rem,3vw,2rem)}
+  .art-pane{flex:0 0 44%;max-width:44%;position:sticky;top:0;background:none;
+            padding-top:.5rem}
+  .text-pane{flex:1;min-width:0;align-items:flex-start}
+  .audio-block,.sfx-block,.wait-block{width:100%}
+}
+
+/* ── lite motion ───────────────────────────────────────────────────────────
+   Small, slow, and never in lockstep -- staggered delays keep it feeling alive
+   rather than mechanical. All of it is switched off entirely under
+   prefers-reduced-motion, which the rule at the bottom of this sheet handles. */
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2.5px)}}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.022)}}
+@keyframes twinkle{0%,100%{opacity:.35}50%{opacity:1}}
+@keyframes drift{0%{transform:translate(0,0);opacity:.9}
+                 100%{transform:translate(-26px,14px);opacity:.15}}
+@keyframes sway{0%,100%{transform:rotate(-1.1deg)}50%{transform:rotate(1.1deg)}}
+.bob{animation:bob 3.4s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}
+.bob:nth-of-type(2){animation-duration:2.9s;animation-delay:-.7s}
+.bob:nth-of-type(3){animation-duration:3.8s;animation-delay:-1.4s}
+.breathe{animation:breathe 5.2s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 90%}
+.twinkle circle,.twinkle{animation:twinkle 2.8s ease-in-out infinite}
+.drift{animation:drift 3.6s ease-in linear infinite}
+.sway{animation:sway 4.6s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 0%}
+
+/* The block being spoken lifts very slightly out of the page. */
+.audio-block{transition:opacity .45s ease, transform .45s ease}
+.audio-block.speaking{transform:translateY(-2px)}
+.rule{width:min(100%,560px);height:26px;flex:none;opacity:.55}
+
+/* ── verse ──────────────────────────────────────────────────────
+   Each verse line is its own block element. The book is written in
+   anapestic tetrameter and the line breaks ARE the rhythm -- running
+   them together as prose flattens the thing the book is built on. */
+.audio-block{
+  width:min(100%,780px);
+  font-size:clamp(1.35rem,4.9vw,1.85rem); line-height:1.48;
+  opacity:.32; transition:opacity .45s ease;
+}
+.audio-block.speaking{opacity:1}
+.audio-block.spoken{opacity:.46}
+.ln{
+  display:block; padding:.06em 0;
+  /* Hanging indent: a line too long for the screen wraps INDENTED, so it reads
+     as the continuation it is rather than as a new line of verse. */
+  padding-left:1.4em; text-indent:-1.4em;
+}
+.ln + .ln{margin-top:.06em}
+.stanza-gap{margin-top:.72em}
+
+.audio-block[data-voice]{font-weight:600}
+.audio-block[data-voice]::before{
+  content:attr(data-speaker); display:block; font-family:system-ui,sans-serif;
+  font-size:.56em; font-weight:800; letter-spacing:.16em; text-transform:uppercase;
+  opacity:.8; margin-bottom:.35rem;
+}
+[data-voice="etta"]{color:var(--etta)} [data-voice="kip"]{color:var(--kip)}
+[data-voice="mo"]{color:var(--mo)} [data-voice="hushabaloo"]{color:var(--hush)}
+
+/* The highlight lands ON the word, instantly, then fades behind it.
+   .word-active is last so it always wins, and carries transition:none so it
+   arrives on the syllable rather than easing in behind the voice. The fade
+   lives on the base rule, so it only applies on the way out. */
+[data-word]{
+  border-radius:.3em; padding:.05em .12em; margin:0 -.03em;
+  background:transparent; color:inherit; box-shadow:0 0 0 rgba(255,201,60,0);
+  transition:background .6s ease, box-shadow .6s ease, color .6s ease;
+}
+[data-word].word-spoken{background:var(--glow-soft);box-shadow:0 0 0 rgba(255,201,60,0)}
+[data-word].word-active{
+  background:var(--glow); color:#2a2118;
+  box-shadow:0 0 20px rgba(255,201,60,.8);
+  transition:none;
+}
+
+/* ── sfx + participation ────────────────────────────────────── */
+.sfx-block{
+  width:min(100%,700px); display:flex; align-items:center; gap:.8rem;
+  font-family:system-ui,sans-serif; font-size:1rem; font-weight:800;
+  letter-spacing:.2em; text-transform:uppercase; color:var(--dim);
+  opacity:.28; transition:opacity .3s;
+}
+.sfx-block.speaking{opacity:1;color:var(--glow)}
+.sfx-block .ring{width:16px;height:16px;border-radius:50%;border:3px solid currentColor;flex:none}
+.sfx-block.speaking .ring{animation:ring 1s ease-out infinite}
+@keyframes ring{0%{box-shadow:0 0 0 0 currentColor;opacity:1}100%{box-shadow:0 0 0 18px transparent;opacity:.4}}
+
+.wait-block{
+  width:min(100%,700px); text-align:center; padding:1.3rem 1rem; border-radius:1.4rem;
+  border:4px dashed var(--dim); color:var(--dim);
+  font-family:system-ui,sans-serif; font-weight:900;
+  font-size:clamp(1.25rem,5vw,1.75rem); opacity:.3; transition:all .3s;
+}
+.wait-block.speaking{opacity:1;border-color:var(--glow);color:var(--glow);transform:scale(1.04)}
+
+/* ── controls ───────────────────────────────────────────────── */
+.controls{
+  position:fixed; left:0; right:0; bottom:0; height:82px; z-index:50;
+  display:flex; align-items:center; gap:.8rem; padding:0 clamp(.7rem,3vw,1.4rem);
+  background:var(--paper); border-top:3px solid var(--glow-soft);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.ctrl{
+  border:none;background:none;color:var(--ink);cursor:pointer;flex:none;
+  width:50px;height:50px;border-radius:50%;font-size:1.25rem;font-family:system-ui,sans-serif;
+}
+.ctrl:hover{background:var(--glow-soft)}
+.ctrl:disabled{opacity:.22;cursor:default}
+.ctrl.play{background:var(--glow);color:#2a2118;width:62px;height:62px;font-size:1.5rem}
+.ctrl-label{
+  font-family:system-ui,sans-serif;font-size:.64rem;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--dim);text-align:center;line-height:1.15;
+}
+.progress{flex:1;height:12px;border-radius:6px;background:var(--glow-soft);overflow:hidden;cursor:pointer}
+.fill{height:100%;width:0;background:var(--glow);transition:width .25s linear}
+.where{font-family:system-ui,sans-serif;font-size:.8rem;font-weight:700;color:var(--dim);min-width:78px;text-align:right;flex:none}
+.build{display:block;font-size:.58rem;font-weight:600;opacity:.65;letter-spacing:.06em}
+.err{
+  position:fixed;left:50%;transform:translateX(-50%);bottom:94px;z-index:60;
+  background:#c0392b;color:#fff;padding:.55rem 1rem;border-radius:.6rem;
+  font-family:system-ui,sans-serif;font-size:.85rem;opacity:0;transition:opacity .3s;
+  pointer-events:none;max-width:90vw;
+}
+.err.show{opacity:1}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+
+<div class="start-overlay" id="startOverlay">
+  <svg class="start-door" viewBox="0 0 140 210" aria-hidden="true">
+    <rect x="24" y="12" width="92" height="186" rx="5" fill="#3b2d1e"/>
+    <rect x="24" y="12" width="92" height="186" rx="5" fill="none" stroke="#ffc93c" stroke-width="4"/>
+    <rect x="34" y="26" width="32" height="56" rx="3" fill="#ffc93c" opacity=".16"/>
+    <rect x="74" y="26" width="32" height="56" rx="3" fill="#ffc93c" opacity=".16"/>
+    <rect x="34" y="96" width="32" height="56" rx="3" fill="#ffc93c" opacity=".16"/>
+    <rect x="74" y="96" width="32" height="56" rx="3" fill="#ffc93c" opacity=".16"/>
+    <circle cx="38" cy="118" r="6" fill="#ffc93c"/>
+    <rect x="20" y="196" width="100" height="7" rx="3" fill="#ffc93c" opacity=".9"/>
+  </svg>
+  <div class="start-title">The Hushabaloo</div>
+  <div class="start-sub">Behind the third door on the left of the hall.</div>
+  <button class="start-btn" id="startBtn" aria-label="Start reading">&#9654;</button>
+  <div class="start-hint">Tap the page to pause &middot; swipe to turn</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     CHARACTER SHEET
+
+     Each character is defined exactly ONCE here and <use>d everywhere else.
+     That is what makes them consistent: there is no second Etta to drift
+     from the first. Change a face here and it changes on all eleven spreads.
+     Costs a few KB total, stays crisp at any size, and works offline.
+
+     Skin is a single variable so it is one edit, not forty.
+     ══════════════════════════════════════════════════════════════════ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+<defs>
+
+  <!-- ETTA — five. The plan. Tallest, squarest stance, eyebrows that mean it. -->
+  <symbol id="ch-etta" viewBox="0 0 100 152">
+    <rect x="36" y="116" width="10" height="30" rx="5" fill="#c2431f"/>
+    <rect x="54" y="116" width="10" height="30" rx="5" fill="#c2431f"/>
+    <path d="M50 70 C70 70 80 86 82 120 L18 120 C20 86 30 70 50 70 Z" fill="var(--etta)"/>
+    <path d="M24 84 q-14 14 -11 30" stroke="var(--etta)" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <path d="M76 84 q14 14 11 30" stroke="var(--etta)" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <circle cx="50" cy="42" r="29" fill="var(--skin)"/>
+    <path d="M21 42 a29 29 0 0 1 58 0 q0 -22 -29 -22 t-29 22 Z" fill="#8a3a1e"/>
+    <path d="M21 42 q-3 20 4 28 q-9 -12 -6 -30 Z" fill="#8a3a1e"/>
+    <path d="M79 42 q3 20 -4 28 q9 -12 6 -30 Z" fill="#8a3a1e"/>
+    <circle cx="40" cy="43" r="4" fill="#2a2118"/><circle cx="60" cy="43" r="4" fill="#2a2118"/>
+    <path d="M34 34 q6 -4 12 -1 M54 33 q6 -3 12 1" stroke="#2a2118" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+    <path d="M42 55 q8 7 16 0" stroke="#2a2118" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+  </symbol>
+
+  <!-- KIP — two. The climber. Big head, tiny body, one defiant tuft, always mid-go. -->
+  <symbol id="ch-kip" viewBox="0 0 100 128">
+    <rect x="38" y="100" width="10" height="24" rx="5" fill="#0d7368"/>
+    <rect x="54" y="100" width="10" height="24" rx="5" fill="#0d7368"/>
+    <path d="M50 62 C67 62 74 76 76 104 L24 104 C26 76 33 62 50 62 Z" fill="var(--kip)"/>
+    <path d="M28 74 q-16 -12 -18 -28" stroke="var(--kip)" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <path d="M72 74 q16 -12 18 -28" stroke="var(--kip)" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <circle cx="50" cy="38" r="30" fill="var(--skin)"/>
+    <path d="M50 8 q-4 -12 6 -8 q-2 -8 8 4 q6 6 -2 10 Z" fill="#0d7368"/>
+    <circle cx="39" cy="35" r="5" fill="#2a2118"/><circle cx="61" cy="35" r="5" fill="#2a2118"/>
+    <path d="M39 50 q11 12 22 0 q-11 5 -22 0 Z" fill="#2a2118"/>
+    <circle cx="27" cy="47" r="5" fill="#e8522e" opacity=".28"/>
+    <circle cx="73" cy="47" r="5" fill="#e8522e" opacity=".28"/>
+  </symbol>
+
+  <!-- MO — two. The ear. Same build as Kip, but still: bigger ears, heavy lids,
+       one calm curl. Read side by side they are plainly not the same child. -->
+  <symbol id="ch-mo" viewBox="0 0 100 128">
+    <rect x="38" y="100" width="10" height="24" rx="5" fill="#2c4699"/>
+    <rect x="54" y="100" width="10" height="24" rx="5" fill="#2c4699"/>
+    <path d="M50 62 C67 62 74 76 76 104 L24 104 C26 76 33 62 50 62 Z" fill="var(--mo)"/>
+    <path d="M28 76 q-12 10 -12 22" stroke="var(--mo)" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <path d="M72 76 q12 10 12 22" stroke="var(--mo)" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <ellipse cx="18" cy="38" rx="9" ry="11" fill="var(--skin)"/>
+    <ellipse cx="82" cy="38" rx="9" ry="11" fill="var(--skin)"/>
+    <circle cx="50" cy="38" r="30" fill="var(--skin)"/>
+    <path d="M46 9 q8 -7 12 1 q-6 -2 -12 -1 Z" fill="#2c4699"/>
+    <path d="M33 34 q6 6 12 0" stroke="#2a2118" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+    <path d="M55 34 q6 6 12 0" stroke="#2a2118" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+    <path d="M44 52 q6 4 12 0" stroke="#2a2118" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+  </symbol>
+
+  <!-- THE HUSHABALOO — enormous, soft, drooping. Heavy lids, no teeth, no claws,
+       nothing pointed anywhere. Sad, not menacing: children this age read threat
+       from how a thing LOOKS, not from what the plot says it does. -->
+  <symbol id="ch-hush" viewBox="0 0 200 170">
+    <ellipse cx="100" cy="104" rx="92" ry="64" fill="var(--hush)"/>
+    <ellipse cx="100" cy="86" rx="78" ry="48" fill="var(--hush)"/>
+    <path d="M16 104 q-14 26 4 46 q4 -24 12 -34 Z" fill="var(--hush)"/>
+    <path d="M184 104 q14 26 -4 46 q-4 -24 -12 -34 Z" fill="var(--hush)"/>
+    <circle cx="72" cy="78" r="19" fill="#fffaf0"/><circle cx="76" cy="82" r="9" fill="#2a2118"/>
+    <circle cx="128" cy="78" r="19" fill="#fffaf0"/><circle cx="132" cy="82" r="9" fill="#2a2118"/>
+    <path d="M53 62 q19 -12 38 -3" stroke="#5c3f94" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M109 59 q19 -9 38 3" stroke="#5c3f94" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M84 122 q16 10 32 0" stroke="#fffaf0" stroke-width="5" fill="none" stroke-linecap="round" opacity=".8"/>
+  </symbol>
+
+  <!-- Same creature, mouth turned down, lids lower. Spreads 7 and 9. -->
+  <symbol id="ch-hush-sad" viewBox="0 0 200 170">
+    <ellipse cx="100" cy="104" rx="92" ry="64" fill="var(--hush)"/>
+    <ellipse cx="100" cy="86" rx="78" ry="48" fill="var(--hush)"/>
+    <path d="M16 104 q-14 26 4 46 q4 -24 12 -34 Z" fill="var(--hush)"/>
+    <path d="M184 104 q14 26 -4 46 q-4 -24 -12 -34 Z" fill="var(--hush)"/>
+    <circle cx="72" cy="80" r="19" fill="#fffaf0"/><circle cx="76" cy="85" r="9" fill="#2a2118"/>
+    <circle cx="128" cy="80" r="19" fill="#fffaf0"/><circle cx="132" cy="85" r="9" fill="#2a2118"/>
+    <path d="M53 68 q19 -8 38 4" stroke="#5c3f94" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M109 72 q19 -12 38 -4" stroke="#5c3f94" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M84 130 q16 -9 32 0" stroke="#fffaf0" stroke-width="5" fill="none" stroke-linecap="round" opacity=".8"/>
+  </symbol>
+
+</defs>
+</svg>
+
+<div class="book" id="book">
+<!--PAGES-->
+
+</div><!-- /book -->
+
+<div class="err" id="err"></div>
+
+<div class="controls">
+  <button class="ctrl" id="btnPrev" title="Previous page" aria-label="Previous page">&#9664;</button>
+  <button class="ctrl play" id="btnPlay" title="Play or pause the story" aria-label="Play the story">&#9654;</button>
+  <div class="ctrl-label" id="playLabel">Play<br>story</div>
+  <div class="progress" id="progress" title="Jump through the story"><div class="fill" id="fill"></div></div>
+  <div class="where"><span id="where">Cover</span><span class="build" id="build"></span></div>
+  <button class="ctrl" id="btnNext" title="Next page" aria-label="Next page">&#9654;</button>
+</div>
+
+<script>
+/* ────────────────────────────────────────────────────────────────
+   THE HUSHABALOO -- read-along engine
+
+   Three block kinds, all addressed by data-audio and matched to
+   script/blocks.py. tools/audit.py fails the build if the two ever
+   disagree -- the silent-desync trap DATATRAX left open.
+   ──────────────────────────────────────────────────────────────── */
+
+/* Audio filenames are stable across rebuilds -- p7_hush_01.mp3 has been
+   regenerated repeatedly at the same URL. Without a version on the request a
+   browser keeps serving whatever it cached first, so a fixed recording never
+   reaches a returning reader. BUILD is rewritten with the commit SHA by the
+   deploy workflow, giving every asset a fresh URL whenever the content changes. */
+const BUILD = '__BUILD__';
+const V = BUILD.startsWith('__') ? '' : `?v=${BUILD}`;
+
+const AUDIO_BASE = './audio/lines/';
+const SFX_BASE   = './audio/sfx/';
+const TIMESTAMPS_URL = './audio/timestamps.json' + V;
+
+/* Standalone builds inject every MP3 and the timings as one global before this
+   script runs. A declared seam, not a regex rewrite of the built file. */
+const INLINE = window.__HUSHABALOO_INLINE__ || null;
+const srcFor = (kind, key) =>
+  INLINE ? INLINE.audio[`${kind}/${key}`]
+         : (kind === 'sfx' ? SFX_BASE : AUDIO_BASE) + key + '.mp3' + V;
+
+/* ── ambient beds ────────────────────────────────────────────────
+   A quiet loop runs UNDER the narration for the whole spread, on its own
+   channel, cross-fading on the page turn. Levels are deliberately low: a bed
+   under speech measurably hurts comprehension for two-year-olds, so these are
+   felt rather than heard. Spread 7 drops lowest, because there the silence IS
+   the story. */
+const AMBIENCE = {
+  cover: null, p1: null, p2: null, p3: null, p4: null, p5: null,
+  p6: ['amb_drips', 0.22],   // rain loose in the room, heading home
+  p7: null,                  // the silence IS the story here
+  p8: null, p9: null, final: null,
+};
+let bed = null, bedName = null, bedFade = null;
+
+function fadeBed(el, to, ms, done){
+  if (!el) return done && done();
+  const from = el.volume, t0 = performance.now();
+  clearInterval(bedFade);
+  bedFade = setInterval(() => {
+    const k = Math.min(1, (performance.now() - t0) / ms);
+    try { el.volume = Math.max(0, Math.min(1, from + (to - from) * k)); } catch {}
+    if (k >= 1){ clearInterval(bedFade); done && done(); }
+  }, 40);
+}
+
+function setBed(spread){
+  const want = AMBIENCE[spread] || null;
+  const name = want && want[0];
+  if (name === bedName){                       /* same bed -- just re-level */
+    if (bed && want) fadeBed(bed, want[1], 600);
+    return;
+  }
+  const old = bed;
+  fadeBed(old, 0, 500, () => { try { old && old.pause(); } catch {} });
+  bedName = name;
+  if (!name){ bed = null; return; }
+  const src = srcFor('sfx', name);
+  if (!src){ bed = null; return; }
+  const a = new Audio(src);
+  a.loop = true; a.volume = 0; bed = a;
+  a.play().then(() => { if (bed === a) fadeBed(a, want[1], 900); }).catch(() => {});
+}
+function stopBed(){ if (bed){ try { bed.pause(); } catch {} } }
+function resumeBed(){
+  if (bed && playing) bed.play().catch(() => {});
+  else if (playing) setBed(pages[page]?.dataset.spread);
+}
+
+let WORDS = {};
+const pages = [...document.querySelectorAll('.page')];
+const lastPage = pages.length - 1;
+
+let page = 0, playing = false, idx = 0, blocks = [], current = null, raf = null, timer = null;
+
+const $ = id => document.getElementById(id);
+const btnPlay = $('btnPlay'), playLabel = $('playLabel'), fill = $('fill'), where = $('where');
+const overlay = $('startOverlay'), errBox = $('err');
+
+/* ── generated art ──────────────────────────────────────────────
+   Two scenes are repetitive enough that drawing them by hand would be
+   hundreds of near-identical nodes: the wall of labelled jars, and the
+   burst where all of them let go at once. */
+(function decorate(){
+  const jars = document.getElementById('jars');
+  if (jars) {
+    const labels = ['RAIN','DOG','STAIRS','SNORE','SHEEP','KETTLE','TAP','BIRD','CLOCK','HUM',
+                    'CREAK','DRIP','KNOCK','WIND','PURR','BELL','SPLASH','GIGGLE'];
+    let n = 0;
+    for (let r = 0; r < 4; r++) for (let c = 0; c < 11; c++) {
+      if (r >= 2 && c > 5) continue;                    /* leave the creature room */
+      const x = 30 + c * 50, y = 26 + r * 82;
+      jars.insertAdjacentHTML('beforeend',
+        `<rect x="${x}" y="${y}" width="38" height="38" rx="6" fill="#fffaf0"
+               stroke="var(--ink)" stroke-width="2.5" opacity=".8"/>
+         <rect x="${x+8}" y="${y-7}" width="22" height="8" rx="3" fill="var(--shelf)"/>
+         <text x="${x+19}" y="${y+24}" text-anchor="middle" font-family="system-ui"
+               font-size="7.5" font-weight="700" fill="var(--dim)">${labels[n++ % labels.length]}</text>`);
+    }
+  }
+  const burst = document.getElementById('burst');
+  if (burst) {
+    const cols = ['var(--glow)','var(--etta)','var(--kip)','var(--mo)','var(--hush)'];
+    for (let i = 0; i < 34; i++) {
+      const a = (i / 34) * Math.PI * 2, cx = 300, cy = 160;
+      const x = (cx + Math.cos(a) * (120 + (i % 4) * 30)).toFixed(0);
+      const y = (cy + Math.sin(a) * (86 + (i % 3) * 26)).toFixed(0);
+      burst.insertAdjacentHTML('beforeend',
+        `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="${cols[i % 5]}"
+               stroke-width="2" opacity=".22"/>
+         <circle cx="${x}" cy="${y}" r="${5 + (i % 3) * 3}" fill="${cols[i % 5]}"
+                 opacity="${(0.4 + (i % 4) * 0.15).toFixed(2)}"/>`);
+    }
+  }
+})();
+
+/* ── word wrapping ──────────────────────────────────────────────
+   Walks text nodes and wraps words in place, PRESERVING the surrounding
+   markup. An earlier version rebuilt each block from its textContent,
+   which flattened every <span class="ln"> and turned the verse back into
+   prose -- the line breaks are the meter, so they have to survive. */
+function wrapWords(el){
+  if (el.dataset.wrapped) return;
+  el.dataset.wrapped = '1';
+
+  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
+    acceptNode: n => n.textContent.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT
+  });
+  const textNodes = [];
+  for (let n; (n = walker.nextNode()); ) textNodes.push(n);
+
+  let i = 0;
+  for (const node of textNodes){
+    const frag = document.createDocumentFragment();
+    for (const part of node.textContent.split(/(\s+)/)){
+      if (!part) continue;
+      if (/^\s+$/.test(part)){ frag.appendChild(document.createTextNode(part)); continue; }
+      const s = document.createElement('span');
+      s.setAttribute('data-word', i++);
+      s.textContent = part;
+      frag.appendChild(s);
+    }
+    node.parentNode.replaceChild(frag, node);
+  }
+}
+
+/* ── karaoke ────────────────────────────────────────────────────
+   Each word sits in exactly one of three states, re-derived every frame:
+     ahead of the voice -> no classes
+     being said now     -> .word-active  (instant, full glow)
+     already said       -> .word-spoken  (fades over .6s)
+
+   LEAD is a 50ms head start: the timing marks the acoustic onset, but the
+   eye needs to already be on the word when the sound of it arrives. */
+const LEAD = 0.05;
+
+function highlight(el, audio){
+  stopHighlight();
+  const times = WORDS[el.dataset.audio];
+  const spans = el.querySelectorAll('[data-word]');
+  if (!times || !times.length || !spans.length) return;
+  const n = Math.min(times.length, spans.length);
+  (function tick(){
+    if (!audio || audio.paused) return;
+    const t = audio.currentTime;
+    for (let i = 0; i < n; i++){
+      const s = spans[i];
+      if (t >= times[i].end){
+        s.classList.remove('word-active'); s.classList.add('word-spoken');
+      } else if (t >= times[i].start - LEAD){
+        s.classList.add('word-active'); s.classList.remove('word-spoken');
+      } else {
+        s.classList.remove('word-active', 'word-spoken');
+      }
+    }
+    raf = requestAnimationFrame(tick);
+  })();
+}
+function stopHighlight(){ if (raf) cancelAnimationFrame(raf), raf = null; }
+function clearWords(scope){
+  (scope || document).querySelectorAll('[data-word]')
+    .forEach(s => s.classList.remove('word-active','word-spoken'));
+}
+
+/* ── pages ── */
+function showPage(i, dir){
+  pages.forEach((p, k) => {
+    p.classList.toggle('active', k === i);
+    p.classList.toggle('prev', dir === 'next' && k === i - 1);
+  });
+  page = i;
+  pages[i].scrollTop = 0;
+  blocks = [...pages[i].querySelectorAll('[data-audio]')];
+  blocks.forEach(b => { if (b.classList.contains('audio-block')) wrapWords(b); });
+  idx = 0;
+  resetStates();
+  if (playing) setBed(pages[i].dataset.spread);
+  where.textContent = i === 0 ? 'Cover' : i === lastPage ? 'The End' : `${i} / ${lastPage - 1}`;
+  $('btnPrev').disabled = i === 0;
+  $('btnNext').disabled = i === lastPage;
+}
+function resetStates(){
+  document.querySelectorAll('[data-audio]').forEach(b => b.classList.remove('speaking','spoken'));
+  stopHighlight(); clearWords();
+}
+
+/* ── playback ── */
+function play(i){
+  if (i >= blocks.length){
+    if (page < lastPage){
+      timer = setTimeout(() => { next(); if (playing) timer = setTimeout(() => play(0), 700); }, 1200);
+    } else { setPlaying(false); }
+    return;
+  }
+  idx = i;
+  const el = blocks[i];
+  blocks.forEach((b, k) => {
+    b.classList.toggle('speaking', k === i);
+    b.classList.toggle('spoken', k < i);
+  });
+  el.scrollIntoView({behavior:'smooth', block:'center'});
+
+  /* participation beat -- pauses, but NEVER blocks. It always moves on. */
+  if (el.classList.contains('wait-block')){
+    const ms = parseFloat(el.dataset.wait || '3') * 1000;
+    timer = setTimeout(() => { if (playing) play(i + 1); }, ms);
+    return;
+  }
+
+  const isSfx = el.classList.contains('sfx-block');
+  const src = isSfx ? srcFor('sfx', el.dataset.sfx) : srcFor('lines', el.dataset.audio);
+  if (!src){
+    showError(`Missing audio: ${el.dataset.audio}`);
+    if (playing) timer = setTimeout(() => play(i + 1), 900);
+    return;
+  }
+  const a = new Audio(src);
+  current = a;
+
+  a.addEventListener('canplaythrough', () => {
+    if (current !== a) return;
+    a.play().then(() => { if (!isSfx) highlight(el, a); }).catch(() => {});
+  }, {once:true});
+
+  a.addEventListener('ended', () => {
+    if (current !== a) return;
+    stopHighlight();
+    el.querySelectorAll('[data-word]').forEach(s => {
+      s.classList.remove('word-active'); s.classList.add('word-spoken');
+    });
+    if (playing) timer = setTimeout(() => play(i + 1), 320);
+  });
+
+  /* Loud, not silent. DATATRAX swallowed missing audio and drifted on. */
+  a.addEventListener('error', () => {
+    if (current !== a) return;
+    showError(`Missing audio: ${el.dataset.audio}`);
+    if (playing) timer = setTimeout(() => play(i + 1), 900);
+  });
+
+  a.load();
+}
+
+function stopAudio(){
+  if (timer) clearTimeout(timer), timer = null;
+  if (current) current.pause(), current = null;
+  stopHighlight();
+}
+function setPlaying(on){
+  playing = on;
+  btnPlay.innerHTML = on ? '&#10074;&#10074;' : '&#9654;';
+  btnPlay.setAttribute('aria-label', on ? 'Pause the story' : 'Play the story');
+  playLabel.innerHTML = on ? 'Pause<br>story' : 'Play<br>story';
+}
+function showError(msg){
+  errBox.textContent = msg;
+  errBox.classList.add('show');
+  setTimeout(() => errBox.classList.remove('show'), 2600);
+}
+
+/* ── navigation ── */
+function next(){ if (page < lastPage){ stopAudio(); showPage(page + 1, 'next'); } }
+function prev(){ if (page > 0){ stopAudio(); showPage(page - 1, 'prev'); } }
+
+function progressTick(){
+  const total = document.querySelectorAll('[data-audio]').length;
+  let done = 0;
+  for (let i = 0; i < page; i++) done += pages[i].querySelectorAll('[data-audio]').length;
+  fill.style.width = (total ? ((done + idx) / total) * 100 : 0) + '%';
+  requestAnimationFrame(progressTick);
+}
+requestAnimationFrame(progressTick);
+
+/* ── input ── */
+btnPlay.addEventListener('click', e => {
+  e.stopPropagation();
+  if (playing){ setPlaying(false); stopAudio(); stopBed(); }
+  else { setPlaying(true); setBed(pages[page].dataset.spread); play(idx); }
+});
+$('btnNext').addEventListener('click', e => {
+  e.stopPropagation(); next(); if (playing) timer = setTimeout(() => play(0), 500);
+});
+$('btnPrev').addEventListener('click', e => {
+  e.stopPropagation(); prev(); if (playing) timer = setTimeout(() => play(0), 500);
+});
+$('progress').addEventListener('click', e => {
+  const r = e.currentTarget.getBoundingClientRect();
+  const target = Math.round(((e.clientX - r.left) / r.width) * lastPage);
+  stopAudio(); showPage(Math.max(0, Math.min(lastPage, target)), 'next');
+  if (playing) timer = setTimeout(() => play(0), 400);
+});
+document.addEventListener('keydown', e => {
+  if (e.key === ' ' || e.key === 'k'){ e.preventDefault(); btnPlay.click(); }
+  else if (e.key === 'ArrowRight'){ $('btnNext').click(); }
+  else if (e.key === 'ArrowLeft'){ $('btnPrev').click(); }
+});
+$('book').addEventListener('click', e => {
+  if (e.target.closest('button') || !overlay.classList.contains('hidden')) return;
+  btnPlay.click();
+});
+overlay.addEventListener('click', () => {
+  overlay.classList.add('hidden');
+  setTimeout(() => { setPlaying(true); setBed(pages[page].dataset.spread); play(0); }, 420);
+});
+
+let sx = 0, sy = 0;
+$('book').addEventListener('touchstart', e => {
+  sx = e.touches[0].clientX; sy = e.touches[0].clientY;
+}, {passive:true});
+$('book').addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+  if (Math.abs(dx) > 58 && Math.abs(dx) > Math.abs(dy) * 1.5){
+    (dx < 0 ? $('btnNext') : $('btnPrev')).click();
+  }
+}, {passive:true});
+
+/* ── test seam ──────────────────────────────────────────────────
+   The suite drives the book the way a reader does, but needs to jump to a
+   spread and read internal state. Top-level `let` is script-scoped and never
+   lands on window, so expose it deliberately rather than letting tests reach
+   for globals that silently read undefined and pass anyway. */
+document.getElementById('build').textContent = V ? BUILD.slice(0, 7) : 'dev';
+
+window.__book = {
+  build: BUILD,
+  showPage, play, setPlaying,
+  get page()    { return page; },
+  get playing() { return playing; },
+  get words()   { return WORDS; },
+  get blocks()  { return blocks; },
+  blockAt: id => blocks.findIndex(b => b.dataset.audio === id),
+  setBed, get bed(){ return bed; }, get bedName(){ return bedName; },
+  ready: null,
+};
+
+/* ── init ──────────────────────────────────────────────────────
+   Timings load asynchronously and the cover is only raised once they land.
+   Anything driving the book before then gets silently undone by that final
+   showPage(0) -- so publish the promise rather than leaving callers to guess. */
+window.__book.ready =
+  (INLINE
+    ? Promise.resolve(INLINE.timestamps)
+    : fetch(TIMESTAMPS_URL).then(r => r.json()))
+    .then(j => { WORDS = j; })
+    .catch(() => showError('Word timings not loaded -- highlighting is off'))
+    .finally(() => showPage(0, 'next'));
+</script>
+</body>
+</html>

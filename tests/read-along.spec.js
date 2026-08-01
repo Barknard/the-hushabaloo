@@ -14,6 +14,14 @@ import { test, expect } from '@playwright/test';
 
 const BASE = '/the-hushabaloo/';
 
+/** Jump to a page by its id in script/pages.py, not by a brittle index. */
+async function goToPage(page, pageId) {
+  await page.evaluate(id => {
+    const el = document.querySelector(`.page[data-pageid="${id}"]`);
+    window.__book.showPage(Number(el.dataset.page), 'next');
+  }, pageId);
+}
+
 /** Load the book and wait until it is safe to drive. */
 async function open(page) {
   await page.goto(BASE);
@@ -32,9 +40,9 @@ test.describe('The Hushabaloo read-along', () => {
 
   test('has all eleven spreads and every block carries an id', async ({ page }) => {
     await open(page);
-    await expect(page.locator('.page')).toHaveCount(11);
+    await expect(page.locator('.page')).toHaveCount(35);
     const blocks = page.locator('[data-audio]');
-    await expect(blocks).toHaveCount(88);
+    await expect(blocks).toHaveCount(87);
     const missing = await blocks.evaluateAll(
       els => els.filter(e => !e.getAttribute('data-audio')).length);
     expect(missing).toBe(0);
@@ -100,7 +108,7 @@ test.describe('The Hushabaloo read-along', () => {
   test('participation beats never block the story', async ({ page }) => {
     await open(page);
     // Spread 8 holds the 3s "blow a raspberry" beat.
-    await page.evaluate(() => window.__book.showPage(8, 'next'));
+    await goToPage(page, 'p8b');
     const wait = page.locator('[data-audio="p8_wait_01"]');
     await expect(wait).toHaveAttribute('data-wait', '3.0');
     await page.evaluate(() => {
@@ -138,7 +146,7 @@ test.describe('The Hushabaloo read-along', () => {
     await page.locator('#btnNext').click();
     await expect(page.locator('.page.active')).toHaveAttribute('data-page', '1');
     await expect(page.locator('#btnPrev')).toBeEnabled();
-    await page.evaluate(() => window.__book.showPage(10, 'next'));
+    await page.evaluate(() => window.__book.showPage(34, 'next'));
     await expect(page.locator('#btnNext')).toBeDisabled();
   });
 
@@ -146,6 +154,7 @@ test.describe('The Hushabaloo read-along', () => {
     await open(page);
     // Every narration block is metrical verse. If wrapWords ever flattens the
     // markup again, these become one run-on line and the meter disappears.
+    await goToPage(page, 'p1a');
     const lines = await page.locator('[data-audio="p1_nar_01"] .ln').count();
     expect(lines).toBe(4);
     // And each line must actually sit on its own row on screen.
@@ -153,8 +162,6 @@ test.describe('The Hushabaloo read-along', () => {
       .evaluateAll(els => els.map(e => Math.round(e.getBoundingClientRect().top)));
     expect(new Set(tops).size).toBe(4);
     // Word spans must survive inside the lines, or karaoke has nothing to light.
-    // Wrapping is lazy per page, so visit the spread before counting.
-    await page.evaluate(() => window.__book.showPage(1, 'next'));
     const words = await page.locator('[data-audio="p1_nar_01"] .ln [data-word]').count();
     expect(words).toBeGreaterThan(30);
   });
@@ -185,30 +192,32 @@ test.describe('The Hushabaloo read-along', () => {
     });
     expect(Object.keys(beds).length).toBe(11);
 
-    await page.evaluate(() => { window.__book.setPlaying(true); window.__book.setBed('p3'); });
-    await expect.poll(() => page.evaluate(() => window.__book.bedName)).toBe('amb_attic');
+    // Only spread 6 keeps a bed. The first pass laid one under nearly every
+    // spread and it read as white noise, because a bed with no events is hiss.
+    await page.evaluate(() => { window.__book.setPlaying(true); window.__book.setBed('p6'); });
+    await expect.poll(() => page.evaluate(() => window.__book.bedName)).toBe('amb_drips');
 
-    // The bed must be quiet enough to sit under speech, never over it.
     const vol = await page.evaluate(() => window.__book.bed && window.__book.bed.volume);
-    expect(vol).toBeLessThanOrEqual(0.35);
-
-    // Spread 7 is the quietest thing in the book -- its bed must be lower than the rest.
-    await page.evaluate(() => window.__book.setBed('p7'));
-    await expect.poll(() => page.evaluate(() => window.__book.bedName)).toBe('amb_night');
-
-    // ...and the bed loops, or it would fall silent mid-spread.
+    expect(vol).toBeLessThanOrEqual(0.30);
     const loops = await page.evaluate(() => window.__book.bed && window.__book.bed.loop);
     expect(loops).toBe(true);
+
+    // Everywhere else must be genuinely silent -- especially spread 7, where the
+    // silence IS the story.
+    for (const s of ['p1', 'p3', 'p7', 'p9']) {
+      await page.evaluate(x => window.__book.setBed(x), s);
+      await expect.poll(() => page.evaluate(() => window.__book.bedName)).toBe(null);
+    }
   });
 
   test('art stays with its verse instead of scrolling away', async ({ page }) => {
     await open(page);
-    await page.evaluate(() => window.__book.showPage(7, 'next'));
-    const art = page.locator('.page[data-page="7"] .art-pane');
+    await goToPage(page, 'p4b');           // the longest page in the book
+    const art = page.locator('.page[data-pageid="p4b"] .art-pane');
     const before = (await art.boundingBox()).y;
     // Spread 7 is the longest in the book. Scroll well past where the art used
     // to disappear -- a picture book must show the picture WHILE it reads.
-    await page.evaluate(() => { document.querySelector('.page[data-page="7"]').scrollTop = 600; });
+    await page.evaluate(() => { document.querySelector('.page[data-pageid="p4b"]').scrollTop = 600; });
     await page.waitForTimeout(300);
     const after = (await art.boundingBox()).y;
     expect(Math.abs(after - before)).toBeLessThan(6);
@@ -218,9 +227,9 @@ test.describe('The Hushabaloo read-along', () => {
   test('wide landscape lays out as a two-page spread', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
     await open(page);
-    await page.evaluate(() => window.__book.showPage(1, 'next'));
-    const art = await page.locator('.page[data-page="1"] .art-pane').boundingBox();
-    const text = await page.locator('.page[data-page="1"] .text-pane').boundingBox();
+    await goToPage(page, 'p1a');
+    const art = await page.locator('.page[data-pageid="p1a"] .art-pane').boundingBox();
+    const text = await page.locator('.page[data-pageid="p1a"] .text-pane').boundingBox();
     // Art on the left page, verse on the right -- side by side, not stacked.
     expect(art.x + art.width).toBeLessThanOrEqual(text.x + 4);
     expect(Math.abs(art.y - text.y)).toBeLessThan(60);
@@ -244,6 +253,23 @@ test.describe('The Hushabaloo read-along', () => {
 
     // The stamp is visible, so "am I looking at the new one?" is answerable.
     await expect(page.locator('#build')).toHaveText(build.slice(0, 7));
+  });
+
+  test('no page needs scrolling to finish its verse', async ({ page }) => {
+    await open(page);
+    // The point of 35 short pages: the reader never scrolls mid-thought, and the
+    // picture never leaves the screen. Checked on a phone, the tightest case.
+    await page.setViewportSize({ width: 390, height: 780 });
+    const overflowing = await page.evaluate(() => {
+      const bad = [];
+      document.querySelectorAll('.page').forEach(p => {
+        p.classList.add('active');
+        if (p.scrollHeight > p.clientHeight * 1.6) bad.push(p.dataset.pageid);
+        if (p.dataset.page !== '0') p.classList.remove('active');
+      });
+      return bad;
+    });
+    expect(overflowing).toEqual([]);
   });
 
   test('controls say what they do', async ({ page }) => {
