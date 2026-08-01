@@ -93,6 +93,7 @@ test.describe('The Hushabaloo read-along', () => {
   });
 
   test('playing lights words up and then fades them', async ({ page }) => {
+    test.slow();
     await open(page);
     await page.locator('#startOverlay').click();
     const cover = page.locator('[data-audio="cover_nar_01"]');
@@ -406,6 +407,60 @@ test.describe('The Hushabaloo read-along', () => {
       return c.scrollTop;
     });
     expect(moved).toBe(0);
+  });
+
+  test('pausing holds the word and resuming carries on from it', async ({ page }) => {
+    // Real playback under four parallel browsers all decoding audio -- this one
+    // needs proportionate time or it fails on contention, not on behaviour.
+    test.slow();
+    await open(page);
+    await page.locator('#startOverlay').click();
+    // Pause used to discard the audio element, so resume rebuilt the block from
+    // zero and replayed the whole verse from the beginning.
+    await page.waitForFunction(
+      () => window.__book.audio && window.__book.audio.currentTime > 0.8,
+      null, { timeout: 40000 });
+    await page.locator('#btnPlay').click();                       // pause
+    // Read the clock AFTER pausing, then prove it is frozen. Comparing against a
+    // reading taken before the click is a race -- audio keeps playing during the
+    // round trip, and under parallel load that window is unbounded.
+    const paused = await page.evaluate(() => ({
+      t: window.__book.audio.currentTime, flag: window.__book.audio.paused }));
+    expect(paused.flag).toBe(true);
+    expect(paused.t).toBeGreaterThan(0.4);                        // genuinely mid-verse
+
+    await page.waitForTimeout(900);
+    const stillThere = await page.evaluate(() => window.__book.audio.currentTime);
+    expect(stillThere).toBeCloseTo(paused.t, 2);                  // held on the word
+
+    await page.locator('#btnPlay').click();                       // resume
+    await page.waitForTimeout(700);
+    const after = await page.evaluate(() => window.__book.audio.currentTime);
+    expect(after).toBeGreaterThan(paused.t);                      // moving again
+    expect(after).toBeGreaterThan(paused.t * 0.9);                // NOT restarted at 0
+  });
+
+  test('controls sink away while playing and come back on any input', async ({ page }) => {
+    await open(page);
+    await page.locator('#startOverlay').click();
+    await expect.poll(() => page.evaluate(
+      () => document.body.classList.contains('immersive')),
+      { timeout: 9000 }).toBe(true);
+    // The book takes the whole screen once they are gone. This is a .55s
+    // transition, so poll for the settled value rather than catching it in flight.
+    await expect.poll(() => page.evaluate(
+      () => parseFloat(getComputedStyle(document.getElementById('book')).bottom)),
+      { timeout: 4000 }).toBeLessThan(2);
+
+    await page.mouse.move(300, 250);
+    await expect.poll(() => page.evaluate(
+      () => document.body.classList.contains('immersive'))).toBe(false);
+
+    // Pausing must always bring them back -- never hidden when you need them.
+    await page.locator('#btnPlay').click();
+    await page.waitForTimeout(3800);
+    expect(await page.evaluate(
+      () => document.body.classList.contains('immersive'))).toBe(false);
   });
 
   test('controls say what they do', async ({ page }) => {
