@@ -74,24 +74,27 @@ body{
 }
 .page.active{opacity:1;transform:none;pointer-events:auto}
 .page.prev{transform:translateX(-30px)}
-.art{width:100%;max-width:600px;height:auto;display:block}
+.art{width:100%;max-width:600px;height:auto;max-height:100%;display:block}
 .art.small{max-width:400px}
 
 /* Two panes. A picture book's premise is that you see the picture WHILE you hear
    the words -- so the art never scrolls away from the verse it belongs to. */
 .art-pane{width:100%;display:flex;justify-content:center;flex:none;
   position:sticky; top:0; z-index:2; padding:.35rem 0 .9rem;
+  /* Stacked layout: the picture may never take more than this much of the
+     screen, or the verse starts below the fold on a short landscape phone. */
+  max-height:min(44vh, 340px);
   background:linear-gradient(to bottom,
     var(--paper) 0%, var(--paper) 90%, transparent 100%);}
 .text-pane{width:100%;display:flex;flex-direction:column;align-items:center;gap:1.1rem}
 
 /* Wide and landscape: an actual open two-page spread. Art holds the left page,
    verse scrolls on the right, exactly like a book lying open. */
-@media (min-width:900px) and (orientation:landscape){
+@media (orientation:landscape) and (min-aspect-ratio:6/5){
   .page{flex-direction:row;align-items:flex-start;gap:clamp(1rem,3vw,2.5rem);
         padding-top:clamp(1rem,3vw,2rem)}
   .art-pane{flex:0 0 44%;max-width:44%;position:sticky;top:0;background:none;
-            padding-top:.5rem}
+            padding-top:.5rem;max-height:calc(100vh - 96px)}
   .text-pane{flex:1;min-width:0;align-items:flex-start}
   .audio-block,.sfx-block,.wait-block{width:100%}
 }
@@ -127,11 +130,11 @@ body{
 @keyframes e-rise    {from{opacity:0;transform:translateY(22px) scale(.985)} to{opacity:1;transform:none}}
 @keyframes e-bloom   {from{opacity:0;transform:scale(.86)}                   to{opacity:1;transform:none}}
 @keyframes e-sweep   {from{opacity:0;transform:translateX(-34px)}            to{opacity:1;transform:none}}
-@keyframes e-pop     {0%{opacity:0;transform:scale(.7)}60%{opacity:1;transform:scale(1.045)}100%{transform:none}}
+@keyframes e-pop     {0%{opacity:0;transform:scale(.7)}60%{opacity:1;transform:scale(1.045)}100%{opacity:1;transform:none}}
 @keyframes e-dissolve{from{opacity:0;filter:blur(7px)}                       to{opacity:1;filter:none}}
 @keyframes e-lean    {from{opacity:0;transform:translateX(30px) rotate(1.6deg)} to{opacity:1;transform:none}}
 @keyframes e-fall    {from{opacity:0;transform:translateY(-26px)}            to{opacity:1;transform:none}}
-@keyframes e-flare   {0%{opacity:0;transform:scale(.55)}55%{opacity:1;transform:scale(1.09)}100%{transform:none}}
+@keyframes e-flare   {0%{opacity:0;transform:scale(.55)}55%{opacity:1;transform:scale(1.09)}100%{opacity:1;transform:none}}
 .page[data-enter="rise"]     .art{--enter:e-rise}
 .page[data-enter="bloom"]    .art{--enter:e-bloom}
 .page[data-enter="sweep"]    .art{--enter:e-sweep}

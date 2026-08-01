@@ -302,6 +302,63 @@ test.describe('The Hushabaloo read-along', () => {
     expect(running).toMatch(/^e-/);
   });
 
+  test('every page actually renders its art after the entrance', async ({ page }) => {
+    await open(page);
+    await page.evaluate(() => document.getElementById('startOverlay').classList.add('hidden'));
+    // e-pop and e-flare once ended on a keyframe that set transform but not
+    // opacity. With fill-mode:both the element held that frame and fell back to
+    // .art{opacity:0} -- eight pages finished their entrance INVISIBLE, including
+    // the raspberry and the burst. Check the end state, not that it animated.
+    // The entrance animates per element, so activating every page at once starts
+    // all 35 entrances together and the end state can be read in one pass --
+    // walking them one at a time took 30s and told us nothing extra.
+    // Await the animations rather than sleeping a guessed duration -- under
+    // parallel load a fixed wait caught them mid-fade at 0.94 and reported a
+    // failure that was really just a slow machine. The looping accents never
+    // finish, so exclude them.
+    await page.evaluate(async () => {
+      document.querySelectorAll('.page').forEach(p => p.classList.add('active'));
+      const arts = [...document.querySelectorAll('.page .art')];
+      await Promise.all(arts.flatMap(a => a.getAnimations()
+        .filter(an => an.effect.getTiming().iterations !== Infinity)
+        .map(an => an.finished.catch(() => {}))));
+    });
+    const blank = await page.evaluate(() =>
+      [...document.querySelectorAll('.page')]
+        .map(p => [p.dataset.pageid, getComputedStyle(p.querySelector('.art')).opacity])
+        .filter(([, op]) => parseFloat(op) < 0.95)
+        .map(([id, op]) => `${id}=${op}`));
+    expect(blank).toEqual([]);
+  });
+
+  test('landscape and mirrored shapes keep the verse on screen', async ({ page }) => {
+    // Two columns used to be gated on min-width:900px. A phone in landscape is
+    // 844px, so it stayed stacked and the sticky art plus the control bar pushed
+    // the verse entirely below the fold -- measured at -87px of visible height.
+    for (const [w, h] of [[844, 390], [667, 375], [1180, 820], [1920, 1080], [1280, 720]]) {
+      await page.setViewportSize({ width: w, height: h });
+      await open(page);
+      await page.evaluate(() => document.getElementById('startOverlay').classList.add('hidden'));
+      await goToPage(page, 'p4b');              // the longest page in the book
+      await page.waitForTimeout(350);
+      const r = await page.evaluate(() => {
+        const pg = document.querySelector('.page.active');
+        const vh = innerHeight - 82, vw = innerWidth;
+        let off = 0;
+        pg.querySelectorAll('.ln').forEach(l => {
+          const b = l.getBoundingClientRect();
+          if (b.right > vw + 2 || b.left < -2) off++;
+        });
+        const top = pg.querySelector('.text-pane').getBoundingClientRect().top;
+        return { visible: vh - Math.max(top, 0), off,
+                 twoCol: getComputedStyle(pg).flexDirection === 'row' };
+      });
+      expect(r.off, `${w}x${h}: lines running off screen`).toBe(0);
+      expect(r.visible, `${w}x${h}: verse starts below the fold`).toBeGreaterThan(180);
+      if (w > h) expect(r.twoCol, `${w}x${h}: landscape should be two columns`).toBe(true);
+    }
+  });
+
   test('controls say what they do', async ({ page }) => {
     await open(page);
     await expect(page.locator('#playLabel')).toContainText('Play');
