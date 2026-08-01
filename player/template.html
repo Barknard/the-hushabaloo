@@ -559,23 +559,65 @@ function highlight(el, audio){
   const spans = el.querySelectorAll('[data-word]');
   if (!times || !times.length || !spans.length) return;
   const n = Math.min(times.length, spans.length);
+  let followed = -1;
   (function tick(){
     if (!audio || audio.paused) return;
     const t = audio.currentTime;
+    let live = -1;
     for (let i = 0; i < n; i++){
       const s = spans[i];
       if (t >= times[i].end){
         s.classList.remove('word-active'); s.classList.add('word-spoken');
       } else if (t >= times[i].start - LEAD){
         s.classList.add('word-active'); s.classList.remove('word-spoken');
+        if (live < 0) live = i;
       } else {
         s.classList.remove('word-active', 'word-spoken');
       }
     }
+    if (live >= 0 && live !== followed){ followed = live; followWord(spans[live]); }
     raf = requestAnimationFrame(tick);
   })();
 }
 function stopHighlight(){ if (raf) cancelAnimationFrame(raf), raf = null; }
+
+/* ── following the reading ──────────────────────────────────────
+   The page must start at the top of its verse and creep down as the words are
+   spoken -- the way a finger follows a line. scrollIntoView({block:'center'})
+   did the opposite: it centred each block, which on a short landscape screen
+   jumps straight past the opening lines to the middle of the text.
+
+   So: scroll only when the reading is about to leave the comfortable band, and
+   scroll by just enough. In the stacked layout the sticky art occupies the top
+   of the scroller, so the band has to start below it. */
+function topInset(){
+  const p = pages[page];
+  if (getComputedStyle(p).flexDirection === 'row') return 16;   // two-page spread
+  const art = p.querySelector('.art-pane');
+  return (art ? art.offsetHeight : 0) + 12;                     // stacked: clear the art
+}
+
+function scrollPageTo(top){
+  pages[page].scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+}
+
+/* Bring a block into the band, but never scroll a block that is already in it --
+   pointless motion under a two-year-old's eyes is worse than none. */
+function revealBlock(el){
+  const c = pages[page], cr = c.getBoundingClientRect(), er = el.getBoundingClientRect();
+  const top = cr.top + topInset(), bottom = cr.bottom - 24;
+  if (er.top >= top && er.bottom <= bottom) return;
+  scrollPageTo(c.scrollTop + (er.top - cr.top) - topInset() - 8);
+}
+
+/* Keep the word being spoken inside the band. Only moves when it crosses out,
+   so the page drifts a line at a time instead of animating constantly. */
+function followWord(span){
+  const c = pages[page], cr = c.getBoundingClientRect(), sr = span.getBoundingClientRect();
+  const top = cr.top + topInset() + 4, bottom = cr.bottom - 96;
+  if (sr.bottom > bottom)   scrollPageTo(c.scrollTop + (sr.bottom - bottom) + 36);
+  else if (sr.top < top)    scrollPageTo(c.scrollTop - (top - sr.top) - 16);
+}
 function clearWords(scope){
   (scope || document).querySelectorAll('[data-word]')
     .forEach(s => s.classList.remove('word-active','word-spoken'));
@@ -588,7 +630,7 @@ function showPage(i, dir){
     p.classList.toggle('prev', dir === 'next' && k === i - 1);
   });
   page = i;
-  pages[i].scrollTop = 0;
+  pages[i].scrollTo({ top: 0, behavior: 'instant' });
   blocks = [...pages[i].querySelectorAll('[data-audio]')];
   blocks.forEach(b => { if (b.classList.contains('audio-block')) wrapWords(b); });
   idx = 0;
@@ -617,7 +659,7 @@ function play(i){
     b.classList.toggle('speaking', k === i);
     b.classList.toggle('spoken', k < i);
   });
-  el.scrollIntoView({behavior:'smooth', block:'center'});
+  revealBlock(el);
 
   /* participation beat -- pauses, but NEVER blocks. It always moves on. */
   if (el.classList.contains('wait-block')){
@@ -748,6 +790,7 @@ window.__book = {
   get words()   { return WORDS; },
   get blocks()  { return blocks; },
   blockAt: id => blocks.findIndex(b => b.dataset.audio === id),
+  topInset, revealBlock, followWord,
   setBed, get bed(){ return bed; }, get bedName(){ return bedName; },
   ready: null,
 };

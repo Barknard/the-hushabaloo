@@ -359,6 +359,55 @@ test.describe('The Hushabaloo read-along', () => {
     }
   });
 
+  test('the page starts at the top and follows the reading downward', async ({ page }) => {
+    // scrollIntoView({block:'center'}) centred every block, which on a short
+    // landscape screen jumped straight past the opening lines. The verse must
+    // start at the top of the page and creep down as the words are spoken.
+    await page.setViewportSize({ width: 844, height: 390 });   // phone landscape
+    await open(page);
+    await page.evaluate(() => document.getElementById('startOverlay').classList.add('hidden'));
+    await goToPage(page, 'p4b');                               // the longest page
+
+    expect(await page.evaluate(() =>
+      document.querySelector('.page.active').scrollTop)).toBe(0);
+
+    const trail = await page.evaluate(async () => {
+      const c = document.querySelector('.page.active');
+      const out = [];
+      for (const el of c.querySelectorAll('[data-audio]')) {
+        window.__book.revealBlock(el);
+        await new Promise(r => setTimeout(r, 260));
+        const cr = c.getBoundingClientRect(), er = el.getBoundingClientRect();
+        out.push({ top: Math.round(c.scrollTop),
+                   visible: er.top >= cr.top - 2 && er.bottom <= cr.bottom + 2 });
+      }
+      return out;
+    });
+
+    expect(trail[0].top).toBe(0);                       // begins at the top
+    for (const t of trail) expect(t.visible).toBe(true);
+    for (let i = 1; i < trail.length; i++)              // never scrolls backwards
+      expect(trail[i].top).toBeGreaterThanOrEqual(trail[i - 1].top - 1);
+    expect(trail[trail.length - 1].top).toBeGreaterThan(0);   // it did move
+  });
+
+  test('a page that already fits never scrolls', async ({ page }) => {
+    // Motion for its own sake is worse than none in front of a two-year-old.
+    await page.setViewportSize({ width: 390, height: 844 });
+    await open(page);
+    await page.evaluate(() => document.getElementById('startOverlay').classList.add('hidden'));
+    await goToPage(page, 'p1a');
+    const moved = await page.evaluate(async () => {
+      const c = document.querySelector('.page.active');
+      for (const el of c.querySelectorAll('[data-audio]')) {
+        window.__book.revealBlock(el);
+        await new Promise(r => setTimeout(r, 200));
+      }
+      return c.scrollTop;
+    });
+    expect(moved).toBe(0);
+  });
+
   test('controls say what they do', async ({ page }) => {
     await open(page);
     await expect(page.locator('#playLabel')).toContainText('Play');
