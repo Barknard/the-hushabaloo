@@ -17,7 +17,7 @@
   --paper:#fffaf0; --ink:#2a2118; --dim:#9a8b74;
   --glow:#ffc93c; --glow-soft:#ffeeb8;
   --etta:#e8522e; --kip:#129e8c; --mo:#3f63d4; --hush:#8257c5;
-  --shelf:#a97f4d; --tint:#ffe9a8;
+  --shelf:#a97f4d; --tint:#ffe9a8; --skin:#f2c8a2;
 }
 @media (prefers-color-scheme: dark){
   :root{ --paper:#1c1610; --ink:#f7ecdb; --dim:#7a6b57;
@@ -193,6 +193,98 @@ body{
   <div class="start-hint">Tap the page to pause &middot; swipe to turn</div>
 </div>
 
+<!-- ══════════════════════════════════════════════════════════════════
+     CHARACTER SHEET
+
+     Each character is defined exactly ONCE here and <use>d everywhere else.
+     That is what makes them consistent: there is no second Etta to drift
+     from the first. Change a face here and it changes on all eleven spreads.
+     Costs a few KB total, stays crisp at any size, and works offline.
+
+     Skin is a single variable so it is one edit, not forty.
+     ══════════════════════════════════════════════════════════════════ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+<defs>
+
+  <!-- ETTA — five. The plan. Tallest, squarest stance, eyebrows that mean it. -->
+  <symbol id="ch-etta" viewBox="0 0 100 152">
+    <rect x="36" y="116" width="10" height="30" rx="5" fill="#c2431f"/>
+    <rect x="54" y="116" width="10" height="30" rx="5" fill="#c2431f"/>
+    <path d="M50 70 C70 70 80 86 82 120 L18 120 C20 86 30 70 50 70 Z" fill="var(--etta)"/>
+    <path d="M24 84 q-14 14 -11 30" stroke="var(--etta)" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <path d="M76 84 q14 14 11 30" stroke="var(--etta)" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <circle cx="50" cy="42" r="29" fill="var(--skin)"/>
+    <path d="M21 42 a29 29 0 0 1 58 0 q0 -22 -29 -22 t-29 22 Z" fill="#8a3a1e"/>
+    <path d="M21 42 q-3 20 4 28 q-9 -12 -6 -30 Z" fill="#8a3a1e"/>
+    <path d="M79 42 q3 20 -4 28 q9 -12 6 -30 Z" fill="#8a3a1e"/>
+    <circle cx="40" cy="43" r="4" fill="#2a2118"/><circle cx="60" cy="43" r="4" fill="#2a2118"/>
+    <path d="M34 34 q6 -4 12 -1 M54 33 q6 -3 12 1" stroke="#2a2118" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+    <path d="M42 55 q8 7 16 0" stroke="#2a2118" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+  </symbol>
+
+  <!-- KIP — two. The climber. Big head, tiny body, one defiant tuft, always mid-go. -->
+  <symbol id="ch-kip" viewBox="0 0 100 128">
+    <rect x="38" y="100" width="10" height="24" rx="5" fill="#0d7368"/>
+    <rect x="54" y="100" width="10" height="24" rx="5" fill="#0d7368"/>
+    <path d="M50 62 C67 62 74 76 76 104 L24 104 C26 76 33 62 50 62 Z" fill="var(--kip)"/>
+    <path d="M28 74 q-16 -12 -18 -28" stroke="var(--kip)" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <path d="M72 74 q16 -12 18 -28" stroke="var(--kip)" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <circle cx="50" cy="38" r="30" fill="var(--skin)"/>
+    <path d="M50 8 q-4 -12 6 -8 q-2 -8 8 4 q6 6 -2 10 Z" fill="#0d7368"/>
+    <circle cx="39" cy="35" r="5" fill="#2a2118"/><circle cx="61" cy="35" r="5" fill="#2a2118"/>
+    <path d="M39 50 q11 12 22 0 q-11 5 -22 0 Z" fill="#2a2118"/>
+    <circle cx="27" cy="47" r="5" fill="#e8522e" opacity=".28"/>
+    <circle cx="73" cy="47" r="5" fill="#e8522e" opacity=".28"/>
+  </symbol>
+
+  <!-- MO — two. The ear. Same build as Kip, but still: bigger ears, heavy lids,
+       one calm curl. Read side by side they are plainly not the same child. -->
+  <symbol id="ch-mo" viewBox="0 0 100 128">
+    <rect x="38" y="100" width="10" height="24" rx="5" fill="#2c4699"/>
+    <rect x="54" y="100" width="10" height="24" rx="5" fill="#2c4699"/>
+    <path d="M50 62 C67 62 74 76 76 104 L24 104 C26 76 33 62 50 62 Z" fill="var(--mo)"/>
+    <path d="M28 76 q-12 10 -12 22" stroke="var(--mo)" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <path d="M72 76 q12 10 12 22" stroke="var(--mo)" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <ellipse cx="18" cy="38" rx="9" ry="11" fill="var(--skin)"/>
+    <ellipse cx="82" cy="38" rx="9" ry="11" fill="var(--skin)"/>
+    <circle cx="50" cy="38" r="30" fill="var(--skin)"/>
+    <path d="M46 9 q8 -7 12 1 q-6 -2 -12 -1 Z" fill="#2c4699"/>
+    <path d="M33 34 q6 6 12 0" stroke="#2a2118" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+    <path d="M55 34 q6 6 12 0" stroke="#2a2118" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+    <path d="M44 52 q6 4 12 0" stroke="#2a2118" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+  </symbol>
+
+  <!-- THE HUSHABALOO — enormous, soft, drooping. Heavy lids, no teeth, no claws,
+       nothing pointed anywhere. Sad, not menacing: children this age read threat
+       from how a thing LOOKS, not from what the plot says it does. -->
+  <symbol id="ch-hush" viewBox="0 0 200 170">
+    <ellipse cx="100" cy="104" rx="92" ry="64" fill="var(--hush)"/>
+    <ellipse cx="100" cy="86" rx="78" ry="48" fill="var(--hush)"/>
+    <path d="M16 104 q-14 26 4 46 q4 -24 12 -34 Z" fill="var(--hush)"/>
+    <path d="M184 104 q14 26 -4 46 q-4 -24 -12 -34 Z" fill="var(--hush)"/>
+    <circle cx="72" cy="78" r="19" fill="#fffaf0"/><circle cx="76" cy="82" r="9" fill="#2a2118"/>
+    <circle cx="128" cy="78" r="19" fill="#fffaf0"/><circle cx="132" cy="82" r="9" fill="#2a2118"/>
+    <path d="M53 62 q19 -12 38 -3" stroke="#5c3f94" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M109 59 q19 -9 38 3" stroke="#5c3f94" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M84 122 q16 10 32 0" stroke="#fffaf0" stroke-width="5" fill="none" stroke-linecap="round" opacity=".8"/>
+  </symbol>
+
+  <!-- Same creature, mouth turned down, lids lower. Spreads 7 and 9. -->
+  <symbol id="ch-hush-sad" viewBox="0 0 200 170">
+    <ellipse cx="100" cy="104" rx="92" ry="64" fill="var(--hush)"/>
+    <ellipse cx="100" cy="86" rx="78" ry="48" fill="var(--hush)"/>
+    <path d="M16 104 q-14 26 4 46 q4 -24 12 -34 Z" fill="var(--hush)"/>
+    <path d="M184 104 q14 26 -4 46 q-4 -24 -12 -34 Z" fill="var(--hush)"/>
+    <circle cx="72" cy="80" r="19" fill="#fffaf0"/><circle cx="76" cy="85" r="9" fill="#2a2118"/>
+    <circle cx="128" cy="80" r="19" fill="#fffaf0"/><circle cx="132" cy="85" r="9" fill="#2a2118"/>
+    <path d="M53 68 q19 -8 38 4" stroke="#5c3f94" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M109 72 q19 -12 38 -4" stroke="#5c3f94" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M84 130 q16 -9 32 0" stroke="#fffaf0" stroke-width="5" fill="none" stroke-linecap="round" opacity=".8"/>
+  </symbol>
+
+</defs>
+</svg>
+
 <div class="book" id="book">
 
 <!-- ══════════ COVER ══════════ -->
@@ -242,10 +334,13 @@ body{
     <text x="166" y="238" font-family="system-ui" font-size="17" font-weight="700" fill="var(--shelf)">whumpf</text>
     <g><rect x="500" y="192" width="66" height="102" rx="5" fill="var(--shelf)"/><circle cx="512" cy="246" r="7" fill="var(--glow)"/></g>
     <text x="498" y="288" font-family="system-ui" font-size="20" font-weight="800" fill="var(--glow)">click.</text>
-    <g><circle cx="352" cy="236" r="21" fill="var(--etta)"/><circle cx="394" cy="248" r="15" fill="var(--kip)"/><circle cx="428" cy="250" r="15" fill="var(--mo)"/>
-      <text x="341" y="284" font-family="system-ui" font-size="13" font-weight="800" fill="var(--etta)">Etta</text>
-      <text x="384" y="284" font-family="system-ui" font-size="12" font-weight="800" fill="var(--kip)">Kip</text>
-      <text x="418" y="284" font-family="system-ui" font-size="12" font-weight="800" fill="var(--mo)">Mo</text></g>
+    <g>
+      <use href="#ch-etta" x="326" y="182" width="53" height="80"/>
+      <use href="#ch-kip"  x="384" y="204" width="47" height="60"/>
+      <use href="#ch-mo"   x="430" y="204" width="47" height="60"/>
+      <text x="334" y="280" font-family="system-ui" font-size="14" font-weight="800" fill="var(--etta)">Etta</text>
+      <text x="394" y="280" font-family="system-ui" font-size="13" font-weight="800" fill="var(--kip)">Kip</text>
+      <text x="442" y="280" font-family="system-ui" font-size="13" font-weight="800" fill="var(--mo)">Mo</text></g>
   </svg>
   <div class="audio-block" data-audio="p1_nar_01">
     <span class="ln">In a house at the end of a hall that was long,</span>
@@ -282,9 +377,9 @@ body{
       <path d="M540 82 q-48 28 -84 68"/><path d="M566 158 q-54 10 -92 34"/><path d="M528 226 q-38 -8 -70 14"/></g>
     <g fill="var(--glow)"><circle cx="546" cy="80" r="8"/><circle cx="572" cy="156" r="7"/><circle cx="532" cy="224" r="7"/></g>
     <text x="486" y="52" font-family="system-ui" font-size="15" font-style="italic" fill="var(--dim)">going, going&hellip;</text>
-    <g><circle cx="378" cy="236" r="17" fill="var(--mo)"/><circle cx="362" cy="231" r="5" fill="#fff"/></g>
-    <circle cx="422" cy="244" r="22" fill="var(--etta)"/>
-    <circle cx="462" cy="254" r="15" fill="var(--kip)"/>
+    <use href="#ch-mo"   x="330" y="212" width="47" height="60"/>
+    <use href="#ch-etta" x="386" y="192" width="53" height="80"/>
+    <use href="#ch-kip"  x="444" y="212" width="47" height="60"/>
   </svg>
   <div class="audio-block" data-audio="p2_nar_01">
     <span class="ln">But on Tuesday the kettle did not sing its song.</span>
@@ -321,13 +416,11 @@ body{
       <line x1="18" y1="64" x2="582" y2="64"/><line x1="18" y1="146" x2="582" y2="146"/>
       <line x1="18" y1="228" x2="582" y2="228"/><line x1="18" y1="310" x2="582" y2="310"/></g>
     <g id="jars"></g>
+    <use href="#ch-hush" x="352" y="196" width="200" height="170"/>
     <g>
-      <ellipse cx="450" cy="278" rx="98" ry="76" fill="var(--hush)"/>
-      <circle cx="418" cy="256" r="16" fill="#fffaf0"/><circle cx="423" cy="259" r="7" fill="var(--ink)"/>
-      <circle cx="476" cy="256" r="16" fill="#fffaf0"/><circle cx="481" cy="259" r="7" fill="var(--ink)"/>
-      <path d="M424 306 q26 16 52 0" stroke="#fffaf0" stroke-width="5" fill="none" stroke-linecap="round" opacity=".85"/>
-      <path d="M370 250 q-14 -22 4 -34 M530 250 q14 -22 -4 -34" stroke="var(--hush)" stroke-width="9" fill="none" stroke-linecap="round"/></g>
-    <g><circle cx="66" cy="344" r="19" fill="var(--etta)"/><circle cx="104" cy="352" r="13" fill="var(--kip)"/><circle cx="136" cy="352" r="13" fill="var(--mo)"/></g>
+      <use href="#ch-etta" x="40" y="308" width="40" height="61"/>
+      <use href="#ch-kip"  x="84" y="325" width="34" height="44"/>
+      <use href="#ch-mo"   x="122" y="325" width="34" height="44"/></g>
     <text x="40" y="378" font-family="system-ui" font-size="14" font-style="italic" fill="var(--dim)">(very small indeed)</text>
   </svg>
   <div class="audio-block" data-audio="p3_nar_01">
@@ -358,16 +451,16 @@ body{
 <!-- ══════════ SPREAD 4 ══════════ -->
 <div class="page" data-page="4" style="--tint:#cdc3e8">
   <svg class="art" viewBox="0 0 600 320" role="img" aria-label="The Hushabaloo reaching a very long sleeve across the room to lift the click out of the door">
-    <ellipse cx="146" cy="180" rx="112" ry="94" fill="var(--hush)"/>
-    <circle cx="110" cy="154" r="17" fill="#fffaf0"/><circle cx="115" cy="157" r="8" fill="var(--ink)"/>
-    <circle cx="176" cy="154" r="17" fill="#fffaf0"/><circle cx="181" cy="157" r="8" fill="var(--ink)"/>
-    <path d="M118 214 q28 18 56 0" stroke="#fffaf0" stroke-width="5" fill="none" stroke-linecap="round" opacity=".85"/>
+    <use href="#ch-hush" x="34" y="86" width="224" height="190"/>
     <path d="M256 178 q112 -20 196 26" stroke="var(--hush)" stroke-width="30" fill="none" stroke-linecap="round"/>
     <rect x="452" y="118" width="86" height="166" rx="5" fill="var(--shelf)"/>
     <circle cx="466" cy="206" r="8" fill="var(--dim)"/>
     <g fill="var(--glow)"><circle cx="438" cy="188" r="11"/><circle cx="392" cy="174" r="7" opacity=".7"/><circle cx="352" cy="166" r="5" opacity=".45"/></g>
     <text x="316" y="132" font-family="system-ui" font-size="17" font-style="italic" fill="var(--dim)">the click</text>
-    <g><circle cx="60" cy="288" r="16" fill="var(--etta)"/><circle cx="94" cy="294" r="11" fill="var(--kip)"/><circle cx="122" cy="294" r="11" fill="var(--mo)"/></g>
+    <g>
+      <use href="#ch-etta" x="268" y="248" width="36" height="55"/>
+      <use href="#ch-kip"  x="308" y="264" width="30" height="38"/>
+      <use href="#ch-mo"   x="342" y="264" width="30" height="38"/></g>
   </svg>
   <div class="audio-block" data-audio="p4_hush_01" data-voice="hushabaloo" data-speaker="The Hushabaloo">
     <span class="ln">I am only the keeper. I keep them. That's all.</span>
@@ -403,12 +496,8 @@ body{
 <!-- ══════════ SPREAD 5 ══════════ -->
 <div class="page" data-page="5" style="--tint:#e0d6e6">
   <svg class="art" viewBox="0 0 600 300" role="img" aria-label="Etta standing up to the Hushabaloo while the word she needs is lifted out of her speech bubble">
-    <ellipse cx="446" cy="168" rx="108" ry="90" fill="var(--hush)" opacity=".96"/>
-    <circle cx="412" cy="144" r="16" fill="#fffaf0"/><circle cx="416" cy="147" r="7" fill="var(--ink)"/>
-    <circle cx="476" cy="144" r="16" fill="#fffaf0"/><circle cx="480" cy="147" r="7" fill="var(--ink)"/>
-    <path d="M416 204 q30 12 60 0" stroke="#fffaf0" stroke-width="5" fill="none" stroke-linecap="round" opacity=".6"/>
-    <circle cx="112" cy="176" r="38" fill="var(--etta)"/>
-    <rect x="92" y="214" width="40" height="56" rx="12" fill="var(--etta)"/>
+    <use href="#ch-hush" x="338" y="76" width="216" height="184"/>
+    <use href="#ch-etta" x="66" y="110" width="72" height="109"/>
     <g><rect x="172" y="112" width="140" height="52" rx="15" fill="#fffaf0" stroke="var(--ink)" stroke-width="4"/>
       <path d="M192 164 l-10 22 l26 -22" fill="#fffaf0" stroke="var(--ink)" stroke-width="4"/>
       <text x="192" y="146" font-family="system-ui" font-size="22" font-weight="700" fill="var(--ink)">safe&hellip;</text></g>
@@ -449,9 +538,7 @@ body{
       <rect x="44" y="34" width="38" height="38" rx="6"/><rect x="102" y="34" width="38" height="38" rx="6"/>
       <rect x="44" y="116" width="38" height="38" rx="6"/><rect x="214" y="116" width="38" height="38" rx="6"/>
       <rect x="44" y="198" width="38" height="38" rx="6"/><rect x="272" y="198" width="38" height="38" rx="6"/></g>
-    <circle cx="190" cy="138" r="17" fill="var(--kip)"/>
-    <rect x="178" y="156" width="24" height="34" rx="9" fill="var(--kip)"/>
-    <path d="M176 158 q-20 -16 -24 -38 M204 158 q20 -12 34 -30" stroke="var(--kip)" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <use href="#ch-kip" x="160" y="106" width="54" height="69"/>
     <text x="150" y="112" font-family="system-ui" font-size="16" font-weight="800" fill="var(--kip)">watch me!</text>
     <g><path d="M312 102 l16 -24 l18 22" fill="none" stroke="var(--ink)" stroke-width="3.5"/>
       <rect x="308" y="102" width="46" height="38" rx="6" fill="none" stroke="var(--ink)" stroke-width="3.5"/></g>
@@ -461,7 +548,9 @@ body{
     <rect x="496" y="54" width="80" height="104" rx="5" fill="none" stroke="var(--ink)" stroke-width="5"/>
     <line x1="536" y1="54" x2="536" y2="158" stroke="var(--ink)" stroke-width="4"/>
     <text x="490" y="188" font-family="system-ui" font-size="17" font-weight="800" fill="var(--mo)">home</text>
-    <g><circle cx="80" cy="300" r="20" fill="var(--etta)"/><circle cx="122" cy="308" r="14" fill="var(--mo)"/></g>
+    <g>
+      <use href="#ch-etta" x="54" y="258" width="46" height="70"/>
+      <use href="#ch-mo"   x="108" y="282" width="36" height="46"/></g>
   </svg>
   <div class="audio-block" data-audio="p6_nar_01">
     <span class="ln">Then Kip sized the shelf up. Now, Kip is quite small.</span>
@@ -503,9 +592,10 @@ body{
       <rect x="276" y="96" width="48" height="52" rx="7" fill="none" stroke="var(--glow)" stroke-width="5"/>
       <rect x="283" y="85" width="34" height="12" rx="4" fill="var(--glow)"/></g>
     <text x="346" y="128" font-family="system-ui" font-size="18" font-style="italic" fill="var(--glow)">empty</text>
-    <g><circle cx="268" cy="238" r="24" fill="var(--etta)" opacity=".95"/>
-      <circle cx="312" cy="250" r="17" fill="var(--kip)" opacity=".95"/>
-      <circle cx="346" cy="250" r="17" fill="var(--mo)" opacity=".95"/></g>
+    <g opacity=".96">
+      <use href="#ch-etta" x="238" y="196" width="46" height="70"/>
+      <use href="#ch-kip"  x="290" y="216" width="40" height="51"/>
+      <use href="#ch-mo"   x="334" y="216" width="40" height="51"/></g>
     <text x="46" y="212" font-family="system-ui" font-size="15" font-style="italic" fill="#fffaf0" opacity=".45">and there wasn't a sound</text>
     <text x="46" y="234" font-family="system-ui" font-size="15" font-style="italic" fill="#fffaf0" opacity=".45">in the world</text>
   </svg>
@@ -559,9 +649,10 @@ body{
 <div class="page" data-page="8" style="--tint:#ffd766">
   <svg class="art" viewBox="0 0 600 340" role="img" aria-label="Every jar bursting open at once as all the sounds fly outward in every direction">
     <g id="burst"></g>
-    <g><circle cx="176" cy="224" r="28" fill="var(--etta)"/>
-      <circle cx="248" cy="240" r="22" fill="var(--kip)"/><circle cx="300" cy="240" r="22" fill="var(--mo)"/>
-      <path d="M266 262 q5 14 17 5 M318 262 q5 14 17 5" stroke="#fffaf0" stroke-width="5" fill="none" stroke-linecap="round"/></g>
+    <g>
+      <use href="#ch-etta" x="136" y="180" width="56" height="85"/>
+      <use href="#ch-kip"  x="204" y="204" width="48" height="61"/>
+      <use href="#ch-mo"   x="258" y="204" width="48" height="61"/></g>
     <g stroke="var(--kip)" stroke-width="7" fill="none" stroke-linecap="round" opacity=".92">
       <path d="M270 268 q34 26 74 20"/><path d="M322 268 q38 30 82 24"/></g>
     <text x="352" y="306" font-family="system-ui" font-size="34" font-weight="900" fill="var(--etta)">PBBBBT!</text>
@@ -608,11 +699,8 @@ body{
 <!-- ══════════ SPREAD 9 ══════════ -->
 <div class="page" data-page="9" style="--tint:#ffd9b0">
   <svg class="art" viewBox="0 0 600 320" role="img" aria-label="Etta blowing a raspberry back to the Hushabaloo as a glowing doorway home opens behind them">
-    <ellipse cx="150" cy="186" rx="92" ry="78" fill="var(--hush)" opacity=".95"/>
-    <circle cx="120" cy="166" r="15" fill="#fffaf0"/><circle cx="124" cy="168" r="7" fill="var(--ink)"/>
-    <circle cx="180" cy="166" r="15" fill="#fffaf0"/><circle cx="184" cy="168" r="7" fill="var(--ink)"/>
-    <path d="M120 212 q30 24 60 0" stroke="#fffaf0" stroke-width="6" fill="none" stroke-linecap="round"/>
-    <circle cx="296" cy="212" r="23" fill="var(--etta)"/>
+    <use href="#ch-hush-sad" x="58" y="106" width="184" height="156"/>
+    <use href="#ch-etta" x="266" y="168" width="46" height="70"/>
     <g stroke="var(--etta)" stroke-width="6" fill="none" stroke-linecap="round" opacity=".92">
       <path d="M275 220 q-24 -10 -44 -4"/><path d="M275 230 q-28 4 -48 14"/></g>
     <text x="238" y="278" font-family="system-ui" font-size="15" font-style="italic" fill="var(--dim)">a gift, not a weapon</text>
@@ -620,7 +708,9 @@ body{
     <rect x="436" y="62" width="128" height="228" rx="6" fill="none" stroke="var(--glow)" stroke-width="6"/>
     <circle cx="452" cy="188" r="9" fill="var(--glow)"/>
     <text x="444" y="316" font-family="system-ui" font-size="22" font-weight="900" fill="var(--glow)">click.</text>
-    <g><circle cx="376" cy="248" r="15" fill="var(--kip)"/><circle cx="406" cy="254" r="15" fill="var(--mo)"/></g>
+    <g>
+      <use href="#ch-kip" x="352" y="212" width="40" height="51"/>
+      <use href="#ch-mo"  x="398" y="212" width="40" height="51"/></g>
   </svg>
   <div class="audio-block" data-audio="p9_nar_01">
     <span class="ln">And in all of that noise, in that whole rushing flood,</span>

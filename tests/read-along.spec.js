@@ -158,6 +158,22 @@ test.describe('The Hushabaloo read-along', () => {
     expect(words).toBeGreaterThan(30);
   });
 
+  test('characters come from one shared definition', async ({ page }) => {
+    await open(page);
+    // Consistency is structural: every appearance is a <use> of one <symbol>.
+    // If a spread ever hand-rolls a character again, this catches it.
+    const uses = await page.locator('use[href^="#ch-"]').count();
+    expect(uses).toBeGreaterThanOrEqual(25);
+    const symbols = await page.locator('symbol[id^="ch-"]').count();
+    expect(symbols).toBe(5);
+    // Every reference must resolve to a symbol that actually exists.
+    const dangling = await page.evaluate(() =>
+      [...document.querySelectorAll('use[href^="#ch-"]')]
+        .map(u => u.getAttribute('href'))
+        .filter(h => !document.querySelector(`symbol[id="${h.slice(1)}"]`)));
+    expect(dangling).toEqual([]);
+  });
+
   test('controls say what they do', async ({ page }) => {
     await open(page);
     await expect(page.locator('#playLabel')).toContainText('Play');
