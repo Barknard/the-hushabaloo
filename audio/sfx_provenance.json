@@ -46,5 +46,29 @@
     "collection": "Bells",
     "lufs": -22,
     "seconds": 2.5
+  },
+  "amb_house": {
+    "source": "AMBIENCES/ROOM TONE/AMBRoom-Samsung Galaxy Smartphone, CU_Tone, Faint Fan Running_The Designer's Choice_GNRL2.mp3",
+    "collection": "Ambiences",
+    "lufs": -30,
+    "seconds": 24.0
+  },
+  "amb_attic": {
+    "source": "AMBIENCES/MISC/AMBMisc-Samsung Galaxy Smartphone, CU_Attic, Weird_The Designer's Choice_GNRL2.mp3",
+    "collection": "Ambiences",
+    "lufs": -29,
+    "seconds": 24.0
+  },
+  "amb_night": {
+    "source": "AMBIENCES/AIR/AMBAir-Samsung Galaxy Smartphone, MCU_Quiet, Nighttime_The Designer's Choice_GNRL2.mp3",
+    "collection": "Ambiences",
+    "lufs": -31,
+    "seconds": 24.0
+  },
+  "amb_drips": {
+    "source": "AMBIENCES/MISC/AMBMisc-Samsung Galaxy Smartphone, MCU_Suburban Atmosphere, After Rain, Drips from Roof to Dirt_The Designer's Choice_GNRL1.mp3",
+    "collection": "Ambiences",
+    "lufs": -30,
+    "seconds": 24.0
   }
 }

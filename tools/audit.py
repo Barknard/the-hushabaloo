@@ -20,6 +20,13 @@ Every check here exists because its absence produced a real defect, or could:
   5  Direction leakage   -- [performance direction] must never reach visible text.
   6  Audio presence      -- (--audio) every block has a file on disk.
   7  Timing parity       -- (--audio) timing count equals visible word count.
+  8  Spoken direction    -- (--audio) eleven_v3 sometimes READS a [tag] aloud instead
+                            of applying it; ElevenLabs documents this. Word timings are
+                            absolute, so a spoken tag pushes the first visible word
+                            late. Normal onset is under half a second. This caught the
+                            Hushabaloo reading his own stage direction for 2.5s.
+  9  Tag vocabulary      -- only short canonical tags. A long descriptive direction
+                            matches nothing v3 recognises and gets read aloud.
 """
 
 import argparse
@@ -144,7 +151,18 @@ def main():
             if "[" in dom_text and "]" in dom_text:
                 fail("leak", f"{bid}: performance direction reached visible text")
 
-    # 6/7 -- audio
+    # 9 -- tag vocabulary (runs without audio)
+    VETTED = {"whispers", "excited", "curious", "sad", "warmly",
+              "shouts", "sighs", "laughs", "nervously", "mischievously"}
+    for bid, kind, _r, text, _p, _s in B.BLOCKS:
+        if kind != "speech":
+            continue
+        for tag in re.findall(r"\[(.*?)\]", text):
+            if tag not in VETTED:
+                fail("tag", f"{bid}: [{tag[:44]}] is not a canonical v3 tag -- "
+                            "long directions get read aloud")
+
+    # 6/7/8 -- audio
     if args.audio:
         timings = {}
         tpath = AUDIO / "timestamps.json"
@@ -165,6 +183,11 @@ def main():
                     warn("timing", f"{bid}: {len(t)} timings vs "
                                    f"{len(visible(text).split())} words -- "
                                    "highlight will drift at the tail")
+                # 8 -- spoken direction
+                if t and t[0]["start"] > 0.9:
+                    fail("spoken-tag",
+                         f"{bid}: first spoken word starts at {t[0]['start']:.2f}s -- "
+                         f"the [direction] was almost certainly read aloud")
             elif kind == "sfx" and not (AUDIO / "sfx" / f"{ref}.mp3").exists():
                 fail("audio", f"sfx/{ref}.mp3 missing")
 

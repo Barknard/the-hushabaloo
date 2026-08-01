@@ -174,6 +174,32 @@ test.describe('The Hushabaloo read-along', () => {
     expect(dangling).toEqual([]);
   });
 
+  test('an ambient bed runs under the narration and follows the spread', async ({ page }) => {
+    await open(page);
+    // Every spread but the cover carries a bed; they must resolve and differ by scene.
+    const beds = await page.evaluate(() => {
+      const out = {};
+      document.querySelectorAll('.page[data-spread]').forEach(p => { out[p.dataset.spread] = true; });
+      return out;
+    });
+    expect(Object.keys(beds).length).toBe(11);
+
+    await page.evaluate(() => { window.__book.setPlaying(true); window.__book.setBed('p3'); });
+    await expect.poll(() => page.evaluate(() => window.__book.bedName)).toBe('amb_attic');
+
+    // The bed must be quiet enough to sit under speech, never over it.
+    const vol = await page.evaluate(() => window.__book.bed && window.__book.bed.volume);
+    expect(vol).toBeLessThanOrEqual(0.35);
+
+    // Spread 7 is the quietest thing in the book -- its bed must be lower than the rest.
+    await page.evaluate(() => window.__book.setBed('p7'));
+    await expect.poll(() => page.evaluate(() => window.__book.bedName)).toBe('amb_night');
+
+    // ...and the bed loops, or it would fall silent mid-spread.
+    const loops = await page.evaluate(() => window.__book.bed && window.__book.bed.loop);
+    expect(loops).toBe(true);
+  });
+
   test('controls say what they do', async ({ page }) => {
     await open(page);
     await expect(page.locator('#playLabel')).toContainText('Play');

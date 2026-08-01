@@ -72,6 +72,20 @@ LIBRARY = {
     "room_tone": dict(
         collection="Ambiences", want=[], prefer=["room", "interior", "quiet", "house"],
         avoid=["city", "traffic", "crowd", "street"], lufs=-30, seconds=8.0),
+    # -- ambient beds: long, quiet, looped under the narration --
+    "amb_house": dict(
+        collection="Ambiences", want=[], prefer=["room", "tone", "fan"],
+        avoid=["city", "crowd", "street", "carnival", "parade", "grocery", "restaurant"],
+        lufs=-30, seconds=24.0),
+    "amb_attic": dict(
+        collection="Ambiences", want=[], prefer=["attic", "weird", "misc"],
+        avoid=["suburban", "rain", "crowd", "city"], lufs=-29, seconds=24.0),
+    "amb_night": dict(
+        collection="Ambiences", want=[], prefer=["nighttime", "quiet", "air"],
+        avoid=["crickets", "cicada", "city", "crowd"], lufs=-31, seconds=24.0),
+    "amb_drips": dict(
+        collection="Ambiences", want=[], prefer=["after rain", "drips", "suburban"],
+        avoid=["crowd", "city", "weedwhacker"], lufs=-30, seconds=24.0),
     "bell": dict(
         collection="Bells", want=[], prefer=["small", "light", "ding", "hand"],
         avoid=["church", "alarm", "large"], lufs=-22, seconds=2.5),

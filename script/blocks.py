@@ -39,12 +39,19 @@ VOICES = {
 # barely-there whisper on spread 7 to headlong joy on spread 8, so it runs
 # Creative. The children and the Hushabaloo sit at Natural: they appear in short
 # bursts and need to sound like the same character every time.
+# PITCH is applied after generation by tools/master_voices.py, in semitones.
+# The library has no child voices (and v3 will not design one), so the children are
+# adult character voices lifted into a child register -- which is how animation has
+# always cast children. Kip goes higher than Mo on purpose: the twins have to stay
+# separable by ear, and pitch is the cheapest axis to hold them apart on.
+PITCH_SEMITONES = {"ETTA": 2.0, "KIP": 4.0, "MO": 2.5}
+
 VOICE_SETTINGS = {
     "NARRATOR":   {"stability": 0.0, "similarity_boost": 0.75, "style": 0.6,  "use_speaker_boost": True},
-    "ETTA":       {"stability": 0.5, "similarity_boost": 0.8,  "style": 0.45, "use_speaker_boost": True},
-    "KIP":        {"stability": 0.5, "similarity_boost": 0.8,  "style": 0.5,  "use_speaker_boost": True},
-    "MO":         {"stability": 0.5, "similarity_boost": 0.8,  "style": 0.35, "use_speaker_boost": True},
-    "HUSHABALOO": {"stability": 0.5, "similarity_boost": 0.75, "style": 0.4,  "use_speaker_boost": True},
+    "ETTA":       {"stability": 0.0, "similarity_boost": 0.8,  "style": 0.70, "use_speaker_boost": True},
+    "KIP":        {"stability": 0.0, "similarity_boost": 0.8,  "style": 0.80, "use_speaker_boost": True},
+    "MO":         {"stability": 0.0, "similarity_boost": 0.8,  "style": 0.60, "use_speaker_boost": True},
+    "HUSHABALOO": {"stability": 0.3, "similarity_boost": 0.75, "style": 0.50, "use_speaker_boost": True},
     "_default":   {"stability": 0.5, "similarity_boost": 0.75, "style": 0.4,  "use_speaker_boost": True},
 }
 
@@ -78,6 +85,10 @@ SFX = {
     "rain":            dict(source="cc0", seconds=6.0, lufs=-24),
     "room_tone":       dict(source="cc0", seconds=8.0, lufs=-30),
     "bell":            dict(source="cc0", seconds=2.5, lufs=-22),
+    "amb_house":       dict(source="cc0", seconds=24.0, lufs=-30),
+    "amb_attic":       dict(source="cc0", seconds=24.0, lufs=-29),
+    "amb_night":       dict(source="cc0", seconds=24.0, lufs=-31),
+    "amb_drips":       dict(source="cc0", seconds=24.0, lufs=-30),
     "raspberry_big":   dict(source="cc0", seconds=2.2, lufs=-17),
     "raspberry_small": dict(source="cc0", seconds=1.4, lufs=-22),
 
@@ -104,274 +115,252 @@ SFX = {
 BLOCKS = [
     # ══ COVER ══
     ("cover_nar_01", "speech", "NARRATOR",
-          "[warmly, slowly, drawing them in] The Hushabaloo. ... [almost a whisper, conspiratorial] Behind the third door on the left of the hall.", PAGE, "cover"),
+          "[warmly] The Hushabaloo. ... [whispers] Behind the third door on the left of the hall.", PAGE, "cover"),
 
     # ══ SPREAD 1 — a house that was full of it ══
     ("p1_nar_01", "speech", "NARRATOR",
-          "[bright and inviting, a story beginning] In a house at the end of a hall that was long, [lilting] where the stairs had a squeak and the kettle a song, [warmly, introducing old friends] there was Etta, who planned. There was Mo, who could hear. [with a grin] There was Kip, who climbed everything, year after year.", LINE, "p1"),
+          "[warmly] In a house at the end of a hall that was long, where the stairs had a squeak and the kettle a song, there was Etta, who planned. There was Mo, who could hear. There was Kip, who climbed everything, year after year.", LINE, "p1"),
 
     ("p1_sfx_creak", "sfx", "creak", "", LINE, "p1"),
 
     ("p1_nar_02", "speech", "NARRATOR",
-          "[picking up speed, delighted] And the house was so full of so much to be heard, [rattling them off joyfully] of a clank and a clink and a creak and a bird, of the hum of the fridge, of the drip of the tap, [landing it with a thump] of the whumpf of the dog as he flopped for a nap.", LINE, "p1"),
+          "[excited] And the house was so full of so much to be heard, of a clank and a clink and a creak and a bird, of the hum of the fridge, of the drip of the tap, of the whumpf of the dog as he flopped for a nap.", LINE, "p1"),
 
     ("p1_nar_03", "speech", "NARRATOR",
-          "[slowing right down, secretive] And the best of them all, and remember this trick, [quietly, leaning in] was the door down the hall. And the door went...", LINE, "p1"),
+          "[curious] And the best of them all, and remember this trick, [whispers] was the door down the hall. And the door went...", LINE, "p1"),
 
     ("p1_sfx_click", "sfx", "click", "", BEAT, "p1"),
 
-    ("p1_nar_04", "speech", "NARRATOR",      "[softly, savouring it] click.", PAGE, "p1"),
+    ("p1_nar_04", "speech", "NARRATOR",      "[whispers] click.", PAGE, "p1"),
 
     # ══ SPREAD 2 — Tuesday ══
     ("p2_nar_01", "speech", "NARRATOR",
-          "[puzzled, something is off] But on Tuesday the kettle did not sing its song. [more troubled] And the stairs did not squeak. And the tap-drip was gone.", SECTION, "p2"),
+          "[curious] But on Tuesday the kettle did not sing its song. [sad] And the stairs did not squeak. And the tap-drip was gone.", SECTION, "p2"),
 
     ("p2_etta_01", "speech", "ETTA",
-     "[counting on her fingers, interested not frightened] "
-     "That's three. That's three sounds. And they've all gone away.", SECTION, "p2"),
+     "[curious] That's three. That's three sounds. And they've all gone away.", SECTION, "p2"),
 
     ("p2_nar_02", "speech", "NARRATOR",
-          "[building curiosity] Now the hall had three doors, and they knew one and two. [dropping to a hush] But the third door, the third door they'd never been through. [very quiet] And they stood there. And Mo put his ear to the wood.", SECTION, "p2"),
+          "[excited] Now the hall had three doors, and they knew one and two. But the third door, the third door they'd never been through. [whispers] And they stood there. And Mo put his ear to the wood.", SECTION, "p2"),
 
     ("p2_mo_01", "speech", "MO",
-     "[quiet, certain] Listen. ... Somefing in there.", SECTION, "p2"),
+     "[whispers] Listen. ... Somefing in there.", SECTION, "p2"),
 
     ("p2_nar_03", "speech", "NARRATOR",
-          "[dry, matter-of-fact] And there was. ... [gathering, urgent] For a sound they had heard every day of their lives, the small squeak of the stairs, came unstuck, and it dived [quickening] through the crack of that door with a...", LINE, "p2"),
+          "[curious] And there was. ... [excited] For a sound they had heard every day of their lives, the small squeak of the stairs, came unstuck, and it dived through the crack of that door with a...", LINE, "p2"),
 
     ("p2_sfx_shloop", "sfx", "shloop", "", BEAT, "p2"),
 
     ("p2_nar_04", "speech", "NARRATOR",
-          "[flat, a little stunned] and was gone. [softly, sadly] And the stairs were as silent as snow, from then on.", PAGE, "p2"),
+          "[whispers] and was gone. And the stairs were as silent as snow, from then on.", PAGE, "p2"),
 
     # ══ SPREAD 3 — a room that was not in the house ══
     ("p3_nar_01", "speech", "NARRATOR",
-          "[hushed, careful] So they opened the door, and the door made no sound, and they stepped through the door, and they looked all around. [wondering] And behind the third door on the left of the hall [awed] was a room that was not in the house. Not at all.", LINE, "p3"),
+          "[whispers] So they opened the door, and the door made no sound, and they stepped through the door, and they looked all around. [curious] And behind the third door on the left of the hall was a room that was not in the house. Not at all.", LINE, "p3"),
 
     ("p3_nar_02", "speech", "NARRATOR",
-          "[full of awe, slow and wide] It was tall as a church and as wide as a town, [craning upward] and it went up so far that no ceiling came down. [marvelling] And on every last shelf, in a row, in a row, were the jars. And each jar had a label. [curious] And so...", SECTION, "p3"),
+          "[curious] It was tall as a church and as wide as a town, and it went up so far that no ceiling came down. And on every last shelf, in a row, in a row, were the jars. And each jar had a label. And so...", SECTION, "p3"),
 
     ("p3_etta_01", "speech", "ETTA",
-     "[thrilled, she loves a label] That one's RAIN. That one's DOG. "
-     "That one's stairs-when-you-creep. "
-     "That one's somebody snoring. That's somebody's sheep!", SECTION, "p3"),
+     "[excited] That one's RAIN. That one's DOG. That one's stairs-when-you-creep. That one's somebody snoring. That's somebody's sheep!", SECTION, "p3"),
 
     ("p3_nar_03", "speech", "NARRATOR",
-          "[quiet, uneasy, a slow reveal] Then a shelf became shoulders. [slower] A jar became eye. [barely breathing] And the thing they'd been sure was a wall said...", SECTION, "p3"),
+          "[whispers] Then a shelf became shoulders. A jar became eye. And the thing they'd been sure was a wall said...", SECTION, "p3"),
 
     ("p3_hush_01", "speech", "HUSHABALOO",
-     "[soft, delighted, faintly wheezy] Oh. Hello. Oh my.", PAGE, "p3"),
+     "[excited] Oh. Hello. Oh my.", PAGE, "p3"),
 
     # ══ SPREAD 4 — the keeper ══
     ("p4_hush_01", "speech", "HUSHABALOO",
-     "[warm, explaining something lovely and obvious] "
-     "I am only the keeper. I keep them. That's all. "
-     "Every sound ever let loose in somebody's hall, "
-     "every squeak, every drip, every creak, every knock, "
-     "I have kept them all safe. Every one. Every clock.", SECTION, "p4"),
+     "[warmly] I am only the keeper. I keep them. That's all. Every sound ever let loose in somebody's hall, every squeak, every drip, every creak, every knock, I have kept them all safe. Every one. Every clock.", SECTION, "p4"),
 
     ("p4_nar_01", "speech", "NARRATOR",
-          "[watchful, wary] And he reached out a hand that was mostly a sleeve, [sharper] and he took Kip's small laugh. [disapproving] And he did not ask leave.", LINE, "p4"),
+          "[curious] And he reached out a hand that was mostly a sleeve, and he took Kip's small laugh. And he did not ask leave.", LINE, "p4"),
 
     ("p4_sfx_shloop_1", "sfx", "shloop", "", LINE, "p4"),
 
-    ("p4_nar_02", "speech", "NARRATOR",      "[flat, clipped] And he took Mo's low hum.", LINE, "p4"),
+    ("p4_nar_02", "speech", "NARRATOR",      "[whispers] And he took Mo's low hum.", LINE, "p4"),
 
     ("p4_sfx_shloop_2", "sfx", "shloop", "", LINE, "p4"),
 
     ("p4_nar_03", "speech", "NARRATOR",
-          "[quicker, alarmed] And then, gentle and quick, he took Etta's own word, in the middle. Like this.", LINE, "p4"),
+          "[sad] And then, gentle and quick, he took Etta's own word, in the middle. Like this.", LINE, "p4"),
 
     ("p4_sfx_shloop_3", "sfx", "shloop", "", BEAT, "p4"),
 
     ("p4_nar_04", "speech", "NARRATOR",
-          "[whispering, dreadful] And behind them, so soft that not one of them heard, he reached out once again. [slowly] And he took, from the door, [the worst of it] the small click that it made.", LINE, "p4"),
+          "[whispers] And behind them, so soft that not one of them heard, he reached out once again. And he took, from the door, [sad] the small click that it made.", LINE, "p4"),
 
     ("p4_sfx_shloop_4", "sfx", "shloop_soft", "", BEAT, "p4"),
 
     ("p4_nar_05", "speech", "NARRATOR",
-          "[hollow] And the door was no more. ... [flat, three heavy beats] For a door with no click isn't really a door. It's a wall. It's a wall. It's a wall. [final] Nothing more.", PAGE, "p4"),
+          "[whispers] And the door was no more. ... For a door with no click isn't really a door. It's a wall. It's a wall. It's a wall. Nothing more.", PAGE, "p4"),
 
     # ══ SPREAD 5 — please ══
     ("p5_nar_01", "speech", "NARRATOR",
-          "[warm, explaining patiently] Now Etta was five, which is old. And she knew that when somebody's taken a thing that's not theirs, [firmly] you say give it back, please. [proud of her] So she said it. She did.", SECTION, "p5"),
+          "[warmly] Now Etta was five, which is old. And she knew that when somebody's taken a thing that's not theirs, you say give it back, please. So she said it. She did.", SECTION, "p5"),
 
     ("p5_etta_01", "speech", "ETTA",
-     "[polite, firm, certain this will work] "
      "Give them back. Give them back, please. They're ours.", SECTION, "p5"),
 
     ("p5_hush_01", "speech", "HUSHABALOO",
-     "[genuinely baffled, not refusing] But they're safe. Don't you see? "
-     "They are safe here with me. "
-     "Nothing's lost. Nothing ever is lost here. Not one. "
-     "I have rain from a Tuesday two hundred years gone. "
-     "It's still raining. In there. It has never been done.", SECTION, "p5"),
+     "But they're safe. Don't you see? They are safe here with me. Nothing's lost. Nothing ever is lost here. Not one. I have rain from a Tuesday two hundred years gone. It's still raining. In there. It has never been done.", SECTION, "p5"),
 
     ("p5_etta_02", "speech", "ETTA",
-     "[pressing, exasperated] But a sound isn't safe when it's kept in a...", LINE, "p5"),
+     "But a sound isn't safe when it's kept in a...", LINE, "p5"),
 
     ("p5_sfx_shloop", "sfx", "shloop", "", BEAT, "p5"),
 
     ("p5_nar_02", "speech", "NARRATOR",
-          "[dry, wincing sympathy] And the word that she needed went off in a jar. [slower] And she opened her mouth. ... [very small] And there wasn't a sound.", PAGE, "p5"),
+          "[curious] And the word that she needed went off in a jar. And she opened her mouth. ... [whispers] And there wasn't a sound.", PAGE, "p5"),
 
     # ══ SPREAD 6 — Kip climbs, because Kip climbs ══
     ("p6_nar_01", "speech", "NARRATOR",
-          "[amused, fond] Then Kip sized the shelf up. Now, Kip is quite small. [with a knowing smile] But of all of the things about Kip, above all...", LINE, "p6"),
+          "[warmly] Then Kip sized the shelf up. Now, Kip is quite small. But of all of the things about Kip, above all...", LINE, "p6"),
 
     ("p6_kip_01", "speech", "KIP",
-     "[flat, obvious, already going] I can get it.", LINE, "p6"),
+     "[whispers] I can get it.", LINE, "p6"),
 
     ("p6_nar_02", "speech", "NARRATOR",
-          "[brisk, a climbing rhythm] Kip climbs. And Kip climbed. And Kip went up a shelf, and another, and up, and he leant", LINE, "p6"),
+          "Kip climbs. And Kip climbed. And Kip went up a shelf, and another, and up, and he leant", LINE, "p6"),
 
     ("p6_kip_02", "speech", "KIP",
-     "[breathless, delighted, three shelves up] Watch me! Watch me!", LINE, "p6"),
+     "[excited] Watch me! Watch me!", LINE, "p6"),
 
     ("p6_nar_03", "speech", "NARRATOR",
-          "[breathless, rising tension] and he reached for a jar, and he stretched, and he wobbled, and grabbed, and...",
+          "[excited] and he reached for a jar, and he stretched, and he wobbled, and grabbed, and...",
      LINE, "p6"),
 
     ("p6_kip_03", "speech", "KIP",
-     "[pure joy, no fear whatsoever] Uh oh.", LINE, "p6"),
+     "[excited] Uh oh.", LINE, "p6"),
 
     ("p6_sfx_pop", "sfx", "pop", "", LINE, "p6"),
 
     ("p6_sfx_rain", "sfx", "rain", "", LINE, "p6"),
 
     ("p6_nar_04", "speech", "NARRATOR",
-          "[exhilarated, fast and joyful] And the jar came down hard, and the jar came apart, [thrilled] and out came the rain! All the rain! From the start! [racing] And it went up, and out, and it went through the wall, [triumphant] to the window it came from, right down the long hall.", SECTION, "p6"),
+          "[excited] And the jar came down hard, and the jar came apart, and out came the rain! All the rain! From the start! And it went up, and out, and it went through the wall, to the window it came from, right down the long hall.", SECTION, "p6"),
 
     ("p6_etta_01", "speech", "ETTA",
-     "[discovery, this is information not victory] "
      "It went HOME. Did you see it? It broke and went home!", PAGE, "p6"),
 
     # ══ SPREAD 7 — the quiet part ══
     ("p7_nar_01", "speech", "NARRATOR",
-          "[deflating, sad] But the Hushabaloo sighed. And he lifted the shelf. [heavier] And he put it up high, where a person can't climb. [almost inaudible] And he said it so softly, and mostly himself...", SECTION, "p7"),
+          "[whispers] But the Hushabaloo sighed. And he lifted the shelf. And he put it up high, where a person can't climb. And he said it so softly, and mostly himself...", SECTION, "p7"),
 
     ("p7_hush_01", "speech", "HUSHABALOO",
-     "[not angry, heartbroken. This must never sound like a threat] "
-     "Please don't break them. Please don't. "
-     "I have had them a very long time.", SECTION, "p7"),
+     "[sad] Please don't break them. Please don't. I have had them a very long time.", SECTION, "p7"),
 
     ("p7_nar_02", "speech", "NARRATOR",
-          "[very slow, very quiet, emptying out] And it got very dark. And it got very still. [slower] And the three of them sat. And they sat. And they sat. [hushed] And there wasn't a squeak. And there wasn't a drip. [barely a whisper] And there wasn't a sound in the world. ... [empty] Just like that.", SECTION, "p7"),
+          "[whispers] And it got very dark. And it got very still. And the three of them sat. And they sat. And they sat. And there wasn't a squeak. And there wasn't a drip. And there wasn't a sound in the world. ... Just like that.", SECTION, "p7"),
 
     ("p7_sfx_roomtone", "sfx", "room_tone", "", BEAT, "p7"),
 
     ("p7_kip_01", "speech", "KIP",
-     "[small. The first time Kip has been small] I want home.", LINE, "p7"),
+     "[whispers] I want home.", LINE, "p7"),
 
-    ("p7_mo_01", "speech", "MO", "[smaller] Me too.", SECTION, "p7"),
+    ("p7_mo_01", "speech", "MO", "[whispers] Me too.", SECTION, "p7"),
 
     ("p7_nar_03", "speech", "NARRATOR",
-          "[gently, tenderly] And Etta, who's five, and who plans, and who's brave, [softly] had no plan. And she said it out loud, very small...", LINE, "p7"),
+          "[warmly] And Etta, who's five, and who plans, and who's brave, [whispers] had no plan. And she said it out loud, very small...", LINE, "p7"),
 
     ("p7_etta_01", "speech", "ETTA",
-     "[honest. This is the bottom] I'm scared too.", SECTION, "p7"),
+     "I'm scared too.", SECTION, "p7"),
 
     ("p7_nar_04", "speech", "NARRATOR",
-          "[a spark returning] But then Mo, who hears things that the rest of us miss, [curious, quiet] put his hand on a jar. And he listened. Like this.", SECTION, "p7"),
+          "[excited] But then Mo, who hears things that the rest of us miss, [whispers] put his hand on a jar. And he listened. Like this.", SECTION, "p7"),
 
     ("p7_mo_02", "speech", "MO",
-     "[quiet, but this is the hinge of the whole book] Etta. ... This one empty.",
+     "[whispers] Etta. ... This one empty.",
      SECTION, "p7"),
 
     ("p7_etta_02", "speech", "ETTA",
-     "[sitting bolt upright] Empty? But he's got a jar for everything.", LINE, "p7"),
+     "[curious] Empty? But he's got a jar for everything.", LINE, "p7"),
 
     ("p7_nar_05", "speech", "NARRATOR",
-          "[quickening, excited] And Etta's eyes went round and wide.", LINE, "p7"),
+          "[excited] And Etta's eyes went round and wide.", LINE, "p7"),
 
     ("p7_etta_03", "speech", "ETTA",
-     "[fast, building, the idea arriving in real time] "
-     "He's got jars for the rain and the drip and the door, "
-     "for the sounds that things MAKE. But he hasn't got more! "
-     "He's got nothing at all for a sound that's not FOR "
-     "anything! Nothing! He's not heard one before! ... "
-     "[turning to her brothers, absolutely serious] Kip. Mo. On three. ... "
-     "Do the rudest thing you know.", PAGE, "p7"),
+     "[excited] He's got jars for the rain and the drip and the door, for the sounds that things MAKE. But he hasn't got more! He's got nothing at all for a sound that's not FOR anything! Nothing! He's not heard one before! ... Kip. Mo. On three. ... Do the rudest thing you know.", PAGE, "p7"),
 
     # ══ SPREAD 8 — the rudest thing they know ══
     ("p8_nar_01", "speech", "NARRATOR",
-          "[fast, breathless, everything at once] So Kip climbed. Because Kip climbs. And Mo found the jar, because Mo always finds them. That's just what Mo does. [urgent] And Etta said...", LINE, "p8"),
+          "[excited] So Kip climbed. Because Kip climbs. And Mo found the jar, because Mo always finds them. That's just what Mo does. And Etta said...", LINE, "p8"),
 
-    ("p8_etta_01", "speech", "ETTA", "[big] THREE. TWO. ONE...", LINE, "p8"),
+    ("p8_etta_01", "speech", "ETTA", "[excited] THREE. TWO. ONE...", LINE, "p8"),
 
     ("p8_nar_02", "speech", "NARRATOR",
-          "[building, gleeful] and the twins, who were two, did the one thing that two-year-old people do best.", 0.0, "p8"),
+          "[excited] and the twins, who were two, did the one thing that two-year-old people do best.", 0.0, "p8"),
 
     ("p8_wait_01", "wait", "3.0", "", 0.0, "p8"),
 
     ("p8_kipmo_01", "speech", "KIP",
-     "[with absolutely everything she has] PBBBBBBBBT!", 0.0, "p8"),
+     "PBBBBBBBBT!", 0.0, "p8"),
 
     ("p8_sfx_raspberry", "sfx", "raspberry_big", "", BEAT, "p8"),
 
     ("p8_nar_03", "speech", "NARRATOR",
-          "[building, gathering force] And it wasn't a squeak. And it wasn't a drip. And it wasn't the rain, and it wasn't a door. [louder, delighted] It was nothing! It meant nothing! It came from a lip and it went nowhere useful, [joyously] a wonderful roar of a silly, wet, pointless, ridiculous noise [landing it] that had no jar at all.", SECTION, "p8"),
+          "[excited] And it wasn't a squeak. And it wasn't a drip. And it wasn't the rain, and it wasn't a door. It was nothing! It meant nothing! It came from a lip and it went nowhere useful, a wonderful roar of a silly, wet, pointless, ridiculous noise that had no jar at all.", SECTION, "p8"),
 
     ("p8_nar_04", "speech", "NARRATOR",
-          "[slower, almost pitying] And he looked for a jar. And he looked. And he looked. And he looked down the hall of ten thousand jars... [quiet wonder] and there wasn't one. Not one. Not a label. Not one. Not at all. Not a jar.", BEAT, "p8"),
+          "[sad] And he looked for a jar. And he looked. And he looked. And he looked down the hall of ten thousand jars... [whispers] and there wasn't one. Not one. Not a label. Not one. Not at all. Not a jar.", BEAT, "p8"),
 
     ("p8_nar_05", "speech", "NARRATOR",
-          "[quiet, certain, the hinge of it] And a thing with no jar is a thing you can't keep.", LINE, "p8"),
+          "[whispers] And a thing with no jar is a thing you can't keep.", LINE, "p8"),
 
     ("p8_sfx_cascade", "sfx", "pop_cascade", "", LINE, "p8"),
 
     ("p8_nar_06", "speech", "NARRATOR",
-          "[joyful, headlong, unstoppable] And the empty jar popped. And the next. And the next. [faster, exultant] And the rain and the dog and the kettle and drip and the whumpf and the hum and the squeak of the stair [soaring] went UP, and went OUT, and went HOME through the air.", PAGE, "p8"),
+          "[excited] And the empty jar popped. And the next. And the next. And the rain and the dog and the kettle and drip and the whumpf and the hum and the squeak of the stair went UP, and went OUT, and went HOME through the air.", PAGE, "p8"),
 
     # ══ SPREAD 9 — click ══
     ("p9_nar_01", "speech", "NARRATOR",
-          "[coming down from the roar, hushed] And in all of that noise, in that whole rushing flood, [very quiet] there was one little sound that was smaller than most.", SECTION, "p9"),
+          "[whispers] And in all of that noise, in that whole rushing flood, there was one little sound that was smaller than most.", SECTION, "p9"),
 
     ("p9_mo_01", "speech", "MO",
-     "[perfectly calm. Of course he heard it] Listen. ... There.", SECTION, "p9"),
+     "Listen. ... There.", SECTION, "p9"),
 
     ("p9_nar_02", "speech", "NARRATOR",
-          "[warm, proud] And Mo heard it. Of course. Because that's what Mo does. [gently] And he pointed. And there, in the dark, was a...", LINE, "p9"),
+          "[warmly] And Mo heard it. Of course. Because that's what Mo does. And he pointed. And there, in the dark, was a...", LINE, "p9"),
 
     ("p9_sfx_click", "sfx", "click", "", BEAT, "p9"),
 
     ("p9_nar_03", "speech", "NARRATOR",
-          "[relieved, warm] click. [brightening] And a door with a click is a door once again.", SECTION, "p9"),
+          "[warmly] click. [excited] And a door with a click is a door once again.", SECTION, "p9"),
 
     ("p9_nar_04", "speech", "NARRATOR",
-          "[slowing, tender] But they stood in the doorway. And turned. And they saw that the Hushabaloo hadn't got anything more. [sadly] He had shelves. He had jars. He had none of them full. [very softly] And he sat down. And he was extremely small.", SECTION, "p9"),
+          "[warmly] But they stood in the doorway. And turned. And they saw that the Hushabaloo hadn't got anything more. [sad] He had shelves. He had jars. He had none of them full. And he sat down. And he was extremely small.", SECTION, "p9"),
 
     ("p9_etta_01", "speech", "ETTA", "Wait.", LINE, "p9"),
 
     ("p9_nar_05", "speech", "NARRATOR",
-          "[gentle, quiet] And she walked all the way back, and stood by his knee.", LINE, "p9"),
+          "[whispers] And she walked all the way back, and stood by his knee.", LINE, "p9"),
 
     ("p9_etta_02", "speech", "ETTA",
-     "[gentle. The kindest line in the book] "
-     "You can keep it. That one. That one's from me.", LINE, "p9"),
+     "[warmly] You can keep it. That one. That one's from me.", LINE, "p9"),
 
     ("p9_nar_06", "speech", "NARRATOR",
-          "[warmly, with a smile in it] And she blew him a raspberry, right through the air.", LINE, "p9"),
+          "[warmly] And she blew him a raspberry, right through the air.", LINE, "p9"),
 
     ("p9_sfx_raspberry", "sfx", "raspberry_small", "", LINE, "p9"),
 
     ("p9_nar_07", "speech", "NARRATOR",
-          "[tender, unhurried] And he caught it. And held it. And kept it. Right there. [softly] And he put it in nothing. No jar and no lid. [thoughtfully] Just held it, which is, I suppose, what you do with a sound that was given and not taken. ... [warmly] He did. And he smiled. If a Hushabaloo can. And he knew.", SECTION, "p9"),
+          "[warmly] And he caught it. And held it. And kept it. Right there. [whispers] And he put it in nothing. No jar and no lid. Just held it, which is, I suppose, what you do with a sound that was given and not taken. ... He did. And he smiled. If a Hushabaloo can. And he knew.", SECTION, "p9"),
 
     ("p9_nar_08", "speech", "NARRATOR",
-          "[coming home, warm and slowing] So they went down the hall to the house that was theirs, where the kettle had a song, and a squeak had the stairs, [contented] where the pipes gave a knock, and the tap gave a drip, and the dog gave a whumpf...", LINE, "p9"),
+          "[warmly] So they went down the hall to the house that was theirs, where the kettle had a song, and a squeak had the stairs, where the pipes gave a knock, and the tap gave a drip, and the dog gave a whumpf...", LINE, "p9"),
 
     ("p9_sfx_click_home", "sfx", "click", "", BEAT, "p9"),
 
     ("p9_nar_09", "speech", "NARRATOR",
-          "[softly, home at last] and the door gave a click.", PAGE, "p9"),
+          "[whispers] and the door gave a click.", PAGE, "p9"),
 
     # ══ FINAL ══
     ("final_nar_01", "speech", "NARRATOR",
-          "[quiet, direct, sincere] For everybody small who was ever once told to be quiet, be quiet, be quiet, be still... [warm and certain] here's a story where noise is the thing that saves all.", SECTION, "final"),
+          "[whispers] For everybody small who was ever once told to be quiet, be quiet, be quiet, be still... [warmly] here's a story where noise is the thing that saves all.", SECTION, "final"),
 
     ("final_nar_02", "speech", "NARRATOR",
-          "[playful, inviting, with a grin] Go on. ... [conspiratorial] Make the sound. You know the one.",
+          "[warmly] Go on. ... [curious] Make the sound. You know the one.",
      0.0, "final"),
 
     ("final_wait_01", "wait", "4.0", "", 0.0, "final"),
@@ -390,5 +379,28 @@ BLOCKS = [
 #
 # So the 3s wait on spread 8 is followed by Kip and Mo doing it regardless -- the
 # listeners are invited, never required, and never left hanging.
+
+# ── Ambient beds ──────────────────────────────────────────────────────────────
+# A quiet looping bed plays UNDER the narration for the whole spread, on its own
+# channel, and cross-fades on the page turn. This is the immersion layer: the
+# collection room should sound enormous and strange before anyone says it is.
+#
+# Levels are deliberately low. The research is explicit that a bed under speech
+# hurts comprehension for two-year-olds specifically, whose auditory discrimination
+# is still immature -- so these sit far enough down to be felt rather than heard,
+# and spread 7 drops lower still because the story there IS the silence.
+AMBIENCE = {
+    "cover": None,
+    "p1":    ("amb_house", 0.26),   # a house stuffed with noise
+    "p2":    ("amb_house", 0.18),   # ...and quieter now, sounds going missing
+    "p3":    ("amb_attic", 0.30),   # the collection: vast, strange, echoing
+    "p4":    ("amb_attic", 0.30),
+    "p5":    ("amb_attic", 0.26),
+    "p6":    ("amb_drips", 0.28),   # rain loose in the room, heading home
+    "p7":    ("amb_night", 0.13),   # the quietest thing in the book
+    "p8":    ("amb_attic", 0.24),
+    "p9":    ("amb_house", 0.26),   # home again -- the bed from spread 1 returns
+    "final": ("amb_house", 0.16),
+}
 
 SPREADS = ["cover", "p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "p9", "final"]

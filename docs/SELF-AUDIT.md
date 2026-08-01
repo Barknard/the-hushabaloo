@@ -147,6 +147,47 @@ than the first pass.
 
 ---
 
+## Third pass (2026-08-01) — a bug that shipped
+
+**The Hushabaloo read his own stage direction aloud.** `p7_hush_01` opened with 2.5
+seconds of *"not angry, heartbroken, this must never sound like a threat"* in the
+creature's own voice. `p9_mo_01` had the same fault, 1.2 seconds of it.
+
+Cause: I wrote long descriptive directions in brackets. ElevenLabs documents that
+eleven_v3 "sometimes reads your tags out loud instead of applying them" — and a tag
+matching nothing in its recognised vocabulary is overwhelmingly likely to be read.
+I wrote stage directions for a human actor and handed them to a synthesiser.
+
+Two fixes, both structural:
+
+* **Canonical tags only.** All 68 tagged blocks now use one of five short vetted tags
+  (`whispers`, `excited`, `curious`, `sad`, `warmly`), at most two per block, never a
+  sentence. Expressiveness comes mainly from `stability: 0.0` and the punctuation of
+  the verse; tags are a nudge, not the mechanism.
+* **A permanent audit gate, and an exact one.** Word timings are absolute, so a spoken
+  tag pushes the first *visible* word late. Normal onset is 0.0–0.5s. `audit.py` now
+  fails any block whose first word starts after 0.9s, and separately rejects any tag
+  outside the vetted vocabulary. Verified after regeneration: max onset across all 69
+  blocks is 0.77s, and `p7_hush_01` now opens on "Please" at 0.25s.
+
+**The children sound like children.** All three run `stability: 0.0` with high style,
+and `tools/master_voices.py` lifts them into a child register afterwards — Kip +4
+semitones, Mo +2.5, Etta +2. Kip stays above Mo deliberately; the twins must remain
+separable by ear. Pitch is shifted via `asetrate` with an exact inverse `atempo`, so
+duration is mathematically preserved and the karaoke cannot desync — the tool asserts
+this per file and rejects any drift over 60 ms. The Voice Library forbids child voices
+and Voice Design refused the descriptions, so this is the same solve animation has
+always used: adult character voices, lifted.
+
+**Ambient beds.** Four CC0 loops now run *under* the narration on their own channel,
+cross-fading on the page turn: the house at home, an attic bed for the collection room,
+night air for the low point, drips after the rain. Levels sit low on purpose — the
+research is explicit that a bed under speech hurts comprehension for two-year-olds
+specifically — and spread 7 drops lowest of all, because there the silence is the story.
+Spread 9 brings back spread 1's bed, so coming home sounds like coming home.
+
+---
+
 ## Verdict
 
 Feature parity with DATATRAX, with the failure modes that book left open now closed by

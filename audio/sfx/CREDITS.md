@@ -8,6 +8,10 @@ Every file was trimmed, fade-shaped and loudness-normalised by `tools/fetch_sfx.
 
 | Effect | Collection | Source file |
 | --- | --- | --- |
+| `amb_attic` | Ambiences | `AMBMisc-Samsung Galaxy Smartphone, CU_Attic, Weird_The Designer's Choice_GNRL2.mp3` |
+| `amb_drips` | Ambiences | `AMBMisc-Samsung Galaxy Smartphone, MCU_Suburban Atmosphere, After Rain, Drips from Roof to Dirt_The Designer's Choice_GNRL1.mp3` |
+| `amb_house` | Ambiences | `AMBRoom-Samsung Galaxy Smartphone, CU_Tone, Faint Fan Running_The Designer's Choice_GNRL2.mp3` |
+| `amb_night` | Ambiences | `AMBAir-Samsung Galaxy Smartphone, MCU_Quiet, Nighttime_The Designer's Choice_GNRL2.mp3` |
 | `bell` | Bells | `BELLHand-Blue Snowball Microphone, CU_Timer Ding_Nicholas Judy_TDC.mp3` |
 | `click` | Doors | `DOORAntq-Samsung Galaxy Smartphone, CU_Wooden Treasure Chest Close_Nicholas Judy_TDC.mp3` |
 | `creak` | Doors | `DOORCreak-Samsung Galaxy Smartphone_Master Bathroom, Squeaks_Nicholas Judy_TDC.mp3` |
