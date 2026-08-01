@@ -1,0 +1,28 @@
+# Secrets — never commit ElevenLabs keys
+.env
+.env.*
+!.env.example
+*.key
+
+# Generated audio (large, regenerable from script + API)
+audio/lines/
+audio/sfx/
+audio/_silence/
+audio/*.mp3
+audio/_concat_list.txt
+
+# Standalone build output (13MB+ base64-inlined HTML)
+dist/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Node
+node_modules/
+
+# OS
+Thumbs.db
+.DS_Store
