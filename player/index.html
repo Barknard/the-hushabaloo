@@ -74,8 +74,49 @@ body{
 }
 .page.active{opacity:1;transform:none;pointer-events:auto}
 .page.prev{transform:translateX(-30px)}
-.art{width:min(100%,600px);height:auto;display:block;flex:none}
-.art.small{width:min(72%,380px)}
+.art{width:100%;max-width:600px;height:auto;display:block}
+.art.small{max-width:400px}
+
+/* Two panes. A picture book's premise is that you see the picture WHILE you hear
+   the words -- so the art never scrolls away from the verse it belongs to. */
+.art-pane{width:100%;display:flex;justify-content:center;flex:none;
+  position:sticky; top:0; z-index:2; padding:.35rem 0 .9rem;
+  background:linear-gradient(to bottom,
+    var(--paper) 0%, var(--paper) 90%, transparent 100%);}
+.text-pane{width:100%;display:flex;flex-direction:column;align-items:center;gap:1.1rem}
+
+/* Wide and landscape: an actual open two-page spread. Art holds the left page,
+   verse scrolls on the right, exactly like a book lying open. */
+@media (min-width:900px) and (orientation:landscape){
+  .page{flex-direction:row;align-items:flex-start;gap:clamp(1rem,3vw,2.5rem);
+        padding-top:clamp(1rem,3vw,2rem)}
+  .art-pane{flex:0 0 44%;max-width:44%;position:sticky;top:0;background:none;
+            padding-top:.5rem}
+  .text-pane{flex:1;min-width:0;align-items:flex-start}
+  .audio-block,.sfx-block,.wait-block{width:100%}
+}
+
+/* ── lite motion ───────────────────────────────────────────────────────────
+   Small, slow, and never in lockstep -- staggered delays keep it feeling alive
+   rather than mechanical. All of it is switched off entirely under
+   prefers-reduced-motion, which the rule at the bottom of this sheet handles. */
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2.5px)}}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.022)}}
+@keyframes twinkle{0%,100%{opacity:.35}50%{opacity:1}}
+@keyframes drift{0%{transform:translate(0,0);opacity:.9}
+                 100%{transform:translate(-26px,14px);opacity:.15}}
+@keyframes sway{0%,100%{transform:rotate(-1.1deg)}50%{transform:rotate(1.1deg)}}
+.bob{animation:bob 3.4s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}
+.bob:nth-of-type(2){animation-duration:2.9s;animation-delay:-.7s}
+.bob:nth-of-type(3){animation-duration:3.8s;animation-delay:-1.4s}
+.breathe{animation:breathe 5.2s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 90%}
+.twinkle circle,.twinkle{animation:twinkle 2.8s ease-in-out infinite}
+.drift{animation:drift 3.6s ease-in linear infinite}
+.sway{animation:sway 4.6s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 0%}
+
+/* The block being spoken lifts very slightly out of the page. */
+.audio-block{transition:opacity .45s ease, transform .45s ease}
+.audio-block.speaking{transform:translateY(-2px)}
 .rule{width:min(100%,560px);height:26px;flex:none;opacity:.55}
 
 /* ── verse ──────────────────────────────────────────────────────
@@ -289,6 +330,7 @@ body{
 
 <!-- ══════════ COVER ══════════ -->
 <div class="page active" data-page="0" data-spread="cover" style="--tint:#f6dfa0">
+  <div class="art-pane">
   <svg class="art" viewBox="0 0 600 400" role="img" aria-label="A tall dark door with warm light spilling from every edge, and small glowing sounds drifting toward it">
     <defs><radialGradient id="cg" cx="50%" cy="50%"><stop offset="0%" stop-color="#ffc93c" stop-opacity=".34"/><stop offset="100%" stop-color="#ffc93c" stop-opacity="0"/></radialGradient></defs>
     <rect width="600" height="400" fill="url(#cg)"/>
@@ -300,28 +342,32 @@ body{
     <circle cx="248" cy="210" r="9" fill="var(--glow)"/>
     <g fill="var(--glow)"><rect x="216" y="42" width="7" height="324" rx="3"/><rect x="377" y="42" width="7" height="324" rx="3"/>
       <rect x="216" y="38" width="168" height="7" rx="3"/><rect x="216" y="362" width="168" height="11" rx="5"/></g>
-    <g fill="var(--glow)" opacity=".65">
+    <g class="twinkle" fill="var(--glow)" opacity=".65">
       <circle cx="120" cy="112" r="7"/><circle cx="86" cy="196" r="5"/><circle cx="142" cy="268" r="9"/><circle cx="98" cy="318" r="4"/>
       <circle cx="482" cy="132" r="7"/><circle cx="518" cy="228" r="5"/><circle cx="462" cy="300" r="9"/><circle cx="512" cy="348" r="4"/></g>
     <g stroke="var(--glow)" stroke-width="2.5" fill="none" opacity=".35" stroke-linecap="round">
       <path d="M128 118 q52 26 84 62"/><path d="M150 262 q34 -12 66 -30"/>
       <path d="M474 138 q-48 24 -80 58"/><path d="M470 296 q-30 -14 -62 -30"/></g>
   </svg>
+  </div>
+  <div class="text-pane">
   <div class="audio-block" data-audio="cover_nar_01">
     <span class="ln">The Hushabaloo.</span>
     <span class="ln stanza-gap">Behind the third door on the left of the hall.</span>
+  </div>
   </div>
 </div>
 
 <!-- ══════════ SPREAD 1 ══════════ -->
 <div class="page" data-page="1" data-spread="p1" style="--tint:#ffe3a0">
+  <div class="art-pane">
   <svg class="art" viewBox="0 0 600 320" role="img" aria-label="A cutaway of a noisy house: a whistling kettle, squeaking stairs, a dripping tap, a sleeping dog, and a door at the end of the hall">
     <rect x="20" y="26" width="560" height="270" rx="14" fill="#fff6e0" stroke="var(--ink)" stroke-width="4"/>
     <line x1="20" y1="164" x2="580" y2="164" stroke="var(--ink)" stroke-width="4"/>
     <line x1="300" y1="26" x2="300" y2="164" stroke="var(--ink)" stroke-width="4"/>
     <g><ellipse cx="122" cy="126" rx="38" ry="30" fill="var(--etta)"/>
       <path d="M158 112 q20 -7 22 -25" stroke="var(--etta)" stroke-width="8" fill="none" stroke-linecap="round"/>
-      <path d="M174 74 q7 -16 -2 -25 M188 76 q9 -14 3 -25" stroke="var(--glow)" stroke-width="5" fill="none" stroke-linecap="round"/></g>
+      <path class="sway" d="M174 74 q7 -16 -2 -25 M188 76 q9 -14 3 -25" stroke="var(--glow)" stroke-width="5" fill="none" stroke-linecap="round"/></g>
     <text x="60" y="66" font-family="system-ui" font-size="19" font-weight="800" fill="var(--etta)">sssss!</text>
     <g fill="var(--shelf)"><rect x="352" y="136" width="48" height="12" rx="2"/><rect x="386" y="112" width="48" height="12" rx="2"/>
       <rect x="420" y="88" width="48" height="12" rx="2"/><rect x="454" y="64" width="48" height="12" rx="2"/></g>
@@ -335,13 +381,15 @@ body{
     <g><rect x="500" y="192" width="66" height="102" rx="5" fill="var(--shelf)"/><circle cx="512" cy="246" r="7" fill="var(--glow)"/></g>
     <text x="498" y="288" font-family="system-ui" font-size="20" font-weight="800" fill="var(--glow)">click.</text>
     <g>
-      <use href="#ch-etta" x="326" y="182" width="53" height="80"/>
-      <use href="#ch-kip"  x="384" y="204" width="47" height="60"/>
-      <use href="#ch-mo"   x="430" y="204" width="47" height="60"/>
+      <use class="bob" href="#ch-etta" x="326" y="182" width="53" height="80"/>
+      <use class="bob" href="#ch-kip"  x="384" y="204" width="47" height="60"/>
+      <use class="bob" href="#ch-mo"   x="430" y="204" width="47" height="60"/>
       <text x="334" y="280" font-family="system-ui" font-size="14" font-weight="800" fill="var(--etta)">Etta</text>
       <text x="394" y="280" font-family="system-ui" font-size="13" font-weight="800" fill="var(--kip)">Kip</text>
       <text x="442" y="280" font-family="system-ui" font-size="13" font-weight="800" fill="var(--mo)">Mo</text></g>
   </svg>
+  </div>
+  <div class="text-pane">
   <div class="audio-block" data-audio="p1_nar_01">
     <span class="ln">In a house at the end of a hall that was long,</span>
     <span class="ln">where the stairs had a squeak and the kettle a song,</span>
@@ -361,10 +409,12 @@ body{
   </div>
   <div class="sfx-block" data-audio="p1_sfx_click" data-sfx="click"><span class="ring"></span><span>click</span></div>
   <div class="audio-block" data-audio="p1_nar_04"><span class="ln">click.</span></div>
+  </div>
 </div>
 
 <!-- ══════════ SPREAD 2 ══════════ -->
 <div class="page" data-page="2" data-spread="p2" style="--tint:#dfe6d8">
+  <div class="art-pane">
   <svg class="art" viewBox="0 0 600 320" role="img" aria-label="Three doors along a hall. Glowing sounds stream into the crack beneath the third one while Mo listens at the wood">
     <rect x="34" y="24" width="104" height="256" rx="6" fill="var(--dim)" opacity=".3"/>
     <rect x="176" y="24" width="104" height="256" rx="6" fill="var(--dim)" opacity=".3"/>
@@ -375,12 +425,14 @@ body{
     <text x="346" y="306" font-family="system-ui" font-size="21" font-weight="900" fill="var(--glow)">three</text>
     <g stroke="var(--glow)" stroke-width="5" fill="none" stroke-linecap="round" opacity=".95">
       <path d="M540 82 q-48 28 -84 68"/><path d="M566 158 q-54 10 -92 34"/><path d="M528 226 q-38 -8 -70 14"/></g>
-    <g fill="var(--glow)"><circle cx="546" cy="80" r="8"/><circle cx="572" cy="156" r="7"/><circle cx="532" cy="224" r="7"/></g>
+    <g class="drift" fill="var(--glow)"><circle cx="546" cy="80" r="8"/><circle cx="572" cy="156" r="7"/><circle cx="532" cy="224" r="7"/></g>
     <text x="486" y="52" font-family="system-ui" font-size="15" font-style="italic" fill="var(--dim)">going, going&hellip;</text>
-    <use href="#ch-mo"   x="330" y="212" width="47" height="60"/>
-    <use href="#ch-etta" x="386" y="192" width="53" height="80"/>
-    <use href="#ch-kip"  x="444" y="212" width="47" height="60"/>
+    <use class="bob" href="#ch-mo"   x="330" y="212" width="47" height="60"/>
+    <use class="bob" href="#ch-etta" x="386" y="192" width="53" height="80"/>
+    <use class="bob" href="#ch-kip"  x="444" y="212" width="47" height="60"/>
   </svg>
+  </div>
+  <div class="text-pane">
   <div class="audio-block" data-audio="p2_nar_01">
     <span class="ln">But on Tuesday the kettle did not sing its song.</span>
     <span class="ln">And the stairs did not squeak. And the tap-drip was gone.</span>
@@ -407,22 +459,26 @@ body{
   <div class="audio-block" data-audio="p2_nar_04">
     <span class="ln">and was gone. And the stairs were as silent as snow, from then on.</span>
   </div>
+  </div>
 </div>
 
 <!-- ══════════ SPREAD 3 ══════════ -->
 <div class="page" data-page="3" data-spread="p3" style="--tint:#d8d2ee">
+  <div class="art-pane">
   <svg class="art" viewBox="0 0 600 380" role="img" aria-label="An enormous room of shelves stacked with labelled jars, with a huge gentle creature emerging among them">
     <g stroke="var(--shelf)" stroke-width="8" stroke-linecap="round">
       <line x1="18" y1="64" x2="582" y2="64"/><line x1="18" y1="146" x2="582" y2="146"/>
       <line x1="18" y1="228" x2="582" y2="228"/><line x1="18" y1="310" x2="582" y2="310"/></g>
     <g id="jars"></g>
-    <use href="#ch-hush" x="352" y="196" width="200" height="170"/>
+    <use class="breathe" href="#ch-hush" x="352" y="196" width="200" height="170"/>
     <g>
-      <use href="#ch-etta" x="40" y="308" width="40" height="61"/>
-      <use href="#ch-kip"  x="84" y="325" width="34" height="44"/>
-      <use href="#ch-mo"   x="122" y="325" width="34" height="44"/></g>
+      <use class="bob" href="#ch-etta" x="40" y="308" width="40" height="61"/>
+      <use class="bob" href="#ch-kip"  x="84" y="325" width="34" height="44"/>
+      <use class="bob" href="#ch-mo"   x="122" y="325" width="34" height="44"/></g>
     <text x="40" y="378" font-family="system-ui" font-size="14" font-style="italic" fill="var(--dim)">(very small indeed)</text>
   </svg>
+  </div>
+  <div class="text-pane">
   <div class="audio-block" data-audio="p3_nar_01">
     <span class="ln">So they opened the door, and the door made no sound,</span>
     <span class="ln">and they stepped through the door, and they looked all around.</span>
@@ -446,22 +502,26 @@ body{
   <div class="audio-block" data-audio="p3_hush_01" data-voice="hushabaloo" data-speaker="The Hushabaloo">
     <span class="ln">Oh. Hello. Oh my.</span>
   </div>
+  </div>
 </div>
 
 <!-- ══════════ SPREAD 4 ══════════ -->
 <div class="page" data-page="4" data-spread="p4" style="--tint:#cdc3e8">
+  <div class="art-pane">
   <svg class="art" viewBox="0 0 600 320" role="img" aria-label="The Hushabaloo reaching a very long sleeve across the room to lift the click out of the door">
-    <use href="#ch-hush" x="34" y="86" width="224" height="190"/>
+    <use class="breathe" href="#ch-hush" x="34" y="86" width="224" height="190"/>
     <path d="M256 178 q112 -20 196 26" stroke="var(--hush)" stroke-width="30" fill="none" stroke-linecap="round"/>
     <rect x="452" y="118" width="86" height="166" rx="5" fill="var(--shelf)"/>
     <circle cx="466" cy="206" r="8" fill="var(--dim)"/>
     <g fill="var(--glow)"><circle cx="438" cy="188" r="11"/><circle cx="392" cy="174" r="7" opacity=".7"/><circle cx="352" cy="166" r="5" opacity=".45"/></g>
     <text x="316" y="132" font-family="system-ui" font-size="17" font-style="italic" fill="var(--dim)">the click</text>
     <g>
-      <use href="#ch-etta" x="268" y="248" width="36" height="55"/>
-      <use href="#ch-kip"  x="308" y="264" width="30" height="38"/>
-      <use href="#ch-mo"   x="342" y="264" width="30" height="38"/></g>
+      <use class="bob" href="#ch-etta" x="268" y="248" width="36" height="55"/>
+      <use class="bob" href="#ch-kip"  x="308" y="264" width="30" height="38"/>
+      <use class="bob" href="#ch-mo"   x="342" y="264" width="30" height="38"/></g>
   </svg>
+  </div>
+  <div class="text-pane">
   <div class="audio-block" data-audio="p4_hush_01" data-voice="hushabaloo" data-speaker="The Hushabaloo">
     <span class="ln">I am only the keeper. I keep them. That's all.</span>
     <span class="ln">Every sound ever let loose in somebody's hall,</span>
@@ -491,19 +551,23 @@ body{
     <span class="ln stanza-gap">For a door with no click isn't really a door.</span>
     <span class="ln">It's a wall. It's a wall. It's a wall. Nothing more.</span>
   </div>
+  </div>
 </div>
 
 <!-- ══════════ SPREAD 5 ══════════ -->
 <div class="page" data-page="5" data-spread="p5" style="--tint:#e0d6e6">
+  <div class="art-pane">
   <svg class="art" viewBox="0 0 600 300" role="img" aria-label="Etta standing up to the Hushabaloo while the word she needs is lifted out of her speech bubble">
-    <use href="#ch-hush" x="338" y="76" width="216" height="184"/>
-    <use href="#ch-etta" x="66" y="110" width="72" height="109"/>
+    <use class="breathe" href="#ch-hush" x="338" y="76" width="216" height="184"/>
+    <use class="bob" href="#ch-etta" x="66" y="110" width="72" height="109"/>
     <g><rect x="172" y="112" width="140" height="52" rx="15" fill="#fffaf0" stroke="var(--ink)" stroke-width="4"/>
       <path d="M192 164 l-10 22 l26 -22" fill="#fffaf0" stroke="var(--ink)" stroke-width="4"/>
       <text x="192" y="146" font-family="system-ui" font-size="22" font-weight="700" fill="var(--ink)">safe&hellip;</text></g>
     <g fill="var(--glow)"><circle cx="336" cy="102" r="10"/><circle cx="366" cy="84" r="6" opacity=".6"/><circle cx="390" cy="72" r="4" opacity=".4"/></g>
     <text x="316" y="60" font-family="system-ui" font-size="16" font-style="italic" fill="var(--dim)">(the word she needed)</text>
   </svg>
+  </div>
+  <div class="text-pane">
   <div class="audio-block" data-audio="p5_nar_01">
     <span class="ln">Now Etta was five, which is old. And she knew</span>
     <span class="ln">that when somebody's taken a thing that's not theirs,</span>
@@ -527,10 +591,12 @@ body{
     <span class="ln">And she opened her mouth.</span>
     <span class="ln stanza-gap">And there wasn't a sound.</span>
   </div>
+  </div>
 </div>
 
 <!-- ══════════ SPREAD 6 ══════════ -->
 <div class="page" data-page="6" data-spread="p6" style="--tint:#c9e8dd">
+  <div class="art-pane">
   <svg class="art" viewBox="0 0 600 340" role="img" aria-label="Kip climbing high up the shelves as a jar bursts open and all the rain rushes out through a window">
     <g stroke="var(--shelf)" stroke-width="8" stroke-linecap="round">
       <line x1="20" y1="74" x2="392" y2="74"/><line x1="20" y1="156" x2="392" y2="156"/><line x1="20" y1="238" x2="392" y2="238"/></g>
@@ -538,7 +604,7 @@ body{
       <rect x="44" y="34" width="38" height="38" rx="6"/><rect x="102" y="34" width="38" height="38" rx="6"/>
       <rect x="44" y="116" width="38" height="38" rx="6"/><rect x="214" y="116" width="38" height="38" rx="6"/>
       <rect x="44" y="198" width="38" height="38" rx="6"/><rect x="272" y="198" width="38" height="38" rx="6"/></g>
-    <use href="#ch-kip" x="160" y="106" width="54" height="69"/>
+    <use class="bob" href="#ch-kip" x="160" y="106" width="54" height="69"/>
     <text x="150" y="112" font-family="system-ui" font-size="16" font-weight="800" fill="var(--kip)">watch me!</text>
     <g><path d="M312 102 l16 -24 l18 22" fill="none" stroke="var(--ink)" stroke-width="3.5"/>
       <rect x="308" y="102" width="46" height="38" rx="6" fill="none" stroke="var(--ink)" stroke-width="3.5"/></g>
@@ -549,9 +615,11 @@ body{
     <line x1="536" y1="54" x2="536" y2="158" stroke="var(--ink)" stroke-width="4"/>
     <text x="490" y="188" font-family="system-ui" font-size="17" font-weight="800" fill="var(--mo)">home</text>
     <g>
-      <use href="#ch-etta" x="54" y="258" width="46" height="70"/>
-      <use href="#ch-mo"   x="108" y="282" width="36" height="46"/></g>
+      <use class="bob" href="#ch-etta" x="54" y="258" width="46" height="70"/>
+      <use class="bob" href="#ch-mo"   x="108" y="282" width="36" height="46"/></g>
   </svg>
+  </div>
+  <div class="text-pane">
   <div class="audio-block" data-audio="p6_nar_01">
     <span class="ln">Then Kip sized the shelf up. Now, Kip is quite small.</span>
     <span class="ln">But of all of the things about Kip, above all</span>
@@ -577,10 +645,12 @@ body{
   <div class="audio-block" data-audio="p6_etta_01" data-voice="etta" data-speaker="Etta">
     <span class="ln">It went HOME. Did you see it? It broke and went home!</span>
   </div>
+  </div>
 </div>
 
 <!-- ══════════ SPREAD 7 ══════════ -->
 <div class="page" data-page="7" data-spread="p7" style="--tint:#b9bdd4">
+  <div class="art-pane">
   <svg class="art" viewBox="0 0 600 300" role="img" aria-label="Darkness. Three small children sitting close together beneath one glowing empty jar">
     <rect width="600" height="300" rx="14" fill="#231d2e"/>
     <g opacity=".16" stroke="#fffaf0" stroke-width="5"><line x1="30" y1="72" x2="570" y2="72"/><line x1="30" y1="140" x2="570" y2="140"/></g>
@@ -588,17 +658,19 @@ body{
       <rect x="60" y="36" width="30" height="34" rx="5"/><rect x="126" y="36" width="30" height="34" rx="5"/>
       <rect x="192" y="36" width="30" height="34" rx="5"/><rect x="430" y="104" width="30" height="34" rx="5"/>
       <rect x="496" y="104" width="30" height="34" rx="5"/></g>
-    <g><circle cx="300" cy="122" r="42" fill="var(--glow)" opacity=".13"/>
+    <g class="twinkle"><circle cx="300" cy="122" r="42" fill="var(--glow)" opacity=".13"/>
       <rect x="276" y="96" width="48" height="52" rx="7" fill="none" stroke="var(--glow)" stroke-width="5"/>
       <rect x="283" y="85" width="34" height="12" rx="4" fill="var(--glow)"/></g>
     <text x="346" y="128" font-family="system-ui" font-size="18" font-style="italic" fill="var(--glow)">empty</text>
     <g opacity=".96">
-      <use href="#ch-etta" x="238" y="196" width="46" height="70"/>
-      <use href="#ch-kip"  x="290" y="216" width="40" height="51"/>
-      <use href="#ch-mo"   x="334" y="216" width="40" height="51"/></g>
+      <use class="bob" href="#ch-etta" x="238" y="196" width="46" height="70"/>
+      <use class="bob" href="#ch-kip"  x="290" y="216" width="40" height="51"/>
+      <use class="bob" href="#ch-mo"   x="334" y="216" width="40" height="51"/></g>
     <text x="46" y="212" font-family="system-ui" font-size="15" font-style="italic" fill="#fffaf0" opacity=".45">and there wasn't a sound</text>
     <text x="46" y="234" font-family="system-ui" font-size="15" font-style="italic" fill="#fffaf0" opacity=".45">in the world</text>
   </svg>
+  </div>
+  <div class="text-pane">
   <div class="audio-block" data-audio="p7_nar_01">
     <span class="ln">But the Hushabaloo sighed. And he lifted the shelf.</span>
     <span class="ln">And he put it up high, where a person can't climb.</span>
@@ -643,20 +715,24 @@ body{
     <span class="ln stanza-gap">Kip. Mo. On three.</span>
     <span class="ln">Do the rudest thing you know.</span>
   </div>
+  </div>
 </div>
 
 <!-- ══════════ SPREAD 8 ══════════ -->
 <div class="page" data-page="8" data-spread="p8" style="--tint:#ffd766">
+  <div class="art-pane">
   <svg class="art" viewBox="0 0 600 340" role="img" aria-label="Every jar bursting open at once as all the sounds fly outward in every direction">
     <g id="burst"></g>
     <g>
-      <use href="#ch-etta" x="136" y="180" width="56" height="85"/>
-      <use href="#ch-kip"  x="204" y="204" width="48" height="61"/>
-      <use href="#ch-mo"   x="258" y="204" width="48" height="61"/></g>
+      <use class="bob" href="#ch-etta" x="136" y="180" width="56" height="85"/>
+      <use class="bob" href="#ch-kip"  x="204" y="204" width="48" height="61"/>
+      <use class="bob" href="#ch-mo"   x="258" y="204" width="48" height="61"/></g>
     <g stroke="var(--kip)" stroke-width="7" fill="none" stroke-linecap="round" opacity=".92">
       <path d="M270 268 q34 26 74 20"/><path d="M322 268 q38 30 82 24"/></g>
     <text x="352" y="306" font-family="system-ui" font-size="34" font-weight="900" fill="var(--etta)">PBBBBT!</text>
   </svg>
+  </div>
+  <div class="text-pane">
   <div class="audio-block" data-audio="p8_nar_01">
     <span class="ln">So Kip climbed. Because Kip climbs. And Mo found the jar,</span>
     <span class="ln">because Mo always finds them. That's just what Mo does.</span>
@@ -694,13 +770,15 @@ body{
     <span class="ln">and the whumpf and the hum and the squeak of the stair</span>
     <span class="ln">went UP, and went OUT, and went HOME through the air.</span>
   </div>
+  </div>
 </div>
 
 <!-- ══════════ SPREAD 9 ══════════ -->
 <div class="page" data-page="9" data-spread="p9" style="--tint:#ffd9b0">
+  <div class="art-pane">
   <svg class="art" viewBox="0 0 600 320" role="img" aria-label="Etta blowing a raspberry back to the Hushabaloo as a glowing doorway home opens behind them">
-    <use href="#ch-hush-sad" x="58" y="106" width="184" height="156"/>
-    <use href="#ch-etta" x="266" y="168" width="46" height="70"/>
+    <use class="breathe" href="#ch-hush-sad" x="58" y="106" width="184" height="156"/>
+    <use class="bob" href="#ch-etta" x="266" y="168" width="46" height="70"/>
     <g stroke="var(--etta)" stroke-width="6" fill="none" stroke-linecap="round" opacity=".92">
       <path d="M275 220 q-24 -10 -44 -4"/><path d="M275 230 q-28 4 -48 14"/></g>
     <text x="238" y="278" font-family="system-ui" font-size="15" font-style="italic" fill="var(--dim)">a gift, not a weapon</text>
@@ -709,9 +787,11 @@ body{
     <circle cx="452" cy="188" r="9" fill="var(--glow)"/>
     <text x="444" y="316" font-family="system-ui" font-size="22" font-weight="900" fill="var(--glow)">click.</text>
     <g>
-      <use href="#ch-kip" x="352" y="212" width="40" height="51"/>
-      <use href="#ch-mo"  x="398" y="212" width="40" height="51"/></g>
+      <use class="bob" href="#ch-kip" x="352" y="212" width="40" height="51"/>
+      <use class="bob" href="#ch-mo"  x="398" y="212" width="40" height="51"/></g>
   </svg>
+  </div>
+  <div class="text-pane">
   <div class="audio-block" data-audio="p9_nar_01">
     <span class="ln">And in all of that noise, in that whole rushing flood,</span>
     <span class="ln">there was one little sound that was smaller than most.</span>
@@ -761,10 +841,12 @@ body{
   </div>
   <div class="sfx-block" data-audio="p9_sfx_click_home" data-sfx="click"><span class="ring"></span><span>click</span></div>
   <div class="audio-block" data-audio="p9_nar_09"><span class="ln">and the door gave a click.</span></div>
+  </div>
 </div>
 
 <!-- ══════════ FINAL ══════════ -->
 <div class="page" data-page="10" data-spread="final" style="--tint:#ffeec4">
+  <div class="art-pane">
   <svg class="art small" viewBox="0 0 400 220" role="img" aria-label="One small open jar with nothing inside it and a raspberry drifting gently out">
     <circle cx="180" cy="118" r="52" fill="var(--glow)" opacity=".14"/>
     <rect x="148" y="80" width="72" height="82" rx="9" fill="none" stroke="var(--glow)" stroke-width="6"/>
@@ -774,6 +856,8 @@ body{
     <text x="200" y="204" text-anchor="middle" font-family="system-ui" font-size="16"
           font-weight="700" letter-spacing="3" fill="var(--dim)">NO JAR. NO LID. JUST HELD.</text>
   </svg>
+  </div>
+  <div class="text-pane">
   <div class="audio-block" data-audio="final_nar_01">
     <span class="ln">For everybody small who was ever once told</span>
     <span class="ln">to be quiet, be quiet, be quiet, be still</span>
@@ -785,6 +869,7 @@ body{
   </div>
   <div class="wait-block" data-audio="final_wait_01" data-wait="4.0">Go on&hellip;</div>
   <div class="sfx-block" data-audio="final_sfx_raspberry" data-sfx="raspberry_big"><span class="ring"></span><span>raspberry</span></div>
+  </div>
 </div>
 
 </div><!-- /book -->

@@ -200,6 +200,31 @@ test.describe('The Hushabaloo read-along', () => {
     expect(loops).toBe(true);
   });
 
+  test('art stays with its verse instead of scrolling away', async ({ page }) => {
+    await open(page);
+    await page.evaluate(() => window.__book.showPage(7, 'next'));
+    const art = page.locator('.page[data-page="7"] .art-pane');
+    const before = (await art.boundingBox()).y;
+    // Spread 7 is the longest in the book. Scroll well past where the art used
+    // to disappear -- a picture book must show the picture WHILE it reads.
+    await page.evaluate(() => { document.querySelector('.page[data-page="7"]').scrollTop = 600; });
+    await page.waitForTimeout(300);
+    const after = (await art.boundingBox()).y;
+    expect(Math.abs(after - before)).toBeLessThan(6);
+    await expect(art).toBeInViewport();
+  });
+
+  test('wide landscape lays out as a two-page spread', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await open(page);
+    await page.evaluate(() => window.__book.showPage(1, 'next'));
+    const art = await page.locator('.page[data-page="1"] .art-pane').boundingBox();
+    const text = await page.locator('.page[data-page="1"] .text-pane').boundingBox();
+    // Art on the left page, verse on the right -- side by side, not stacked.
+    expect(art.x + art.width).toBeLessThanOrEqual(text.x + 4);
+    expect(Math.abs(art.y - text.y)).toBeLessThan(60);
+  });
+
   test('controls say what they do', async ({ page }) => {
     await open(page);
     await expect(page.locator('#playLabel')).toContainText('Play');
