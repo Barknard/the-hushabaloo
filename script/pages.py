@@ -151,6 +151,16 @@ SCENES = {
       <rect x="216" y="362" width="168" height="11" rx="5"/></g>
     {motes([(120,112,7),(86,196,5),(142,268,9),(482,132,7),(518,228,5),(462,300,9)], "twinkle")}'''),
 
+"house_intro": (VIEWBOX, f'''
+    {HOUSE_SHELL}
+    <g opacity=".35">{KETTLE}{STAIRS}{TAP}{DOG}</g>
+    {door(500, 192, 66, 102)}
+    {caption(56, 62, "at the end of a hall that was long")}
+    {kids(("etta",300,176,86),("kip",368,202,64),("mo",418,202,64))}
+    <text x="308" y="286" font-family="system-ui" font-size="15" font-weight="800" fill="var(--etta)">Etta</text>
+    <text x="374" y="286" font-family="system-ui" font-size="14" font-weight="800" fill="var(--kip)">Kip</text>
+    <text x="424" y="286" font-family="system-ui" font-size="14" font-weight="800" fill="var(--mo)">Mo</text>'''),
+
 "house_full": (VIEWBOX, f'''
     {HOUSE_SHELL}{KETTLE}
     <text x="60" y="66" font-family="system-ui" font-size="19" font-weight="800" fill="var(--etta)">sssss!</text>
@@ -377,11 +387,31 @@ SCENES = {
 
 # ── the pages ─────────────────────────────────────────────────────────────────
 # (page_id, scene, [block ids], spread, tint)
+#
+# ENTER assigns each page its entrance animation, replayed every time the page
+# becomes active. Chosen for the beat, not for variety's sake:
+#   rise     something arrives calmly          bloom   space opens up
+#   sweep    attention moves across            pop     a sudden small event
+#   dissolve something fades into being        lean    a quiet approach
+#   fall     something drops or closes         flare   everything at once
+ENTER = {
+ "cover": "dissolve", "p1a": "rise",   "p1b": "pop",    "p1c": "pop",
+ "p2a": "dissolve",   "p2b": "lean",   "p2c": "sweep",
+ "p3a": "bloom",      "p3b": "rise",   "p3c": "lean",
+ "p4a": "lean",       "p4b": "sweep",  "p4c": "sweep",  "p4d": "fall",
+ "p5a": "rise",       "p5b": "bloom",  "p5c": "sweep",
+ "p6a": "rise",       "p6b": "rise",   "p6c": "flare",
+ "p7a": "fall",       "p7b": "dissolve","p7c": "dissolve","p7d": "bloom", "p7e": "flare",
+ "p8a": "rise",       "p8b": "pop",    "p8c": "lean",   "p8d": "flare",
+ "p9a": "dissolve",   "p9b": "bloom",  "p9c": "fall",   "p9d": "lean",  "p9e": "rise",
+ "final": "bloom",
+}
+
 
 PAGES = [
  ("cover",  "cover",             ["cover_nar_01"],                                  "cover", "#f6dfa0"),
 
- ("p1a",    "house_full",        ["p1_nar_01", "p1_sfx_creak"],                     "p1", WARM),
+ ("p1a",    "house_intro",       ["p1_nar_01", "p1_sfx_creak"],                     "p1", WARM),
  ("p1b",    "house_full",        ["p1_nar_02"],                                     "p1", WARM),
  ("p1c",    "house_door",        ["p1_nar_03", "p1_sfx_click", "p1_nar_04"],        "p1", WARM),
 

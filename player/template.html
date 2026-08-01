@@ -114,6 +114,47 @@ body{
 .drift{animation:drift 3.6s ease-in linear infinite}
 .sway{animation:sway 4.6s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 0%}
 
+/* ── page entrances ────────────────────────────────────────────────────────
+   Art does not merely appear on a page turn -- it ARRIVES, in a way chosen for
+   the beat. The collection blooms open, the wall falls shut, the raspberry pops,
+   the burst flares. Because the animation is keyed to .page.active it replays
+   every time you turn to that page, so turning the page is part of the story.
+
+   Scene parts then arrive in sequence rather than all at once, which reads as
+   the picture assembling itself instead of being switched on. */
+.art{opacity:0}
+.page.active .art{animation:var(--enter,e-dissolve) .72s cubic-bezier(.22,.8,.3,1) both}
+@keyframes e-rise    {from{opacity:0;transform:translateY(22px) scale(.985)} to{opacity:1;transform:none}}
+@keyframes e-bloom   {from{opacity:0;transform:scale(.86)}                   to{opacity:1;transform:none}}
+@keyframes e-sweep   {from{opacity:0;transform:translateX(-34px)}            to{opacity:1;transform:none}}
+@keyframes e-pop     {0%{opacity:0;transform:scale(.7)}60%{opacity:1;transform:scale(1.045)}100%{transform:none}}
+@keyframes e-dissolve{from{opacity:0;filter:blur(7px)}                       to{opacity:1;filter:none}}
+@keyframes e-lean    {from{opacity:0;transform:translateX(30px) rotate(1.6deg)} to{opacity:1;transform:none}}
+@keyframes e-fall    {from{opacity:0;transform:translateY(-26px)}            to{opacity:1;transform:none}}
+@keyframes e-flare   {0%{opacity:0;transform:scale(.55)}55%{opacity:1;transform:scale(1.09)}100%{transform:none}}
+.page[data-enter="rise"]     .art{--enter:e-rise}
+.page[data-enter="bloom"]    .art{--enter:e-bloom}
+.page[data-enter="sweep"]    .art{--enter:e-sweep}
+.page[data-enter="pop"]      .art{--enter:e-pop}
+.page[data-enter="dissolve"] .art{--enter:e-dissolve}
+.page[data-enter="lean"]     .art{--enter:e-lean}
+.page[data-enter="fall"]     .art{--enter:e-fall}
+.page[data-enter="flare"]    .art{--enter:e-flare}
+
+@keyframes partIn{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+.page.active .art > *{animation:partIn .44s ease both;transform-box:fill-box}
+.page.active .art > *:nth-child(1){animation-delay:.10s}
+.page.active .art > *:nth-child(2){animation-delay:.15s}
+.page.active .art > *:nth-child(3){animation-delay:.20s}
+.page.active .art > *:nth-child(4){animation-delay:.25s}
+.page.active .art > *:nth-child(5){animation-delay:.30s}
+.page.active .art > *:nth-child(6){animation-delay:.35s}
+.page.active .art > *:nth-child(7){animation-delay:.40s}
+.page.active .art > *:nth-child(n+8){animation-delay:.45s}
+/* The looping accents own their own transform, so exempt them from the stagger. */
+.page.active .art > .bob,.page.active .art > .breathe,
+.page.active .art > .twinkle,.page.active .art > .drift,.page.active .art > .sway{animation:none;opacity:1}
+
 /* The block being spoken lifts very slightly out of the page. */
 .audio-block{transition:opacity .45s ease, transform .45s ease}
 .audio-block.speaking{transform:translateY(-2px)}
@@ -213,7 +254,10 @@ body{
   pointer-events:none;max-width:90vw;
 }
 .err.show{opacity:1}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01ms!important}}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition-duration:.01ms!important}
+  .art{opacity:1!important;filter:none!important;transform:none!important}
+}
 </style>
 </head>
 <body>

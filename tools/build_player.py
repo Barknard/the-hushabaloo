@@ -101,6 +101,16 @@ def main():
     if unknown:
         sys.exit(f"  unknown scenes: {sorted(set(unknown))}")
 
+    # Every page needs its own scene and its own entrance, or two pages in a row
+    # look like the same picture and the turn stops meaning anything.
+    scenes = [s for _p, s, _i, _sp, _t in P.PAGES]
+    shared = sorted({s for s in scenes if scenes.count(s) > 1})
+    if shared:
+        sys.exit(f"  scenes reused across pages: {shared}")
+    noenter = [p for p, *_ in P.PAGES if p not in P.ENTER]
+    if noenter:
+        sys.exit(f"  pages with no entrance animation: {noenter}")
+
     chunks = []
     for n, (pid, scene, ids, spread, tint) in enumerate(P.PAGES):
         viewbox, art = P.SCENES[scene]
@@ -109,7 +119,7 @@ def main():
         chunks.append(
             f'<!-- {"═" * 18} {pid} · {scene} {"═" * 18} -->\n'
             f'<div class="page{active}" data-page="{n}" data-spread="{spread}" '
-            f'data-pageid="{pid}" style="--tint:{tint}">\n'
+            f'data-pageid="{pid}" data-enter="{P.ENTER[pid]}" style="--tint:{tint}">\n'
             f'  <div class="art-pane">\n'
             f'    <svg class="art{small}" viewBox="{viewbox}" role="img" '
             f'aria-label="Illustration for {pid}">{art}\n    </svg>\n'

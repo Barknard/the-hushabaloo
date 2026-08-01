@@ -272,6 +272,36 @@ test.describe('The Hushabaloo read-along', () => {
     expect(overflowing).toEqual([]);
   });
 
+  test('every page has its own picture', async ({ page }) => {
+    await open(page);
+    // Two consecutive pages showing the same art makes the page turn meaningless.
+    const arts = await page.evaluate(() =>
+      [...document.querySelectorAll('.page .art')].map(a => a.innerHTML.length + ':' +
+        a.innerHTML.slice(0, 200)));
+    expect(arts.length).toBe(35);
+    expect(new Set(arts).size).toBe(35);
+  });
+
+  test('every page arrives with its own entrance animation', async ({ page }) => {
+    await open(page);
+    const kinds = ['rise','bloom','sweep','pop','dissolve','lean','fall','flare'];
+    const enters = await page.evaluate(() =>
+      [...document.querySelectorAll('.page')].map(p => p.dataset.enter));
+    expect(enters.length).toBe(35);
+    expect(enters.filter(Boolean).length).toBe(35);
+    for (const e of enters) expect(kinds).toContain(e);
+    // All eight are actually used -- otherwise the variety is theoretical.
+    expect(new Set(enters).size).toBe(8);
+
+    // The entrance must actually run on the active page, and only there.
+    await goToPage(page, 'p3a');
+    const running = await page.evaluate(() => {
+      const a = document.querySelector('.page[data-pageid="p3a"] .art');
+      return getComputedStyle(a).animationName;
+    });
+    expect(running).toMatch(/^e-/);
+  });
+
   test('controls say what they do', async ({ page }) => {
     await open(page);
     await expect(page.locator('#playLabel')).toContainText('Play');

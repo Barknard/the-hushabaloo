@@ -114,6 +114,47 @@ body{
 .drift{animation:drift 3.6s ease-in linear infinite}
 .sway{animation:sway 4.6s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 0%}
 
+/* ── page entrances ────────────────────────────────────────────────────────
+   Art does not merely appear on a page turn -- it ARRIVES, in a way chosen for
+   the beat. The collection blooms open, the wall falls shut, the raspberry pops,
+   the burst flares. Because the animation is keyed to .page.active it replays
+   every time you turn to that page, so turning the page is part of the story.
+
+   Scene parts then arrive in sequence rather than all at once, which reads as
+   the picture assembling itself instead of being switched on. */
+.art{opacity:0}
+.page.active .art{animation:var(--enter,e-dissolve) .72s cubic-bezier(.22,.8,.3,1) both}
+@keyframes e-rise    {from{opacity:0;transform:translateY(22px) scale(.985)} to{opacity:1;transform:none}}
+@keyframes e-bloom   {from{opacity:0;transform:scale(.86)}                   to{opacity:1;transform:none}}
+@keyframes e-sweep   {from{opacity:0;transform:translateX(-34px)}            to{opacity:1;transform:none}}
+@keyframes e-pop     {0%{opacity:0;transform:scale(.7)}60%{opacity:1;transform:scale(1.045)}100%{transform:none}}
+@keyframes e-dissolve{from{opacity:0;filter:blur(7px)}                       to{opacity:1;filter:none}}
+@keyframes e-lean    {from{opacity:0;transform:translateX(30px) rotate(1.6deg)} to{opacity:1;transform:none}}
+@keyframes e-fall    {from{opacity:0;transform:translateY(-26px)}            to{opacity:1;transform:none}}
+@keyframes e-flare   {0%{opacity:0;transform:scale(.55)}55%{opacity:1;transform:scale(1.09)}100%{transform:none}}
+.page[data-enter="rise"]     .art{--enter:e-rise}
+.page[data-enter="bloom"]    .art{--enter:e-bloom}
+.page[data-enter="sweep"]    .art{--enter:e-sweep}
+.page[data-enter="pop"]      .art{--enter:e-pop}
+.page[data-enter="dissolve"] .art{--enter:e-dissolve}
+.page[data-enter="lean"]     .art{--enter:e-lean}
+.page[data-enter="fall"]     .art{--enter:e-fall}
+.page[data-enter="flare"]    .art{--enter:e-flare}
+
+@keyframes partIn{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+.page.active .art > *{animation:partIn .44s ease both;transform-box:fill-box}
+.page.active .art > *:nth-child(1){animation-delay:.10s}
+.page.active .art > *:nth-child(2){animation-delay:.15s}
+.page.active .art > *:nth-child(3){animation-delay:.20s}
+.page.active .art > *:nth-child(4){animation-delay:.25s}
+.page.active .art > *:nth-child(5){animation-delay:.30s}
+.page.active .art > *:nth-child(6){animation-delay:.35s}
+.page.active .art > *:nth-child(7){animation-delay:.40s}
+.page.active .art > *:nth-child(n+8){animation-delay:.45s}
+/* The looping accents own their own transform, so exempt them from the stagger. */
+.page.active .art > .bob,.page.active .art > .breathe,
+.page.active .art > .twinkle,.page.active .art > .drift,.page.active .art > .sway{animation:none;opacity:1}
+
 /* The block being spoken lifts very slightly out of the page. */
 .audio-block{transition:opacity .45s ease, transform .45s ease}
 .audio-block.speaking{transform:translateY(-2px)}
@@ -213,7 +254,10 @@ body{
   pointer-events:none;max-width:90vw;
 }
 .err.show{opacity:1}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01ms!important}}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition-duration:.01ms!important}
+  .art{opacity:1!important;filter:none!important;transform:none!important}
+}
 </style>
 </head>
 <body>
@@ -329,7 +373,7 @@ body{
 
 <div class="book" id="book">
 <!-- ══════════════════ cover · cover ══════════════════ -->
-<div class="page active" data-page="0" data-spread="cover" data-pageid="cover" style="--tint:#f6dfa0">
+<div class="page active" data-page="0" data-spread="cover" data-pageid="cover" data-enter="dissolve" style="--tint:#f6dfa0">
   <div class="art-pane">
     <svg class="art" viewBox="0 0 600 400" role="img" aria-label="Illustration for cover">
     <defs><radialGradient id="cg" cx="50%" cy="50%">
@@ -357,20 +401,21 @@ body{
   </div>
 </div>
 
-<!-- ══════════════════ p1a · house_full ══════════════════ -->
-<div class="page" data-page="1" data-spread="p1" data-pageid="p1a" style="--tint:#ffe3a0">
+<!-- ══════════════════ p1a · house_intro ══════════════════ -->
+<div class="page" data-page="1" data-spread="p1" data-pageid="p1a" data-enter="rise" style="--tint:#ffe3a0">
   <div class="art-pane">
     <svg class="art" viewBox="0 0 600 320" role="img" aria-label="Illustration for p1a">
-    <rect x="20" y="26" width="560" height="270" rx="14" fill="#fff6e0" stroke="var(--ink)" stroke-width="4"/><line x1="20" y1="164" x2="580" y2="164" stroke="var(--ink)" stroke-width="4"/><line x1="300" y1="26" x2="300" y2="164" stroke="var(--ink)" stroke-width="4"/><ellipse cx="122" cy="126" rx="38" ry="30" fill="var(--etta)"/><path d="M158 112 q20 -7 22 -25" stroke="var(--etta)" stroke-width="8" fill="none" stroke-linecap="round"/><path class="sway" d="M174 74 q7 -16 -2 -25 M188 76 q9 -14 3 -25" stroke="var(--glow)" stroke-width="5" fill="none" stroke-linecap="round"/>
-    <text x="60" y="66" font-family="system-ui" font-size="19" font-weight="800" fill="var(--etta)">sssss!</text>
-    <g fill="var(--shelf)"><rect x="352" y="136" width="48" height="12" rx="2"/><rect x="386" y="112" width="48" height="12" rx="2"/><rect x="420" y="88" width="48" height="12" rx="2"/><rect x="454" y="64" width="48" height="12" rx="2"/></g><text x="352" y="52" font-family="system-ui" font-size="20" font-weight="800" fill="var(--glow)">squeak!</text>
-    <rect x="92" y="198" width="14" height="38" fill="var(--dim)"/><rect x="76" y="190" width="52" height="12" rx="5" fill="var(--dim)"/><circle cx="99" cy="258" r="8" fill="var(--mo)"/><circle cx="99" cy="282" r="5" fill="var(--mo)" opacity=".6"/><text x="128" y="248" font-family="system-ui" font-size="17" font-weight="700" fill="var(--mo)">drip</text>
-    <g fill="var(--shelf)"><ellipse cx="248" cy="266" rx="52" ry="22"/><circle cx="296" cy="254" r="17"/><ellipse cx="308" cy="266" rx="9" ry="6" fill="var(--ink)"/></g><text x="166" y="238" font-family="system-ui" font-size="17" font-weight="700" fill="var(--shelf)">whumpf</text>
+    <rect x="20" y="26" width="560" height="270" rx="14" fill="#fff6e0" stroke="var(--ink)" stroke-width="4"/><line x1="20" y1="164" x2="580" y2="164" stroke="var(--ink)" stroke-width="4"/><line x1="300" y1="26" x2="300" y2="164" stroke="var(--ink)" stroke-width="4"/>
+    <g opacity=".35"><ellipse cx="122" cy="126" rx="38" ry="30" fill="var(--etta)"/><path d="M158 112 q20 -7 22 -25" stroke="var(--etta)" stroke-width="8" fill="none" stroke-linecap="round"/><path class="sway" d="M174 74 q7 -16 -2 -25 M188 76 q9 -14 3 -25" stroke="var(--glow)" stroke-width="5" fill="none" stroke-linecap="round"/><g fill="var(--shelf)"><rect x="352" y="136" width="48" height="12" rx="2"/><rect x="386" y="112" width="48" height="12" rx="2"/><rect x="420" y="88" width="48" height="12" rx="2"/><rect x="454" y="64" width="48" height="12" rx="2"/></g><rect x="92" y="198" width="14" height="38" fill="var(--dim)"/><rect x="76" y="190" width="52" height="12" rx="5" fill="var(--dim)"/><circle cx="99" cy="258" r="8" fill="var(--mo)"/><circle cx="99" cy="282" r="5" fill="var(--mo)" opacity=".6"/><g fill="var(--shelf)"><ellipse cx="248" cy="266" rx="52" ry="22"/><circle cx="296" cy="254" r="17"/><ellipse cx="308" cy="266" rx="9" ry="6" fill="var(--ink)"/></g></g>
     <rect x="500" y="192" width="66" height="102" rx="5" fill="var(--shelf)"/>
     <circle cx="513" cy="243" r="7" fill="var(--glow)"/>
-    <use class="bob" href="#ch-etta" x="326" y="182" width="52.6" height="80"/>
-    <use class="bob" href="#ch-kip" x="384" y="204" width="46.8" height="60"/>
-    <use class="bob" href="#ch-mo" x="430" y="204" width="46.8" height="60"/>
+    <text x="56" y="62" font-family="system-ui" font-size="15" font-style="italic" fill="var(--dim)">at the end of a hall that was long</text>
+    <use class="bob" href="#ch-etta" x="300" y="176" width="56.6" height="86"/>
+    <use class="bob" href="#ch-kip" x="368" y="202" width="49.9" height="64"/>
+    <use class="bob" href="#ch-mo" x="418" y="202" width="49.9" height="64"/>
+    <text x="308" y="286" font-family="system-ui" font-size="15" font-weight="800" fill="var(--etta)">Etta</text>
+    <text x="374" y="286" font-family="system-ui" font-size="14" font-weight="800" fill="var(--kip)">Kip</text>
+    <text x="424" y="286" font-family="system-ui" font-size="14" font-weight="800" fill="var(--mo)">Mo</text>
     </svg>
   </div>
   <div class="text-pane">
@@ -385,7 +430,7 @@ body{
 </div>
 
 <!-- ══════════════════ p1b · house_full ══════════════════ -->
-<div class="page" data-page="2" data-spread="p1" data-pageid="p1b" style="--tint:#ffe3a0">
+<div class="page" data-page="2" data-spread="p1" data-pageid="p1b" data-enter="pop" style="--tint:#ffe3a0">
   <div class="art-pane">
     <svg class="art" viewBox="0 0 600 320" role="img" aria-label="Illustration for p1b">
     <rect x="20" y="26" width="560" height="270" rx="14" fill="#fff6e0" stroke="var(--ink)" stroke-width="4"/><line x1="20" y1="164" x2="580" y2="164" stroke="var(--ink)" stroke-width="4"/><line x1="300" y1="26" x2="300" y2="164" stroke="var(--ink)" stroke-width="4"/><ellipse cx="122" cy="126" rx="38" ry="30" fill="var(--etta)"/><path d="M158 112 q20 -7 22 -25" stroke="var(--etta)" stroke-width="8" fill="none" stroke-linecap="round"/><path class="sway" d="M174 74 q7 -16 -2 -25 M188 76 q9 -14 3 -25" stroke="var(--glow)" stroke-width="5" fill="none" stroke-linecap="round"/>
@@ -411,7 +456,7 @@ body{
 </div>
 
 <!-- ══════════════════ p1c · house_door ══════════════════ -->
-<div class="page" data-page="3" data-spread="p1" data-pageid="p1c" style="--tint:#ffe3a0">
+<div class="page" data-page="3" data-spread="p1" data-pageid="p1c" data-enter="pop" style="--tint:#ffe3a0">
   <div class="art-pane">
     <svg class="art" viewBox="0 0 600 320" role="img" aria-label="Illustration for p1c">
     <rect x="20" y="26" width="560" height="270" rx="14" fill="#fff6e0" stroke="var(--ink)" stroke-width="4"/><line x1="20" y1="164" x2="580" y2="164" stroke="var(--ink)" stroke-width="4"/><line x1="300" y1="26" x2="300" y2="164" stroke="var(--ink)" stroke-width="4"/><ellipse cx="122" cy="126" rx="38" ry="30" fill="var(--etta)"/><path d="M158 112 q20 -7 22 -25" stroke="var(--etta)" stroke-width="8" fill="none" stroke-linecap="round"/><path class="sway" d="M174 74 q7 -16 -2 -25 M188 76 q9 -14 3 -25" stroke="var(--glow)" stroke-width="5" fill="none" stroke-linecap="round"/><g fill="var(--shelf)"><rect x="352" y="136" width="48" height="12" rx="2"/><rect x="386" y="112" width="48" height="12" rx="2"/><rect x="420" y="88" width="48" height="12" rx="2"/><rect x="454" y="64" width="48" height="12" rx="2"/></g><rect x="92" y="198" width="14" height="38" fill="var(--dim)"/><rect x="76" y="190" width="52" height="12" rx="5" fill="var(--dim)"/><circle cx="99" cy="258" r="8" fill="var(--mo)"/><circle cx="99" cy="282" r="5" fill="var(--mo)" opacity=".6"/><g fill="var(--shelf)"><ellipse cx="248" cy="266" rx="52" ry="22"/><circle cx="296" cy="254" r="17"/><ellipse cx="308" cy="266" rx="9" ry="6" fill="var(--ink)"/></g>
@@ -437,7 +482,7 @@ body{
 </div>
 
 <!-- ══════════════════ p2a · house_quiet ══════════════════ -->
-<div class="page" data-page="4" data-spread="p2" data-pageid="p2a" style="--tint:#dfe6d8">
+<div class="page" data-page="4" data-spread="p2" data-pageid="p2a" data-enter="dissolve" style="--tint:#dfe6d8">
   <div class="art-pane">
     <svg class="art" viewBox="0 0 600 320" role="img" aria-label="Illustration for p2a">
     <rect x="20" y="26" width="560" height="270" rx="14" fill="#fff6e0" stroke="var(--ink)" stroke-width="4"/><line x1="20" y1="164" x2="580" y2="164" stroke="var(--ink)" stroke-width="4"/><line x1="300" y1="26" x2="300" y2="164" stroke="var(--ink)" stroke-width="4"/>
@@ -462,7 +507,7 @@ body{
 </div>
 
 <!-- ══════════════════ p2b · doors_three ══════════════════ -->
-<div class="page" data-page="5" data-spread="p2" data-pageid="p2b" style="--tint:#dfe6d8">
+<div class="page" data-page="5" data-spread="p2" data-pageid="p2b" data-enter="lean" style="--tint:#dfe6d8">
   <div class="art-pane">
     <svg class="art" viewBox="0 0 600 320" role="img" aria-label="Illustration for p2b">
     <rect x="34" y="24" width="104" height="256" rx="6" fill="var(--dim)" opacity=".3"/>
@@ -491,7 +536,7 @@ body{
 </div>
 
 <!-- ══════════════════ p2c · door_drinking ══════════════════ -->
-<div class="page" data-page="6" data-spread="p2" data-pageid="p2c" style="--tint:#dfe6d8">
+<div class="page" data-page="6" data-spread="p2" data-pageid="p2c" data-enter="sweep" style="--tint:#dfe6d8">
   <div class="art-pane">
     <svg class="art" viewBox="0 0 600 320" role="img" aria-label="Illustration for p2c">
     <rect x="318" y="24" width="128" height="256" rx="6" fill="var(--shelf)"/>
@@ -521,7 +566,7 @@ body{
 </div>
 
 <!-- ══════════════════ p3a · doorway_open ══════════════════ -->
-<div class="page" data-page="7" data-spread="p3" data-pageid="p3a" style="--tint:#d8d2ee">
+<div class="page" data-page="7" data-spread="p3" data-pageid="p3a" data-enter="bloom" style="--tint:#d8d2ee">
   <div class="art-pane">
     <svg class="art" viewBox="0 0 600 320" role="img" aria-label="Illustration for p3a">
     <rect x="196" y="24" width="208" height="272" rx="6" fill="var(--hush)" opacity=".16"/>
@@ -544,7 +589,7 @@ body{
 </div>
 
 <!-- ══════════════════ p3b · shelves_vast ══════════════════ -->
-<div class="page" data-page="8" data-spread="p3" data-pageid="p3b" style="--tint:#d8d2ee">
+<div class="page" data-page="8" data-spread="p3" data-pageid="p3b" data-enter="rise" style="--tint:#d8d2ee">
   <div class="art-pane">
     <svg class="art" viewBox="0 0 600 380" role="img" aria-label="Illustration for p3b">
     <line x1="18" y1="70" x2="582" y2="70" stroke="var(--shelf)" stroke-width="8" stroke-linecap="round" opacity="1"/>
@@ -704,7 +749,7 @@ body{
 </div>
 
 <!-- ══════════════════ p3c · shelves_creature ══════════════════ -->
-<div class="page" data-page="9" data-spread="p3" data-pageid="p3c" style="--tint:#d8d2ee">
+<div class="page" data-page="9" data-spread="p3" data-pageid="p3c" data-enter="lean" style="--tint:#d8d2ee">
   <div class="art-pane">
     <svg class="art" viewBox="0 0 600 380" role="img" aria-label="Illustration for p3c">
     <line x1="18" y1="70" x2="582" y2="70" stroke="var(--shelf)" stroke-width="8" stroke-linecap="round" opacity="1"/>
@@ -827,7 +872,7 @@ body{
 </div>
 
 <!-- ══════════════════ p4a · creature_close ══════════════════ -->
-<div class="page" data-page="10" data-spread="p4" data-pageid="p4a" style="--tint:#d8d2ee">
+<div class="page" data-page="10" data-spread="p4" data-pageid="p4a" data-enter="lean" style="--tint:#d8d2ee">
   <div class="art-pane">
     <svg class="art" viewBox="0 0 600 320" role="img" aria-label="Illustration for p4a">
     <use class="breathe" href="#ch-hush" x="120" y="54" width="163.8" height="210"/>
@@ -846,7 +891,7 @@ body{
 </div>
 
 <!-- ══════════════════ p4b · creature_taking ══════════════════ -->
-<div class="page" data-page="11" data-spread="p4" data-pageid="p4b" style="--tint:#d8d2ee">
+<div class="page" data-page="11" data-spread="p4" data-pageid="p4b" data-enter="sweep" style="--tint:#d8d2ee">
   <div class="art-pane">
     <svg class="art" viewBox="0 0 600 320" role="img" aria-label="Illustration for p4b">
     <use class="breathe" href="#ch-hush" x="34" y="86" width="148.2" height="190"/>
@@ -876,7 +921,7 @@ body{
 </div>
 
 <!-- ══════════════════ p4c · door_losing_click ══════════════════ -->
-<div class="page" data-page="12" data-spread="p4" data-pageid="p4c" style="--tint:#d8d2ee">
+<div class="page" data-page="12" data-spread="p4" data-pageid="p4c" data-enter="sweep" style="--tint:#d8d2ee">
   <div class="art-pane">
     <svg class="art" viewBox="0 0 600 320" role="img" aria-label="Illustration for p4c">
     <use class="breathe" href="#ch-hush" x="20" y="96" width="132.6" height="170"/>
@@ -898,7 +943,7 @@ body{
 </div>
 
 <!-- ══════════════════ p4d · wall_no_door ══════════════════ -->
-<div class="page" data-page="13" data-spread="p4" data-pageid="p4d" style="--tint:#d8d2ee">
+<div class="page" data-page="13" data-spread="p4" data-pageid="p4d" data-enter="fall" style="--tint:#d8d2ee">
   <div class="art-pane">
     <svg class="art" viewBox="0 0 600 320" role="img" aria-label="Illustration for p4d">
     <rect x="380" y="60" width="160" height="230" rx="4" fill="var(--shelf)" opacity=".5"/>
@@ -919,7 +964,7 @@ body{
 </div>
 
 <!-- ══════════════════ p5a · etta_stands ══════════════════ -->
-<div class="page" data-page="14" data-spread="p5" data-pageid="p5a" style="--tint:#d8d2ee">
+<div class="page" data-page="14" data-spread="p5" data-pageid="p5a" data-enter="rise" style="--tint:#d8d2ee">
   <div class="art-pane">
     <svg class="art" viewBox="0 0 600 320" role="img" aria-label="Illustration for p5a">
     <use class="breathe" href="#ch-hush" x="338" y="76" width="143.5" height="184"/>
@@ -942,7 +987,7 @@ body{
 </div>
 
 <!-- ══════════════════ p5b · creature_explains ══════════════════ -->
-<div class="page" data-page="15" data-spread="p5" data-pageid="p5b" style="--tint:#d8d2ee">
+<div class="page" data-page="15" data-spread="p5" data-pageid="p5b" data-enter="bloom" style="--tint:#d8d2ee">
   <div class="art-pane">
     <svg class="art" viewBox="0 0 600 320" role="img" aria-label="Illustration for p5b">
     <use class="breathe" href="#ch-hush" x="180" y="40" width="187.2" height="240"/>
@@ -961,7 +1006,7 @@ body{
 </div>
 
 <!-- ══════════════════ p5c · word_taken ══════════════════ -->
-<div class="page" data-page="16" data-spread="p5" data-pageid="p5c" style="--tint:#d8d2ee">
+<div class="page" data-page="16" data-spread="p5" data-pageid="p5c" data-enter="sweep" style="--tint:#d8d2ee">
   <div class="art-pane">
     <svg class="art" viewBox="0 0 600 320" role="img" aria-label="Illustration for p5c">
     <use class="breathe" href="#ch-hush" x="338" y="76" width="143.5" height="184"/>
@@ -985,7 +1030,7 @@ body{
 </div>
 
 <!-- ══════════════════ p6a · kip_sizes_up ══════════════════ -->
-<div class="page" data-page="17" data-spread="p6" data-pageid="p6a" style="--tint:#c9e8dd">
+<div class="page" data-page="17" data-spread="p6" data-pageid="p6a" data-enter="rise" style="--tint:#c9e8dd">
   <div class="art-pane">
     <svg class="art" viewBox="0 0 600 380" role="img" aria-label="Illustration for p6a">
     <line x1="18" y1="70" x2="582" y2="70" stroke="var(--shelf)" stroke-width="8" stroke-linecap="round" opacity="1"/>
@@ -1108,7 +1153,7 @@ body{
 </div>
 
 <!-- ══════════════════ p6b · kip_climbing ══════════════════ -->
-<div class="page" data-page="18" data-spread="p6" data-pageid="p6b" style="--tint:#c9e8dd">
+<div class="page" data-page="18" data-spread="p6" data-pageid="p6b" data-enter="rise" style="--tint:#c9e8dd">
   <div class="art-pane">
     <svg class="art" viewBox="0 0 600 380" role="img" aria-label="Illustration for p6b">
     <line x1="18" y1="70" x2="582" y2="70" stroke="var(--shelf)" stroke-width="8" stroke-linecap="round" opacity="1"/>
@@ -1237,7 +1282,7 @@ body{
 </div>
 
 <!-- ══════════════════ p6c · jar_pops ══════════════════ -->
-<div class="page" data-page="19" data-spread="p6" data-pageid="p6c" style="--tint:#c9e8dd">
+<div class="page" data-page="19" data-spread="p6" data-pageid="p6c" data-enter="flare" style="--tint:#c9e8dd">
   <div class="art-pane">
     <svg class="art" viewBox="0 0 600 380" role="img" aria-label="Illustration for p6c">
     <line x1="18" y1="70" x2="582" y2="70" stroke="var(--shelf)" stroke-width="8" stroke-linecap="round" opacity="1"/>
@@ -1338,7 +1383,7 @@ body{
 </div>
 
 <!-- ══════════════════ p7a · shelf_lifted ══════════════════ -->
-<div class="page" data-page="20" data-spread="p7" data-pageid="p7a" style="--tint:#b9bdd4">
+<div class="page" data-page="20" data-spread="p7" data-pageid="p7a" data-enter="fall" style="--tint:#b9bdd4">
   <div class="art-pane">
     <svg class="art" viewBox="0 0 600 380" role="img" aria-label="Illustration for p7a">
     <line x1="18" y1="58" x2="582" y2="58" stroke="var(--shelf)" stroke-width="8" stroke-linecap="round" opacity="1"/>
@@ -1396,7 +1441,7 @@ body{
 </div>
 
 <!-- ══════════════════ p7b · dark_still ══════════════════ -->
-<div class="page" data-page="21" data-spread="p7" data-pageid="p7b" style="--tint:#b9bdd4">
+<div class="page" data-page="21" data-spread="p7" data-pageid="p7b" data-enter="dissolve" style="--tint:#b9bdd4">
   <div class="art-pane">
     <svg class="art" viewBox="0 0 600 300" role="img" aria-label="Illustration for p7b">
     <rect width="600" height="300" rx="14" fill="#231d2e"/>
@@ -1456,7 +1501,7 @@ body{
 </div>
 
 <!-- ══════════════════ p7c · dark_three ══════════════════ -->
-<div class="page" data-page="22" data-spread="p7" data-pageid="p7c" style="--tint:#b9bdd4">
+<div class="page" data-page="22" data-spread="p7" data-pageid="p7c" data-enter="dissolve" style="--tint:#b9bdd4">
   <div class="art-pane">
     <svg class="art" viewBox="0 0 600 300" role="img" aria-label="Illustration for p7c">
     <rect width="600" height="300" rx="14" fill="#231d2e"/>
@@ -1485,7 +1530,7 @@ body{
 </div>
 
 <!-- ══════════════════ p7d · empty_jar ══════════════════ -->
-<div class="page" data-page="23" data-spread="p7" data-pageid="p7d" style="--tint:#b9bdd4">
+<div class="page" data-page="23" data-spread="p7" data-pageid="p7d" data-enter="bloom" style="--tint:#b9bdd4">
   <div class="art-pane">
     <svg class="art" viewBox="0 0 600 300" role="img" aria-label="Illustration for p7d">
     <rect width="600" height="300" rx="14" fill="#231d2e"/>
@@ -1531,7 +1576,7 @@ body{
 </div>
 
 <!-- ══════════════════ p7e · etta_idea ══════════════════ -->
-<div class="page" data-page="24" data-spread="p7" data-pageid="p7e" style="--tint:#b9bdd4">
+<div class="page" data-page="24" data-spread="p7" data-pageid="p7e" data-enter="flare" style="--tint:#b9bdd4">
   <div class="art-pane">
     <svg class="art" viewBox="0 0 600 300" role="img" aria-label="Illustration for p7e">
     <rect width="600" height="300" rx="14" fill="#231d2e"/>
@@ -1555,7 +1600,7 @@ body{
 </div>
 
 <!-- ══════════════════ p8a · three_ready ══════════════════ -->
-<div class="page" data-page="25" data-spread="p8" data-pageid="p8a" style="--tint:#ffd766">
+<div class="page" data-page="25" data-spread="p8" data-pageid="p8a" data-enter="rise" style="--tint:#ffd766">
   <div class="art-pane">
     <svg class="art" viewBox="0 0 600 320" role="img" aria-label="Illustration for p8a">
     <circle cx="300" cy="160" r="130" fill="var(--glow)" opacity=".14"/>
@@ -1582,7 +1627,7 @@ body{
 </div>
 
 <!-- ══════════════════ p8b · raspberry ══════════════════ -->
-<div class="page" data-page="26" data-spread="p8" data-pageid="p8b" style="--tint:#ffd766">
+<div class="page" data-page="26" data-spread="p8" data-pageid="p8b" data-enter="pop" style="--tint:#ffd766">
   <div class="art-pane">
     <svg class="art" viewBox="0 0 600 320" role="img" aria-label="Illustration for p8b">
     <circle cx="300" cy="150" r="140" fill="var(--glow)" opacity=".2"/>
@@ -1603,7 +1648,7 @@ body{
 </div>
 
 <!-- ══════════════════ p8c · creature_searching ══════════════════ -->
-<div class="page" data-page="27" data-spread="p8" data-pageid="p8c" style="--tint:#ffd766">
+<div class="page" data-page="27" data-spread="p8" data-pageid="p8c" data-enter="lean" style="--tint:#ffd766">
   <div class="art-pane">
     <svg class="art" viewBox="0 0 600 380" role="img" aria-label="Illustration for p8c">
     <line x1="18" y1="70" x2="582" y2="70" stroke="var(--shelf)" stroke-width="8" stroke-linecap="round" opacity="1"/>
@@ -1731,7 +1776,7 @@ body{
 </div>
 
 <!-- ══════════════════ p8d · burst ══════════════════ -->
-<div class="page" data-page="28" data-spread="p8" data-pageid="p8d" style="--tint:#ffd766">
+<div class="page" data-page="28" data-spread="p8" data-pageid="p8d" data-enter="flare" style="--tint:#ffd766">
   <div class="art-pane">
     <svg class="art" viewBox="0 0 600 380" role="img" aria-label="Illustration for p8d">
     <g id="burst"></g>
@@ -1756,7 +1801,7 @@ body{
 </div>
 
 <!-- ══════════════════ p9a · one_small_sound ══════════════════ -->
-<div class="page" data-page="29" data-spread="p9" data-pageid="p9a" style="--tint:#ffd9b0">
+<div class="page" data-page="29" data-spread="p9" data-pageid="p9a" data-enter="dissolve" style="--tint:#ffd9b0">
   <div class="art-pane">
     <svg class="art" viewBox="0 0 600 320" role="img" aria-label="Illustration for p9a">
     <rect width="600" height="320" rx="14" fill="#231d2e" opacity=".92"/>
@@ -1780,7 +1825,7 @@ body{
 </div>
 
 <!-- ══════════════════ p9b · click_found ══════════════════ -->
-<div class="page" data-page="30" data-spread="p9" data-pageid="p9b" style="--tint:#ffd9b0">
+<div class="page" data-page="30" data-spread="p9" data-pageid="p9b" data-enter="bloom" style="--tint:#ffd9b0">
   <div class="art-pane">
     <svg class="art" viewBox="0 0 600 320" role="img" aria-label="Illustration for p9b">
     <rect x="396" y="42" width="140" height="248" rx="6" fill="var(--glow)" opacity=".24"/>
@@ -1805,7 +1850,7 @@ body{
 </div>
 
 <!-- ══════════════════ p9c · creature_small ══════════════════ -->
-<div class="page" data-page="31" data-spread="p9" data-pageid="p9c" style="--tint:#ffd9b0">
+<div class="page" data-page="31" data-spread="p9" data-pageid="p9c" data-enter="fall" style="--tint:#ffd9b0">
   <div class="art-pane">
     <svg class="art" viewBox="0 0 600 320" role="img" aria-label="Illustration for p9c">
     <line x1="18" y1="54" x2="582" y2="54" stroke="var(--shelf)" stroke-width="8" stroke-linecap="round" opacity="1"/>
@@ -1861,7 +1906,7 @@ body{
 </div>
 
 <!-- ══════════════════ p9d · the_gift ══════════════════ -->
-<div class="page" data-page="32" data-spread="p9" data-pageid="p9d" style="--tint:#ffd9b0">
+<div class="page" data-page="32" data-spread="p9" data-pageid="p9d" data-enter="lean" style="--tint:#ffd9b0">
   <div class="art-pane">
     <svg class="art" viewBox="0 0 600 320" role="img" aria-label="Illustration for p9d">
     <use class="breathe" href="#ch-hush-sad" x="58" y="106" width="121.7" height="156"/>
@@ -1895,7 +1940,7 @@ body{
 </div>
 
 <!-- ══════════════════ p9e · home ══════════════════ -->
-<div class="page" data-page="33" data-spread="p9" data-pageid="p9e" style="--tint:#ffd9b0">
+<div class="page" data-page="33" data-spread="p9" data-pageid="p9e" data-enter="rise" style="--tint:#ffd9b0">
   <div class="art-pane">
     <svg class="art" viewBox="0 0 600 320" role="img" aria-label="Illustration for p9e">
     <rect x="20" y="26" width="560" height="270" rx="14" fill="#fff6e0" stroke="var(--ink)" stroke-width="4"/><line x1="20" y1="164" x2="580" y2="164" stroke="var(--ink)" stroke-width="4"/><line x1="300" y1="26" x2="300" y2="164" stroke="var(--ink)" stroke-width="4"/><ellipse cx="122" cy="126" rx="38" ry="30" fill="var(--etta)"/><path d="M158 112 q20 -7 22 -25" stroke="var(--etta)" stroke-width="8" fill="none" stroke-linecap="round"/><path class="sway" d="M174 74 q7 -16 -2 -25 M188 76 q9 -14 3 -25" stroke="var(--glow)" stroke-width="5" fill="none" stroke-linecap="round"/><g fill="var(--shelf)"><rect x="352" y="136" width="48" height="12" rx="2"/><rect x="386" y="112" width="48" height="12" rx="2"/><rect x="420" y="88" width="48" height="12" rx="2"/><rect x="454" y="64" width="48" height="12" rx="2"/></g><rect x="92" y="198" width="14" height="38" fill="var(--dim)"/><rect x="76" y="190" width="52" height="12" rx="5" fill="var(--dim)"/><circle cx="99" cy="258" r="8" fill="var(--mo)"/><circle cx="99" cy="282" r="5" fill="var(--mo)" opacity=".6"/><g fill="var(--shelf)"><ellipse cx="248" cy="266" rx="52" ry="22"/><circle cx="296" cy="254" r="17"/><ellipse cx="308" cy="266" rx="9" ry="6" fill="var(--ink)"/></g>
@@ -1923,7 +1968,7 @@ body{
 </div>
 
 <!-- ══════════════════ final · jar_held ══════════════════ -->
-<div class="page" data-page="34" data-spread="final" data-pageid="final" style="--tint:#ffeec4">
+<div class="page" data-page="34" data-spread="final" data-pageid="final" data-enter="bloom" style="--tint:#ffeec4">
   <div class="art-pane">
     <svg class="art small" viewBox="0 0 400 230" role="img" aria-label="Illustration for final">
     <circle cx="180" cy="118" r="56" fill="var(--glow)" opacity=".16"/>
