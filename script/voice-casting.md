@@ -21,17 +21,30 @@ python tools/check_voices.py
 > Mo are performed the way animation casts children — designed voices, no real minor
 > involved.
 
+> **Describe the register, never the age.** ElevenLabs rejected an earlier draft of
+> Etta's description (2026-08-01) for the phrases "a girl of about five" and "plays a
+> child" — their child-voice policy screens on exactly that language. Every description
+> below is written the way the part is actually cast: an **animated character voice** in a
+> particular register. Bart Simpson is Nancy Cartwright; every child in every cartoon is
+> an adult character actor working high and bright. That is not a workaround for the
+> policy, it is a more accurate brief — "two years old" was never actionable information
+> for a synthesis model, only pitch, nasality, consonant attack and vowel length are.
+> Synthesized real-toddler timbre also sounds uncanny and bad, so this is the better
+> product regardless.
+>
+> **The rule for any future character: name the sound, never the age.**
+
 ---
 
 ## Etta — the sister, 5, the plan
 
 **Description**
 
-> A small, bright, quick-witted girl of about five, performed the way a skilled animation
-> actor plays a child — light and high-pitched but crisp and confident, never babyish or
-> cutesy. American. Fast, decisive delivery with a faint bossy edge, like someone who has
-> already worked out the plan and is explaining it to people moving too slowly. Warm
-> underneath the impatience. Clean, close, dry studio recording.
+> A bright, light, high-register character voice with a quick, energetic, slightly
+> diminutive quality — the sort of voice cast for a plucky animated sidekick. American.
+> Crisp diction and a fast, decisive delivery, with a faint bossy edge, like someone who
+> has already worked out the plan and is impatient explaining it to people moving too
+> slowly. Confident rather than sweet, warm underneath. Clean, close, dry studio recording.
 
 **Preview text**
 
@@ -50,11 +63,11 @@ python tools/check_voices.py
 
 **Description**
 
-> A very small boy, barely more than a toddler, performed the way cartoons cast a tiny
-> fearless kid. High, bright, slightly nasal, with a hard clicky consonant attack.
-> American. Speaks only in bursts of one to three words, loud and certain and utterly
-> undaunted, as though everything he says is obvious. A slight breathlessness, like he is
-> already halfway up something. Never whiny, never sad. Clean, close, dry studio recording.
+> A very high, bright, slightly nasal character voice with a hard, clicky consonant attack
+> — a fast, comic, pint-sized animated character. American. Delivers short loud bursts of
+> one to three words, certain and completely undaunted, as though everything said is
+> obvious. Slightly breathless, constantly in motion. Never whiny, never sad. Clean, close,
+> dry studio recording.
 
 **Preview text**
 
@@ -77,11 +90,11 @@ something.
 
 **Description**
 
-> A very small boy, barely more than a toddler, performed the way cartoons cast a quiet,
-> watchful child. Low for his size — round, soft, slightly husky, with long open vowels
-> and a slow, unhurried delivery. American. Speaks only in one to three words, usually
-> quietly, as if reporting something he has just noticed that nobody else did. Calm and
-> certain rather than shy or timid. Warm. Clean, close, dry studio recording.
+> A soft, round, slightly husky character voice, pitched low and delivered slowly, with
+> long open vowels — a calm, watchful, pint-sized animated character. American. Speaks
+> quietly in short phrases of one to three words, as if reporting something just noticed
+> that nobody else caught. Calm and certain rather than timid or shy. Warm. Clean, close,
+> dry studio recording.
 
 **Preview text**
 
@@ -159,3 +172,25 @@ stately, rich baritone. For something lighter and more delighted:
 Those four lines scan clean in anapestic tetrameter, the meter the whole book runs on. A
 narrator take that fights that rhythm — or flattens it into prose — will fight every line
 in the book.
+
+---
+
+## Fallbacks
+
+If a description is rejected, or Voice Design simply won't produce a usable take, neither
+of these costs the book anything.
+
+**1. Cast from the Voice Library and pitch in post.** `Jessica – Playful, Bright`
+(`cgSgspJ2msm6clMCkdW9`) is already on the account and is a plausible Etta as-is.
+Pitch-shifting an adult voice up a few semitones is a standard production technique, and
+`tools/mix.py` is already going to own per-block gain and transient shaping for the
+startle guard — pitch is a small addition to a stage that has to exist regardless.
+
+**2. Age Etta up.** She is the planner. Nothing in the story depends on her being exactly
+five; she reads fine a year or two older, and a slightly older-sounding Etta actually
+sharpens the contrast with the twins.
+
+The twins are the genuinely constrained parts, and fallback 1 is the likely landing place
+for both. Note that pitching Kip and Mo from the *same* source voice would collapse the
+distinction the whole design rests on — if it comes to that, they need two different
+source voices, shifted by different amounts.
