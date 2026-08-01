@@ -17,11 +17,11 @@ Audited 2026-08-01 against `moe/archive/datatrax/`.
 | Illustrated spreads, inline SVG | ✅ | 11 spreads, all art inline |
 | Auto-advance page to page | ✅ | |
 | Tap to pause, swipe to turn, keyboard | ✅ | Plus a scrubbable progress bar |
-| Self-contained standalone HTML | ✅ | 13.0 MB, no server, no network |
+| Self-contained standalone HTML | ✅ | 13.7 MB, no server, no network |
 | GitHub Pages deploy | ✅ | With gates DATATRAX had none of |
 
-**Verified:** 33 Playwright tests green on desktop Chromium, iPad WebKit, iPhone WebKit.
-`tools/audit.py --audio` passes: 85/85 blocks, 69/69 speech blocks matched word-for-word,
+**Verified:** 36 Playwright tests green on desktop Chromium, iPad WebKit, iPhone WebKit.
+`tools/audit.py --audio` passes: 88/88 blocks, 69/69 speech blocks matched word-for-word,
 zero timing-count mismatches.
 
 ---
@@ -96,29 +96,54 @@ Recorded as a standing rule in `script/voice-casting.md`.
 
 ## Open items — deliberate, not forgotten
 
-**The startle guard is specified but not implemented.** `script/blocks.py` carries a
-`peak_dbfs` per effect, and the research sets the targets: transients ≤ +6 dB over
-programme RMS, ≥ 30 ms attack, 150–300 ms rising pre-roll, −18 LUFS daytime / −20 to
-−23 LUFS bedtime. **No `tools/mix.py` exists yet**, so nothing enforces those numbers —
-the audio is whatever ElevenLabs returned. Spread 8's cascade was *prompted* to rise over
-four seconds rather than being *guaranteed* to. This wants a listen before bedtime use,
-and the bedtime master does not exist.
+**The startle guard now runs — for the eight CC0 effects only.** `tools/fetch_sfx.py`
+trims, applies a 50 ms fade-in (above the 30 ms floor), fades out, and loudness-normalises
+every fetched effect to its per-effect LUFS target. The three *generated* effects
+(`shloop`, `shloop_soft`, `pop_cascade`) still come back as whatever ElevenLabs produced
+and are **not** put through that chain — spread 8's cascade in particular was *prompted*
+to rise over four seconds rather than being *guaranteed* to. Narration is likewise
+un-normalised. A `tools/mix.py` covering generated audio and narration is still the gap.
 
 **The bedtime toggle is not built.** Designed, not implemented. One master ships.
-
-**No loudness normalisation.** Block-to-block level varies by whatever the API produced.
-Audible mainly as the Hushabaloo sitting lower than the narrator, which happens to suit
-him.
 
 **The twins' unison raspberry is Kip's voice with a two-raspberry effect under it.** Two
 sequential TTS clips would read as a queue, not a unison. Deliberate.
 
-**Art is schematic.** Bold flat SVG shapes, characterful but simple — the children are
-coloured circles. It reads as a designed style rather than an unfinished one, but it is
-not illustration.
+**Art is schematic.** Bold flat SVG shapes — the children are coloured circles with name
+labels. It reads as a designed style rather than an unfinished one, but it is not
+illustration. Each spread now carries a `--tint` that washes the page in that scene's
+colour, so the palette follows the same arc as the loudness curve: warm at home, deep in
+the collection, near-black at the low point, gold at the win, sunrise on the way home.
 
 **One light clearance check on "Hushabaloo".** Nothing found in children's publishing.
 That is a name search, not a trademark search.
+
+---
+
+## Second pass (2026-08-01, after first live review)
+
+**Verse was rendering as prose — fixed.** The book is anapestic tetrameter and the line
+breaks *are* the meter, but `wrapWords` rebuilt each block from its `textContent`, which
+flattened the markup and ran every line together. It now walks text nodes with a
+TreeWalker and wraps words in place, preserving `<span class="ln">`. A test asserts four
+lines on four distinct screen rows, so it cannot silently regress. Wrapped continuations
+get a hanging indent, the way poetry has always been set.
+
+**Narrator inflection.** All 45 narrator blocks carry phrase-level `[direction]` rather
+than one tag per block, and the narrator runs at `stability: 0.0` (Creative) where
+eleven_v3 follows direction hardest. Characters stay at 0.5 so they remain recognisably
+themselves. A guard in `tools/_retag_narrator.py` verified the *visible words* never moved.
+
+**Open-source sound.** Eight effects now come from The Designer's Choice UCS Collection
+(CC0) on archive.org, replacing generated approximations — including a real door latch, a
+real ceramic clink and a real raspberry. Wikimedia Commons was tried first and has
+essentially no everyday-object Foley; Freesound has the best library but needs an API
+token. Three new sounds were added where the story already motivated them: a stair creak
+on spread 1, rain going home on spread 6, and room tone in spread 7's silence. Credits in
+`audio/sfx/CREDITS.md`; `tools/generate.py` now refuses to overwrite CC0 files.
+
+**Typography.** Body text runs `clamp(1.35rem, 4.9vw, 1.85rem)` — roughly a third larger
+than the first pass.
 
 ---
 

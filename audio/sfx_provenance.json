@@ -1,0 +1,50 @@
+{
+  "click": {
+    "source": "DOORS/ANTIQUE/DOORAntq-Samsung Galaxy Smartphone, CU_Wooden Treasure Chest Close_Nicholas Judy_TDC.mp3",
+    "collection": "Doors",
+    "lufs": -20,
+    "seconds": 1.4
+  },
+  "raspberry_big": {
+    "source": "FARTS/REAL/FARTReal-Samsung Galaxy Smartphone, CU_Short, Buzzing Fart_Nicholas Judy_TDC.mp3",
+    "collection": "Farts",
+    "lufs": -17,
+    "seconds": 2.2
+  },
+  "raspberry_small": {
+    "source": "FARTS/REAL/FARTReal-Samsung Galaxy Smartphone, CU_Short, Buzzing Fart_Nicholas Judy_TDC.mp3",
+    "collection": "Farts",
+    "lufs": -22,
+    "seconds": 1.4
+  },
+  "pop": {
+    "source": "CERAMICS/IMPACT/CERMImpt-Blue Snowball Microphone, CU_Ceramic, Clink_The Designer's Choice_GNRL2.mp3",
+    "collection": "Ceramics",
+    "lufs": -19,
+    "seconds": 2.2
+  },
+  "creak": {
+    "source": "DOORS/CREAK/DOORCreak-Samsung Galaxy Smartphone_Master Bathroom, Squeaks_Nicholas Judy_TDC.mp3",
+    "collection": "Doors",
+    "lufs": -21,
+    "seconds": 2.5
+  },
+  "rain": {
+    "source": "RAIN/GENERAL/RAIN-Samsung Galaxy Smartphone, MCU_Light_The Designer's Choice_GNRL3.mp3",
+    "collection": "Rain",
+    "lufs": -24,
+    "seconds": 6.0
+  },
+  "room_tone": {
+    "source": "AMBIENCES/ROOM TONE/AMBRoom-Samsung Galaxy Smartphone, CU_Tone, Faint Fan Running_The Designer's Choice_GNRL2.mp3",
+    "collection": "Ambiences",
+    "lufs": -30,
+    "seconds": 8.0
+  },
+  "bell": {
+    "source": "BELLS/HANDBELL/BELLHand-Blue Snowball Microphone, CU_Timer Ding_Nicholas Judy_TDC.mp3",
+    "collection": "Bells",
+    "lufs": -22,
+    "seconds": 2.5
+  }
+}

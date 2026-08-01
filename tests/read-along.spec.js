@@ -34,7 +34,7 @@ test.describe('The Hushabaloo read-along', () => {
     await open(page);
     await expect(page.locator('.page')).toHaveCount(11);
     const blocks = page.locator('[data-audio]');
-    await expect(blocks).toHaveCount(85);
+    await expect(blocks).toHaveCount(88);
     const missing = await blocks.evaluateAll(
       els => els.filter(e => !e.getAttribute('data-audio')).length);
     expect(missing).toBe(0);
@@ -139,6 +139,23 @@ test.describe('The Hushabaloo read-along', () => {
     await expect(page.locator('#btnPrev')).toBeEnabled();
     await page.evaluate(() => window.__book.showPage(10, 'next'));
     await expect(page.locator('#btnNext')).toBeDisabled();
+  });
+
+  test('verse renders as lines, not prose', async ({ page }) => {
+    await open(page);
+    // Every narration block is metrical verse. If wrapWords ever flattens the
+    // markup again, these become one run-on line and the meter disappears.
+    const lines = await page.locator('[data-audio="p1_nar_01"] .ln').count();
+    expect(lines).toBe(4);
+    // And each line must actually sit on its own row on screen.
+    const tops = await page.locator('[data-audio="p1_nar_01"] .ln')
+      .evaluateAll(els => els.map(e => Math.round(e.getBoundingClientRect().top)));
+    expect(new Set(tops).size).toBe(4);
+    // Word spans must survive inside the lines, or karaoke has nothing to light.
+    // Wrapping is lazy per page, so visit the spread before counting.
+    await page.evaluate(() => window.__book.showPage(1, 'next'));
+    const words = await page.locator('[data-audio="p1_nar_01"] .ln [data-word]').count();
+    expect(words).toBeGreaterThan(30);
   });
 
   test('controls say what they do', async ({ page }) => {

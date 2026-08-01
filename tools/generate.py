@@ -154,21 +154,27 @@ def visible_text(text):
 # a confidently wrong build.
 
 def fingerprint(kind, ref, text, cast):
-    basis = f"{kind}|{ref}|{text}|{cast.get(ref, '')}|{MODEL}"
+    settings = B.VOICE_SETTINGS.get(ref, B.VOICE_SETTINGS["_default"])
+    basis = f"{kind}|{ref}|{text}|{cast.get(ref, '')}|{MODEL}|{sorted(settings.items())}"
     return hashlib.sha256(basis.encode("utf-8")).hexdigest()[:16]
 
 
 def sfx_fingerprint(name):
     spec = B.SFX[name]
-    basis = f"sfx|{name}|{spec['prompt']}|{spec['seconds']}"
+    basis = f"sfx|{name}|{spec.get('prompt', '')}|{spec['seconds']}"
     return hashlib.sha256(basis.encode("utf-8")).hexdigest()[:16]
 
 
 # ── generation ────────────────────────────────────────────────────────────────
 
-def gen_speech(api_key, voice_id, text):
-    payload = {"text": text, "model_id": MODEL,
-               "voice_settings": {"stability": 0.45, "similarity_boost": 0.75}}
+def gen_speech(api_key, voice_id, text, voice_name="NARRATOR"):
+    # eleven_v3 reads `stability` as a performance dial: 0.0 Creative, 0.5 Natural,
+    # 1.0 Robust. Lower values follow inline [direction] far more willingly. The
+    # narrator carries most of the book, so it runs Creative -- the swings between
+    # a hushed line and a headlong one are the point. Characters sit at Natural so
+    # they stay recognisably themselves across a whole story.
+    settings = B.VOICE_SETTINGS.get(voice_name, B.VOICE_SETTINGS["_default"])
+    payload = {"text": text, "model_id": MODEL, "voice_settings": dict(settings)}
     data, err = post(f"/text-to-speech/{voice_id}/with-timestamps?output_format={FORMAT}",
                      api_key, payload)
     if data is None and "HTTP 4" in (err or ""):
@@ -219,7 +225,10 @@ def main():
 
     targets = [b for b in B.BLOCKS if not args.only or b[5] == args.only]
     speech = [b for b in targets if b[1] == "speech"]
-    sfx_names = sorted({b[2] for b in targets if b[1] == "sfx"})
+    # CC0 effects are fetched by tools/fetch_sfx.py and mastered there. Generating
+    # over them would silently replace real Foley with a described approximation.
+    sfx_names = sorted({b[2] for b in targets
+                        if b[1] == "sfx" and B.SFX[b[2]]["source"] == "gen"})
 
     print(f"\n  THE HUSHABALOO -- generating")
     print(f"  {len(speech)} speech blocks, {len(sfx_names)} sound effects"
@@ -262,7 +271,7 @@ def main():
 
         preview = visible_text(text)[:52]
         print(f"  gen   {bid:<22} ({voice}) \"{preview}...\"", end="", flush=True)
-        audio, words, err = gen_speech(api_key, cast[voice], text)
+        audio, words, err = gen_speech(api_key, cast[voice], text, voice)
         if audio is None:
             print(f"  FAILED\n        {err}")
             failed += 1

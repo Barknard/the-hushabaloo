@@ -5,139 +5,169 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>The Hushabaloo</title>
 <style>
+/* ────────────────────────────────────────────────────────────────
+   Palette. Each spread carries its own --tint, and the page washes
+   that colour behind the art. The tint arc mirrors the story arc:
+   warm and busy at home, deep and vast in the collection, nearly
+   black at the low point, gold at the win, sunrise on the way home.
+   Text always stays high-contrast ink on light paper -- the colour
+   moves in the background, never under the words.
+   ──────────────────────────────────────────────────────────────── */
 :root{
-  --paper:#fdf6e8; --ink:#2b2320; --dim:#a89880;
-  --glow:#ffd25e; --glow-soft:#fff0c2;
-  --etta:#e0562f; --kip:#2f9e8f; --mo:#4a63c8; --hush:#7a5aa8;
-  --shelf:#8a6f4e;
+  --paper:#fffaf0; --ink:#2a2118; --dim:#9a8b74;
+  --glow:#ffc93c; --glow-soft:#ffeeb8;
+  --etta:#e8522e; --kip:#129e8c; --mo:#3f63d4; --hush:#8257c5;
+  --shelf:#a97f4d; --tint:#ffe9a8;
 }
 @media (prefers-color-scheme: dark){
-  :root{ --paper:#191410; --ink:#f3e6d2; --dim:#6d5f4e; --glow:#ffcb45; --glow-soft:#4a3714; }
+  :root{ --paper:#1c1610; --ink:#f7ecdb; --dim:#7a6b57;
+         --glow:#ffc93c; --glow-soft:#4d3a12; }
 }
-:root[data-theme="dark"]{ --paper:#191410; --ink:#f3e6d2; --dim:#6d5f4e; --glow:#ffcb45; --glow-soft:#4a3714; }
-:root[data-theme="light"]{ --paper:#fdf6e8; --ink:#2b2320; --dim:#a89880; --glow:#ffd25e; --glow-soft:#fff0c2; }
+:root[data-theme="dark"]{ --paper:#1c1610; --ink:#f7ecdb; --dim:#7a6b57; --glow:#ffc93c; --glow-soft:#4d3a12; }
+:root[data-theme="light"]{ --paper:#fffaf0; --ink:#2a2118; --dim:#9a8b74; --glow:#ffc93c; --glow-soft:#ffeeb8; }
 
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
 body{
   background:var(--paper); color:var(--ink);
-  font-family:Georgia,'Iowan Old Style','Palatino Linotype',serif;
+  font-family:'Iowan Old Style','Palatino Linotype',Georgia,serif;
   -webkit-font-smoothing:antialiased; overscroll-behavior:none;
 }
 
 /* ── start gate ─────────────────────────────────────────────── */
 .start-overlay{
-  position:fixed; inset:0; z-index:100; background:var(--paper);
+  position:fixed; inset:0; z-index:100;
+  background:radial-gradient(circle at 50% 42%, #2a2118 0%, #140f0a 100%);
+  color:#fffaf0;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  gap:1.4rem; transition:opacity .5s ease, visibility .5s;
+  gap:1.5rem; transition:opacity .5s ease, visibility .5s;
 }
 .start-overlay.hidden{opacity:0;visibility:hidden;pointer-events:none}
-.start-title{font-size:clamp(2.2rem,9vw,4.5rem);letter-spacing:-.02em;text-align:center;line-height:1.05}
-.start-sub{color:var(--dim);font-size:clamp(.95rem,3.4vw,1.2rem);font-style:italic;text-align:center;padding:0 1.5rem}
-.start-btn{
-  margin-top:.6rem; width:104px;height:104px;border-radius:50%;border:none;cursor:pointer;
-  background:var(--glow); color:#2b2320; font-size:2.4rem; line-height:104px;
-  box-shadow:0 0 0 0 rgba(255,210,94,.6); animation:pulse 2.4s infinite;
+.start-door{width:min(46vw,190px);height:auto;filter:drop-shadow(0 0 40px rgba(255,201,60,.4))}
+.start-title{
+  font-size:clamp(2.6rem,11vw,5.2rem); letter-spacing:-.02em; text-align:center;
+  line-height:1; color:var(--glow); text-shadow:0 0 34px rgba(255,201,60,.35);
 }
-@keyframes pulse{70%{box-shadow:0 0 0 26px rgba(255,210,94,0)}100%{box-shadow:0 0 0 0 rgba(255,210,94,0)}}
-.start-hint{color:var(--dim);font-size:.85rem}
+.start-sub{
+  color:#cbb894; font-size:clamp(1.05rem,4vw,1.4rem); font-style:italic;
+  text-align:center; padding:0 1.5rem;
+}
+.start-btn{
+  margin-top:.4rem; width:118px;height:118px;border-radius:50%;border:none;cursor:pointer;
+  background:var(--glow); color:#2a2118; font-size:2.8rem; line-height:118px;
+  box-shadow:0 0 0 0 rgba(255,201,60,.6); animation:pulse 2.4s infinite;
+}
+@keyframes pulse{70%{box-shadow:0 0 0 30px rgba(255,201,60,0)}100%{box-shadow:0 0 0 0 rgba(255,201,60,0)}}
+.start-hint{color:#8d7d64;font-size:.95rem;font-family:system-ui,sans-serif}
 
 /* ── book ───────────────────────────────────────────────────── */
-.book{position:fixed;inset:0;bottom:74px;overflow:hidden}
+.book{position:fixed;inset:0;bottom:82px;overflow:hidden}
 .page{
   position:absolute; inset:0; overflow-y:auto; overflow-x:hidden;
-  padding:clamp(1.1rem,4vw,2.6rem) clamp(1.1rem,5vw,3rem) 2.5rem;
-  opacity:0; transform:translateX(28px); pointer-events:none;
+  padding:clamp(1.2rem,4vw,2.4rem) clamp(1rem,5vw,3rem) 3rem;
+  opacity:0; transform:translateX(30px); pointer-events:none;
   transition:opacity .5s ease, transform .5s ease;
-  display:flex; flex-direction:column; align-items:center; gap:1.1rem;
+  display:flex; flex-direction:column; align-items:center; gap:1.3rem;
+  background:
+    radial-gradient(ellipse 120% 60% at 50% 0%, var(--tint) 0%, transparent 62%),
+    var(--paper);
 }
 .page.active{opacity:1;transform:none;pointer-events:auto}
-.page.prev{transform:translateX(-28px)}
-.art{width:min(100%,540px);height:auto;display:block;flex:none}
+.page.prev{transform:translateX(-30px)}
+.art{width:min(100%,600px);height:auto;display:block;flex:none}
+.art.small{width:min(72%,380px)}
+.rule{width:min(100%,560px);height:26px;flex:none;opacity:.55}
 
-/* ── text + karaoke ─────────────────────────────────────────── */
+/* ── verse ──────────────────────────────────────────────────────
+   Each verse line is its own block element. The book is written in
+   anapestic tetrameter and the line breaks ARE the rhythm -- running
+   them together as prose flattens the thing the book is built on. */
 .audio-block{
-  width:min(100%,640px); font-size:clamp(1.15rem,4.4vw,1.65rem); line-height:1.62;
-  opacity:.34; transition:opacity .45s ease; text-wrap:pretty;
+  width:min(100%,780px);
+  font-size:clamp(1.35rem,4.9vw,1.85rem); line-height:1.48;
+  opacity:.32; transition:opacity .45s ease;
 }
 .audio-block.speaking{opacity:1}
-.audio-block.spoken{opacity:.5}
+.audio-block.spoken{opacity:.46}
+.ln{
+  display:block; padding:.06em 0;
+  /* Hanging indent: a line too long for the screen wraps INDENTED, so it reads
+     as the continuation it is rather than as a new line of verse. */
+  padding-left:1.4em; text-indent:-1.4em;
+}
+.ln + .ln{margin-top:.06em}
+.stanza-gap{margin-top:.72em}
+
 .audio-block[data-voice]{font-weight:600}
 .audio-block[data-voice]::before{
   content:attr(data-speaker); display:block; font-family:system-ui,sans-serif;
-  font-size:.66em; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
-  opacity:.75; margin-bottom:.28rem;
+  font-size:.56em; font-weight:800; letter-spacing:.16em; text-transform:uppercase;
+  opacity:.8; margin-bottom:.35rem;
 }
 [data-voice="etta"]{color:var(--etta)} [data-voice="kip"]{color:var(--kip)}
 [data-voice="mo"]{color:var(--mo)} [data-voice="hushabaloo"]{color:var(--hush)}
 
-/* The highlight lands ON the word, instantly, then fades away behind it.
-   Order matters: .word-active is declared last so it always wins over .word-spoken,
-   and it carries transition:none so the highlight arrives exactly on the syllable
-   rather than easing in behind the voice. The fade is on the base rule, so it only
-   applies on the way OUT. */
+/* The highlight lands ON the word, instantly, then fades behind it.
+   .word-active is last so it always wins, and carries transition:none so it
+   arrives on the syllable rather than easing in behind the voice. The fade
+   lives on the base rule, so it only applies on the way out. */
 [data-word]{
-  border-radius:.28em; padding:.04em .1em; margin:0 -.02em;
-  background:transparent; color:inherit; box-shadow:0 0 0 rgba(255,210,94,0);
+  border-radius:.3em; padding:.05em .12em; margin:0 -.03em;
+  background:transparent; color:inherit; box-shadow:0 0 0 rgba(255,201,60,0);
   transition:background .6s ease, box-shadow .6s ease, color .6s ease;
 }
-[data-word].word-spoken{background:var(--glow-soft);box-shadow:0 0 0 rgba(255,210,94,0)}
+[data-word].word-spoken{background:var(--glow-soft);box-shadow:0 0 0 rgba(255,201,60,0)}
 [data-word].word-active{
-  background:var(--glow); color:#2b2320;
-  box-shadow:0 0 18px rgba(255,210,94,.75);
+  background:var(--glow); color:#2a2118;
+  box-shadow:0 0 20px rgba(255,201,60,.8);
   transition:none;
 }
 
 /* ── sfx + participation ────────────────────────────────────── */
 .sfx-block{
-  width:min(100%,640px); display:flex; align-items:center; gap:.7rem;
-  font-family:system-ui,sans-serif; font-size:.78rem; letter-spacing:.18em;
-  text-transform:uppercase; color:var(--dim); opacity:.3; transition:opacity .3s;
+  width:min(100%,700px); display:flex; align-items:center; gap:.8rem;
+  font-family:system-ui,sans-serif; font-size:1rem; font-weight:800;
+  letter-spacing:.2em; text-transform:uppercase; color:var(--dim);
+  opacity:.28; transition:opacity .3s;
 }
 .sfx-block.speaking{opacity:1;color:var(--glow)}
-.sfx-block .ring{
-  width:13px;height:13px;border-radius:50%;border:2px solid currentColor;flex:none;
-}
+.sfx-block .ring{width:16px;height:16px;border-radius:50%;border:3px solid currentColor;flex:none}
 .sfx-block.speaking .ring{animation:ring 1s ease-out infinite}
-@keyframes ring{0%{box-shadow:0 0 0 0 currentColor;opacity:1}100%{box-shadow:0 0 0 16px transparent;opacity:.4}}
+@keyframes ring{0%{box-shadow:0 0 0 0 currentColor;opacity:1}100%{box-shadow:0 0 0 18px transparent;opacity:.4}}
 
 .wait-block{
-  width:min(100%,640px); text-align:center; padding:1.1rem 1rem; border-radius:1rem;
-  border:3px dashed var(--dim); color:var(--dim);
-  font-family:system-ui,sans-serif; font-weight:800;
-  font-size:clamp(1rem,4vw,1.35rem); opacity:.3; transition:all .3s;
+  width:min(100%,700px); text-align:center; padding:1.3rem 1rem; border-radius:1.4rem;
+  border:4px dashed var(--dim); color:var(--dim);
+  font-family:system-ui,sans-serif; font-weight:900;
+  font-size:clamp(1.25rem,5vw,1.75rem); opacity:.3; transition:all .3s;
 }
-.wait-block.speaking{opacity:1;border-color:var(--glow);color:var(--glow);transform:scale(1.03)}
+.wait-block.speaking{opacity:1;border-color:var(--glow);color:var(--glow);transform:scale(1.04)}
 
 /* ── controls ───────────────────────────────────────────────── */
 .controls{
-  position:fixed; left:0; right:0; bottom:0; height:74px; z-index:50;
-  display:flex; align-items:center; gap:.7rem; padding:0 clamp(.7rem,3vw,1.4rem);
-  background:var(--paper); border-top:1px solid var(--dim);
+  position:fixed; left:0; right:0; bottom:0; height:82px; z-index:50;
+  display:flex; align-items:center; gap:.8rem; padding:0 clamp(.7rem,3vw,1.4rem);
+  background:var(--paper); border-top:3px solid var(--glow-soft);
   padding-bottom:env(safe-area-inset-bottom);
 }
 .ctrl{
   border:none;background:none;color:var(--ink);cursor:pointer;flex:none;
-  width:46px;height:46px;border-radius:50%;font-size:1.1rem;
-  font-family:system-ui,sans-serif;
+  width:50px;height:50px;border-radius:50%;font-size:1.25rem;font-family:system-ui,sans-serif;
 }
 .ctrl:hover{background:var(--glow-soft)}
-.ctrl:disabled{opacity:.25;cursor:default}
-.ctrl.play{background:var(--glow);color:#2b2320;width:56px;height:56px;font-size:1.35rem}
+.ctrl:disabled{opacity:.22;cursor:default}
+.ctrl.play{background:var(--glow);color:#2a2118;width:62px;height:62px;font-size:1.5rem}
 .ctrl-label{
-  font-family:system-ui,sans-serif;font-size:.6rem;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--dim);text-align:center;line-height:1;
+  font-family:system-ui,sans-serif;font-size:.64rem;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--dim);text-align:center;line-height:1.15;
 }
-.progress{flex:1;height:8px;border-radius:4px;background:var(--glow-soft);overflow:hidden;cursor:pointer}
+.progress{flex:1;height:12px;border-radius:6px;background:var(--glow-soft);overflow:hidden;cursor:pointer}
 .fill{height:100%;width:0;background:var(--glow);transition:width .25s linear}
-.where{
-  font-family:system-ui,sans-serif;font-size:.72rem;color:var(--dim);
-  min-width:74px;text-align:right;flex:none;
-}
+.where{font-family:system-ui,sans-serif;font-size:.8rem;font-weight:700;color:var(--dim);min-width:78px;text-align:right;flex:none}
 .err{
-  position:fixed;left:50%;transform:translateX(-50%);bottom:86px;z-index:60;
-  background:#c0392b;color:#fff;padding:.5rem .9rem;border-radius:.5rem;
-  font-family:system-ui,sans-serif;font-size:.8rem;opacity:0;transition:opacity .3s;
+  position:fixed;left:50%;transform:translateX(-50%);bottom:94px;z-index:60;
+  background:#c0392b;color:#fff;padding:.55rem 1rem;border-radius:.6rem;
+  font-family:system-ui,sans-serif;font-size:.85rem;opacity:0;transition:opacity .3s;
   pointer-events:none;max-width:90vw;
 }
 .err.show{opacity:1}
@@ -147,6 +177,16 @@ body{
 <body>
 
 <div class="start-overlay" id="startOverlay">
+  <svg class="start-door" viewBox="0 0 140 210" aria-hidden="true">
+    <rect x="24" y="12" width="92" height="186" rx="5" fill="#3b2d1e"/>
+    <rect x="24" y="12" width="92" height="186" rx="5" fill="none" stroke="#ffc93c" stroke-width="4"/>
+    <rect x="34" y="26" width="32" height="56" rx="3" fill="#ffc93c" opacity=".16"/>
+    <rect x="74" y="26" width="32" height="56" rx="3" fill="#ffc93c" opacity=".16"/>
+    <rect x="34" y="96" width="32" height="56" rx="3" fill="#ffc93c" opacity=".16"/>
+    <rect x="74" y="96" width="32" height="56" rx="3" fill="#ffc93c" opacity=".16"/>
+    <circle cx="38" cy="118" r="6" fill="#ffc93c"/>
+    <rect x="20" y="196" width="100" height="7" rx="3" fill="#ffc93c" opacity=".9"/>
+  </svg>
   <div class="start-title">The Hushabaloo</div>
   <div class="start-sub">Behind the third door on the left of the hall.</div>
   <button class="start-btn" id="startBtn" aria-label="Start reading">&#9654;</button>
@@ -156,319 +196,503 @@ body{
 <div class="book" id="book">
 
 <!-- ══════════ COVER ══════════ -->
-<div class="page active" data-page="0">
-  <svg class="art" viewBox="0 0 540 400" role="img" aria-label="A door in a dark hall with warm light spilling around its edges">
-    <rect width="540" height="400" fill="none"/>
-    <rect x="60" y="30" width="420" height="350" rx="6" fill="var(--dim)" opacity=".18"/>
-    <g opacity=".9">
-      <rect x="188" y="66" width="164" height="290" rx="5" fill="var(--shelf)"/>
-      <rect x="198" y="80" width="64" height="112" rx="3" fill="var(--paper)" opacity=".22"/>
-      <rect x="278" y="80" width="64" height="112" rx="3" fill="var(--paper)" opacity=".22"/>
-      <rect x="198" y="212" width="64" height="112" rx="3" fill="var(--paper)" opacity=".22"/>
-      <rect x="278" y="212" width="64" height="112" rx="3" fill="var(--paper)" opacity=".22"/>
-      <circle cx="330" cy="216" r="7" fill="var(--glow)"/>
-    </g>
-    <g fill="var(--glow)" opacity=".85">
-      <rect x="182" y="62" width="6" height="298" rx="3"/>
-      <rect x="352" y="62" width="6" height="298" rx="3"/>
-      <rect x="182" y="58" width="176" height="6" rx="3"/>
-      <rect x="182" y="356" width="176" height="9" rx="4"/>
-    </g>
-    <g fill="var(--glow)" opacity=".5">
-      <circle cx="120" cy="120" r="4"/><circle cx="150" cy="200" r="3"/><circle cx="108" cy="272" r="5"/>
-      <circle cx="420" cy="150" r="4"/><circle cx="396" cy="252" r="3"/><circle cx="432" cy="316" r="5"/>
-    </g>
-    <text x="270" y="34" text-anchor="middle" font-family="system-ui" font-size="13"
-          letter-spacing="4" fill="var(--dim)">THREE DOORS. THIS IS THE THIRD.</text>
+<div class="page active" data-page="0" style="--tint:#f6dfa0">
+  <svg class="art" viewBox="0 0 600 400" role="img" aria-label="A tall dark door with warm light spilling from every edge, and small glowing sounds drifting toward it">
+    <defs><radialGradient id="cg" cx="50%" cy="50%"><stop offset="0%" stop-color="#ffc93c" stop-opacity=".34"/><stop offset="100%" stop-color="#ffc93c" stop-opacity="0"/></radialGradient></defs>
+    <rect width="600" height="400" fill="url(#cg)"/>
+    <rect x="222" y="46" width="156" height="316" rx="6" fill="#3b2d1e"/>
+    <rect x="234" y="62" width="60" height="106" rx="4" fill="#ffc93c" opacity=".2"/>
+    <rect x="306" y="62" width="60" height="106" rx="4" fill="#ffc93c" opacity=".2"/>
+    <rect x="234" y="186" width="60" height="106" rx="4" fill="#ffc93c" opacity=".2"/>
+    <rect x="306" y="186" width="60" height="106" rx="4" fill="#ffc93c" opacity=".2"/>
+    <circle cx="248" cy="210" r="9" fill="var(--glow)"/>
+    <g fill="var(--glow)"><rect x="216" y="42" width="7" height="324" rx="3"/><rect x="377" y="42" width="7" height="324" rx="3"/>
+      <rect x="216" y="38" width="168" height="7" rx="3"/><rect x="216" y="362" width="168" height="11" rx="5"/></g>
+    <g fill="var(--glow)" opacity=".65">
+      <circle cx="120" cy="112" r="7"/><circle cx="86" cy="196" r="5"/><circle cx="142" cy="268" r="9"/><circle cx="98" cy="318" r="4"/>
+      <circle cx="482" cy="132" r="7"/><circle cx="518" cy="228" r="5"/><circle cx="462" cy="300" r="9"/><circle cx="512" cy="348" r="4"/></g>
+    <g stroke="var(--glow)" stroke-width="2.5" fill="none" opacity=".35" stroke-linecap="round">
+      <path d="M128 118 q52 26 84 62"/><path d="M150 262 q34 -12 66 -30"/>
+      <path d="M474 138 q-48 24 -80 58"/><path d="M470 296 q-30 -14 -62 -30"/></g>
   </svg>
-  <div class="audio-block" data-audio="cover_nar_01">The Hushabaloo. Behind the third door on the left of the hall.</div>
+  <div class="audio-block" data-audio="cover_nar_01">
+    <span class="ln">The Hushabaloo.</span>
+    <span class="ln stanza-gap">Behind the third door on the left of the hall.</span>
+  </div>
 </div>
 
 <!-- ══════════ SPREAD 1 ══════════ -->
-<div class="page" data-page="1">
-  <svg class="art" viewBox="0 0 540 300" role="img" aria-label="A cutaway of a noisy house: kettle, stairs, dripping tap, sleeping dog, and a door">
-    <rect x="24" y="30" width="492" height="246" rx="10" fill="none" stroke="var(--ink)" stroke-width="3"/>
-    <line x1="24" y1="152" x2="516" y2="152" stroke="var(--ink)" stroke-width="3"/>
-    <line x1="270" y1="30" x2="270" y2="152" stroke="var(--ink)" stroke-width="3"/>
-    <!-- kettle -->
-    <g><ellipse cx="120" cy="120" rx="34" ry="26" fill="var(--etta)"/>
-       <path d="M150 108 q18 -6 20 -22" stroke="var(--etta)" stroke-width="7" fill="none" stroke-linecap="round"/>
-       <path d="M164 74 q6 -14 -2 -22 M176 76 q8 -12 2 -22" stroke="var(--glow)" stroke-width="4" fill="none" stroke-linecap="round"/></g>
-    <!-- stairs -->
-    <g fill="var(--shelf)"><rect x="322" y="126" width="42" height="10"/><rect x="352" y="106" width="42" height="10"/>
-       <rect x="382" y="86" width="42" height="10"/><rect x="412" y="66" width="42" height="10"/></g>
-    <text x="330" y="60" font-family="system-ui" font-size="15" fill="var(--glow)" font-weight="700">squeak!</text>
-    <!-- tap -->
-    <g><rect x="86" y="182" width="12" height="34" fill="var(--dim)"/><rect x="72" y="176" width="46" height="10" rx="4" fill="var(--dim)"/>
-       <circle cx="92" cy="236" r="6" fill="var(--mo)"/><circle cx="92" cy="256" r="4" fill="var(--mo)" opacity=".6"/></g>
-    <!-- dog -->
-    <g fill="var(--shelf)"><ellipse cx="220" cy="248" rx="46" ry="19"/><circle cx="262" cy="238" r="15"/>
-       <ellipse cx="272" cy="248" rx="8" ry="5" fill="var(--ink)"/></g>
-    <text x="150" y="244" font-family="system-ui" font-size="14" fill="var(--dim)">whumpf</text>
-    <!-- the door -->
-    <g><rect x="430" y="176" width="60" height="94" rx="4" fill="var(--shelf)"/>
-       <circle cx="440" cy="226" r="5" fill="var(--glow)"/></g>
-    <text x="424" y="292" font-family="system-ui" font-size="15" fill="var(--glow)" font-weight="700">click.</text>
-    <!-- the three -->
-    <g><circle cx="316" cy="222" r="17" fill="var(--etta)"/><circle cx="352" cy="232" r="12" fill="var(--kip)"/><circle cx="382" cy="234" r="12" fill="var(--mo)"/></g>
+<div class="page" data-page="1" style="--tint:#ffe3a0">
+  <svg class="art" viewBox="0 0 600 320" role="img" aria-label="A cutaway of a noisy house: a whistling kettle, squeaking stairs, a dripping tap, a sleeping dog, and a door at the end of the hall">
+    <rect x="20" y="26" width="560" height="270" rx="14" fill="#fff6e0" stroke="var(--ink)" stroke-width="4"/>
+    <line x1="20" y1="164" x2="580" y2="164" stroke="var(--ink)" stroke-width="4"/>
+    <line x1="300" y1="26" x2="300" y2="164" stroke="var(--ink)" stroke-width="4"/>
+    <g><ellipse cx="122" cy="126" rx="38" ry="30" fill="var(--etta)"/>
+      <path d="M158 112 q20 -7 22 -25" stroke="var(--etta)" stroke-width="8" fill="none" stroke-linecap="round"/>
+      <path d="M174 74 q7 -16 -2 -25 M188 76 q9 -14 3 -25" stroke="var(--glow)" stroke-width="5" fill="none" stroke-linecap="round"/></g>
+    <text x="60" y="66" font-family="system-ui" font-size="19" font-weight="800" fill="var(--etta)">sssss!</text>
+    <g fill="var(--shelf)"><rect x="352" y="136" width="48" height="12" rx="2"/><rect x="386" y="112" width="48" height="12" rx="2"/>
+      <rect x="420" y="88" width="48" height="12" rx="2"/><rect x="454" y="64" width="48" height="12" rx="2"/></g>
+    <text x="352" y="52" font-family="system-ui" font-size="20" font-weight="800" fill="var(--glow)">squeak!</text>
+    <g><rect x="92" y="198" width="14" height="38" fill="var(--dim)"/><rect x="76" y="190" width="52" height="12" rx="5" fill="var(--dim)"/>
+      <circle cx="99" cy="258" r="8" fill="var(--mo)"/><circle cx="99" cy="282" r="5" fill="var(--mo)" opacity=".6"/></g>
+    <text x="128" y="248" font-family="system-ui" font-size="17" font-weight="700" fill="var(--mo)">drip</text>
+    <g fill="var(--shelf)"><ellipse cx="248" cy="266" rx="52" ry="22"/><circle cx="296" cy="254" r="17"/>
+      <ellipse cx="308" cy="266" rx="9" ry="6" fill="var(--ink)"/></g>
+    <text x="166" y="238" font-family="system-ui" font-size="17" font-weight="700" fill="var(--shelf)">whumpf</text>
+    <g><rect x="500" y="192" width="66" height="102" rx="5" fill="var(--shelf)"/><circle cx="512" cy="246" r="7" fill="var(--glow)"/></g>
+    <text x="498" y="288" font-family="system-ui" font-size="20" font-weight="800" fill="var(--glow)">click.</text>
+    <g><circle cx="352" cy="236" r="21" fill="var(--etta)"/><circle cx="394" cy="248" r="15" fill="var(--kip)"/><circle cx="428" cy="250" r="15" fill="var(--mo)"/>
+      <text x="341" y="284" font-family="system-ui" font-size="13" font-weight="800" fill="var(--etta)">Etta</text>
+      <text x="384" y="284" font-family="system-ui" font-size="12" font-weight="800" fill="var(--kip)">Kip</text>
+      <text x="418" y="284" font-family="system-ui" font-size="12" font-weight="800" fill="var(--mo)">Mo</text></g>
   </svg>
-  <div class="audio-block" data-audio="p1_nar_01">In a house at the end of a hall that was long, where the stairs had a squeak and the kettle a song, there was Etta, who planned. There was Mo, who could hear. There was Kip, who climbed everything, year after year.</div>
-  <div class="audio-block" data-audio="p1_nar_02">And the house was so full of so much to be heard, of a clank and a clink and a creak and a bird, of the hum of the fridge, of the drip of the tap, of the whumpf of the dog as he flopped for a nap.</div>
-  <div class="audio-block" data-audio="p1_nar_03">And the best of them all, and remember this trick, was the door down the hall. And the door went</div>
+  <div class="audio-block" data-audio="p1_nar_01">
+    <span class="ln">In a house at the end of a hall that was long,</span>
+    <span class="ln">where the stairs had a squeak and the kettle a song,</span>
+    <span class="ln">there was Etta, who planned. There was Mo, who could hear.</span>
+    <span class="ln">There was Kip, who climbed everything, year after year.</span>
+  </div>
+  <div class="sfx-block" data-audio="p1_sfx_creak" data-sfx="creak"><span class="ring"></span><span>creeeak</span></div>
+  <div class="audio-block" data-audio="p1_nar_02">
+    <span class="ln">And the house was so full of so much to be heard,</span>
+    <span class="ln">of a clank and a clink and a creak and a bird,</span>
+    <span class="ln">of the hum of the fridge, of the drip of the tap,</span>
+    <span class="ln">of the whumpf of the dog as he flopped for a nap.</span>
+  </div>
+  <div class="audio-block" data-audio="p1_nar_03">
+    <span class="ln">And the best of them all, and remember this trick,</span>
+    <span class="ln">was the door down the hall. And the door went</span>
+  </div>
   <div class="sfx-block" data-audio="p1_sfx_click" data-sfx="click"><span class="ring"></span><span>click</span></div>
-  <div class="audio-block" data-audio="p1_nar_04">click.</div>
+  <div class="audio-block" data-audio="p1_nar_04"><span class="ln">click.</span></div>
 </div>
 
 <!-- ══════════ SPREAD 2 ══════════ -->
-<div class="page" data-page="2">
-  <svg class="art" viewBox="0 0 540 300" role="img" aria-label="Three children at a third door, with sounds streaming into the crack beneath it">
-    <rect x="40" y="24" width="86" height="240" rx="4" fill="var(--dim)" opacity=".28"/>
-    <rect x="164" y="24" width="86" height="240" rx="4" fill="var(--dim)" opacity=".28"/>
-    <rect x="288" y="24" width="112" height="240" rx="4" fill="var(--shelf)"/>
-    <circle cx="304" cy="150" r="7" fill="var(--glow)"/>
-    <text x="72" y="288" font-family="system-ui" font-size="16" fill="var(--dim)">one</text>
-    <text x="192" y="288" font-family="system-ui" font-size="16" fill="var(--dim)">two</text>
-    <text x="310" y="288" font-family="system-ui" font-size="16" fill="var(--glow)" font-weight="700">three</text>
-    <!-- sounds sliding under door -->
-    <g stroke="var(--glow)" stroke-width="4" fill="none" stroke-linecap="round" opacity=".9">
-      <path d="M470 96 q-40 24 -70 60"/><path d="M492 150 q-46 8 -78 30"/><path d="M462 208 q-32 -6 -60 12"/>
-    </g>
-    <g fill="var(--glow)"><circle cx="474" cy="94" r="6"/><circle cx="496" cy="148" r="5"/><circle cx="466" cy="206" r="5"/></g>
-    <!-- Mo listening at the door -->
-    <circle cx="344" cy="222" r="15" fill="var(--mo)"/>
-    <circle cx="330" cy="218" r="4" fill="var(--paper)"/>
-    <circle cx="382" cy="228" r="19" fill="var(--etta)"/>
-    <circle cx="416" cy="238" r="13" fill="var(--kip)"/>
+<div class="page" data-page="2" style="--tint:#dfe6d8">
+  <svg class="art" viewBox="0 0 600 320" role="img" aria-label="Three doors along a hall. Glowing sounds stream into the crack beneath the third one while Mo listens at the wood">
+    <rect x="34" y="24" width="104" height="256" rx="6" fill="var(--dim)" opacity=".3"/>
+    <rect x="176" y="24" width="104" height="256" rx="6" fill="var(--dim)" opacity=".3"/>
+    <rect x="318" y="24" width="128" height="256" rx="6" fill="var(--shelf)"/>
+    <circle cx="336" cy="160" r="8" fill="var(--glow)"/>
+    <text x="72" y="306" font-family="system-ui" font-size="19" font-weight="700" fill="var(--dim)">one</text>
+    <text x="214" y="306" font-family="system-ui" font-size="19" font-weight="700" fill="var(--dim)">two</text>
+    <text x="346" y="306" font-family="system-ui" font-size="21" font-weight="900" fill="var(--glow)">three</text>
+    <g stroke="var(--glow)" stroke-width="5" fill="none" stroke-linecap="round" opacity=".95">
+      <path d="M540 82 q-48 28 -84 68"/><path d="M566 158 q-54 10 -92 34"/><path d="M528 226 q-38 -8 -70 14"/></g>
+    <g fill="var(--glow)"><circle cx="546" cy="80" r="8"/><circle cx="572" cy="156" r="7"/><circle cx="532" cy="224" r="7"/></g>
+    <text x="486" y="52" font-family="system-ui" font-size="15" font-style="italic" fill="var(--dim)">going, going&hellip;</text>
+    <g><circle cx="378" cy="236" r="17" fill="var(--mo)"/><circle cx="362" cy="231" r="5" fill="#fff"/></g>
+    <circle cx="422" cy="244" r="22" fill="var(--etta)"/>
+    <circle cx="462" cy="254" r="15" fill="var(--kip)"/>
   </svg>
-  <div class="audio-block" data-audio="p2_nar_01">But on Tuesday the kettle did not sing its song. And the stairs did not squeak. And the tap-drip was gone.</div>
-  <div class="audio-block" data-audio="p2_etta_01" data-voice="etta" data-speaker="Etta">That's three. That's three sounds. And they've all gone away.</div>
-  <div class="audio-block" data-audio="p2_nar_02">Now the hall had three doors, and they knew one and two. But the third door, the third door they'd never been through. And they stood there. And Mo put his ear to the wood.</div>
-  <div class="audio-block" data-audio="p2_mo_01" data-voice="mo" data-speaker="Mo">Listen. Somefing in there.</div>
-  <div class="audio-block" data-audio="p2_nar_03">And there was. For a sound they had heard every day of their lives, the small squeak of the stairs, came unstuck, and it dived through the crack of that door with a</div>
+  <div class="audio-block" data-audio="p2_nar_01">
+    <span class="ln">But on Tuesday the kettle did not sing its song.</span>
+    <span class="ln">And the stairs did not squeak. And the tap-drip was gone.</span>
+  </div>
+  <div class="audio-block" data-audio="p2_etta_01" data-voice="etta" data-speaker="Etta">
+    <span class="ln">That's three. That's three sounds. And they've all gone away.</span>
+  </div>
+  <div class="audio-block" data-audio="p2_nar_02">
+    <span class="ln">Now the hall had three doors, and they knew one and two.</span>
+    <span class="ln">But the third door, the third door they'd never been through.</span>
+    <span class="ln">And they stood there. And Mo put his ear to the wood.</span>
+  </div>
+  <div class="audio-block" data-audio="p2_mo_01" data-voice="mo" data-speaker="Mo">
+    <span class="ln">Listen.</span>
+    <span class="ln">Somefing in there.</span>
+  </div>
+  <div class="audio-block" data-audio="p2_nar_03">
+    <span class="ln">And there was.</span>
+    <span class="ln stanza-gap">For a sound they had heard every day of their lives,</span>
+    <span class="ln">the small squeak of the stairs, came unstuck, and it dived</span>
+    <span class="ln">through the crack of that door with a</span>
+  </div>
   <div class="sfx-block" data-audio="p2_sfx_shloop" data-sfx="shloop"><span class="ring"></span><span>shloop</span></div>
-  <div class="audio-block" data-audio="p2_nar_04">and was gone. And the stairs were as silent as snow, from then on.</div>
+  <div class="audio-block" data-audio="p2_nar_04">
+    <span class="ln">and was gone. And the stairs were as silent as snow, from then on.</span>
+  </div>
 </div>
 
 <!-- ══════════ SPREAD 3 ══════════ -->
-<div class="page" data-page="3">
-  <svg class="art" viewBox="0 0 540 340" role="img" aria-label="An enormous room of shelves filled with labelled jars, taller than a church">
-    <g stroke="var(--shelf)" stroke-width="7">
-      <line x1="20" y1="60" x2="520" y2="60"/><line x1="20" y1="132" x2="520" y2="132"/>
-      <line x1="20" y1="204" x2="520" y2="204"/><line x1="20" y1="276" x2="520" y2="276"/>
-    </g>
+<div class="page" data-page="3" style="--tint:#d8d2ee">
+  <svg class="art" viewBox="0 0 600 380" role="img" aria-label="An enormous room of shelves stacked with labelled jars, with a huge gentle creature emerging among them">
+    <g stroke="var(--shelf)" stroke-width="8" stroke-linecap="round">
+      <line x1="18" y1="64" x2="582" y2="64"/><line x1="18" y1="146" x2="582" y2="146"/>
+      <line x1="18" y1="228" x2="582" y2="228"/><line x1="18" y1="310" x2="582" y2="310"/></g>
     <g id="jars"></g>
-    <!-- the Hushabaloo emerging from the shelves -->
-    <g opacity=".95">
-      <ellipse cx="410" cy="250" rx="86" ry="66" fill="var(--hush)"/>
-      <circle cx="382" cy="232" r="13" fill="var(--paper)"/><circle cx="386" cy="234" r="6" fill="var(--ink)"/>
-      <circle cx="432" cy="232" r="13" fill="var(--paper)"/><circle cx="436" cy="234" r="6" fill="var(--ink)"/>
-      <path d="M388 274 q22 14 44 0" stroke="var(--paper)" stroke-width="4" fill="none" stroke-linecap="round" opacity=".8"/>
-    </g>
-    <!-- the three, tiny -->
-    <g><circle cx="72" cy="308" r="15" fill="var(--etta)"/><circle cx="102" cy="316" r="10" fill="var(--kip)"/><circle cx="128" cy="316" r="10" fill="var(--mo)"/></g>
+    <g>
+      <ellipse cx="450" cy="278" rx="98" ry="76" fill="var(--hush)"/>
+      <circle cx="418" cy="256" r="16" fill="#fffaf0"/><circle cx="423" cy="259" r="7" fill="var(--ink)"/>
+      <circle cx="476" cy="256" r="16" fill="#fffaf0"/><circle cx="481" cy="259" r="7" fill="var(--ink)"/>
+      <path d="M424 306 q26 16 52 0" stroke="#fffaf0" stroke-width="5" fill="none" stroke-linecap="round" opacity=".85"/>
+      <path d="M370 250 q-14 -22 4 -34 M530 250 q14 -22 -4 -34" stroke="var(--hush)" stroke-width="9" fill="none" stroke-linecap="round"/></g>
+    <g><circle cx="66" cy="344" r="19" fill="var(--etta)"/><circle cx="104" cy="352" r="13" fill="var(--kip)"/><circle cx="136" cy="352" r="13" fill="var(--mo)"/></g>
+    <text x="40" y="378" font-family="system-ui" font-size="14" font-style="italic" fill="var(--dim)">(very small indeed)</text>
   </svg>
-  <div class="audio-block" data-audio="p3_nar_01">So they opened the door, and the door made no sound, and they stepped through the door, and they looked all around. And behind the third door on the left of the hall was a room that was not in the house. Not at all.</div>
-  <div class="audio-block" data-audio="p3_nar_02">It was tall as a church and as wide as a town, and it went up so far that no ceiling came down. And on every last shelf, in a row, in a row, were the jars. And each jar had a label. And so</div>
-  <div class="audio-block" data-audio="p3_etta_01" data-voice="etta" data-speaker="Etta">That one's RAIN. That one's DOG. That one's stairs-when-you-creep. That one's somebody snoring. That's somebody's sheep!</div>
-  <div class="audio-block" data-audio="p3_nar_03">Then a shelf became shoulders. A jar became eye. And the thing they'd been sure was a wall said</div>
-  <div class="audio-block" data-audio="p3_hush_01" data-voice="hushabaloo" data-speaker="The Hushabaloo">Oh. Hello. Oh my.</div>
+  <div class="audio-block" data-audio="p3_nar_01">
+    <span class="ln">So they opened the door, and the door made no sound,</span>
+    <span class="ln">and they stepped through the door, and they looked all around.</span>
+    <span class="ln">And behind the third door on the left of the hall</span>
+    <span class="ln">was a room that was not in the house. Not at all.</span>
+  </div>
+  <div class="audio-block" data-audio="p3_nar_02">
+    <span class="ln">It was tall as a church and as wide as a town,</span>
+    <span class="ln">and it went up so far that no ceiling came down.</span>
+    <span class="ln">And on every last shelf, in a row, in a row,</span>
+    <span class="ln">were the jars. And each jar had a label. And so</span>
+  </div>
+  <div class="audio-block" data-audio="p3_etta_01" data-voice="etta" data-speaker="Etta">
+    <span class="ln">That one's RAIN. That one's DOG. That one's stairs-when-you-creep.</span>
+    <span class="ln">That one's somebody snoring. That's somebody's sheep!</span>
+  </div>
+  <div class="audio-block" data-audio="p3_nar_03">
+    <span class="ln">Then a shelf became shoulders. A jar became eye.</span>
+    <span class="ln">And the thing they'd been sure was a wall said</span>
+  </div>
+  <div class="audio-block" data-audio="p3_hush_01" data-voice="hushabaloo" data-speaker="The Hushabaloo">
+    <span class="ln">Oh. Hello. Oh my.</span>
+  </div>
 </div>
 
 <!-- ══════════ SPREAD 4 ══════════ -->
-<div class="page" data-page="4">
-  <svg class="art" viewBox="0 0 540 300" role="img" aria-label="The Hushabaloo reaching out a long sleeve to take the click from the door">
-    <ellipse cx="150" cy="170" rx="104" ry="86" fill="var(--hush)"/>
-    <circle cx="116" cy="146" r="15" fill="var(--paper)"/><circle cx="121" cy="149" r="7" fill="var(--ink)"/>
-    <circle cx="176" cy="146" r="15" fill="var(--paper)"/><circle cx="181" cy="149" r="7" fill="var(--ink)"/>
-    <path d="M124 200 q26 16 52 0" stroke="var(--paper)" stroke-width="4" fill="none" stroke-linecap="round" opacity=".8"/>
-    <path d="M250 168 q100 -16 176 24" stroke="var(--hush)" stroke-width="26" fill="none" stroke-linecap="round"/>
-    <rect x="424" y="112" width="76" height="150" rx="4" fill="var(--shelf)"/>
-    <circle cx="436" cy="192" r="7" fill="var(--dim)"/>
-    <g fill="var(--glow)"><circle cx="410" cy="176" r="9"/><circle cx="368" cy="164" r="6" opacity=".7"/><circle cx="332" cy="158" r="4" opacity=".45"/></g>
-    <text x="298" y="128" font-family="system-ui" font-size="15" fill="var(--dim)" font-style="italic">the click</text>
-    <g><circle cx="70" cy="268" r="14" fill="var(--etta)"/><circle cx="100" cy="274" r="10" fill="var(--kip)"/><circle cx="126" cy="274" r="10" fill="var(--mo)"/></g>
+<div class="page" data-page="4" style="--tint:#cdc3e8">
+  <svg class="art" viewBox="0 0 600 320" role="img" aria-label="The Hushabaloo reaching a very long sleeve across the room to lift the click out of the door">
+    <ellipse cx="146" cy="180" rx="112" ry="94" fill="var(--hush)"/>
+    <circle cx="110" cy="154" r="17" fill="#fffaf0"/><circle cx="115" cy="157" r="8" fill="var(--ink)"/>
+    <circle cx="176" cy="154" r="17" fill="#fffaf0"/><circle cx="181" cy="157" r="8" fill="var(--ink)"/>
+    <path d="M118 214 q28 18 56 0" stroke="#fffaf0" stroke-width="5" fill="none" stroke-linecap="round" opacity=".85"/>
+    <path d="M256 178 q112 -20 196 26" stroke="var(--hush)" stroke-width="30" fill="none" stroke-linecap="round"/>
+    <rect x="452" y="118" width="86" height="166" rx="5" fill="var(--shelf)"/>
+    <circle cx="466" cy="206" r="8" fill="var(--dim)"/>
+    <g fill="var(--glow)"><circle cx="438" cy="188" r="11"/><circle cx="392" cy="174" r="7" opacity=".7"/><circle cx="352" cy="166" r="5" opacity=".45"/></g>
+    <text x="316" y="132" font-family="system-ui" font-size="17" font-style="italic" fill="var(--dim)">the click</text>
+    <g><circle cx="60" cy="288" r="16" fill="var(--etta)"/><circle cx="94" cy="294" r="11" fill="var(--kip)"/><circle cx="122" cy="294" r="11" fill="var(--mo)"/></g>
   </svg>
-  <div class="audio-block" data-audio="p4_hush_01" data-voice="hushabaloo" data-speaker="The Hushabaloo">I am only the keeper. I keep them. That's all. Every sound ever let loose in somebody's hall, every squeak, every drip, every creak, every knock, I have kept them all safe. Every one. Every clock.</div>
-  <div class="audio-block" data-audio="p4_nar_01">And he reached out a hand that was mostly a sleeve, and he took Kip's small laugh. And he did not ask leave.</div>
+  <div class="audio-block" data-audio="p4_hush_01" data-voice="hushabaloo" data-speaker="The Hushabaloo">
+    <span class="ln">I am only the keeper. I keep them. That's all.</span>
+    <span class="ln">Every sound ever let loose in somebody's hall,</span>
+    <span class="ln">every squeak, every drip, every creak, every knock,</span>
+    <span class="ln">I have kept them all safe. Every one. Every clock.</span>
+  </div>
+  <div class="audio-block" data-audio="p4_nar_01">
+    <span class="ln">And he reached out a hand that was mostly a sleeve,</span>
+    <span class="ln">and he took Kip's small laugh. And he did not ask leave.</span>
+  </div>
   <div class="sfx-block" data-audio="p4_sfx_shloop_1" data-sfx="shloop"><span class="ring"></span><span>shloop</span></div>
-  <div class="audio-block" data-audio="p4_nar_02">And he took Mo's low hum.</div>
+  <div class="audio-block" data-audio="p4_nar_02"><span class="ln">And he took Mo's low hum.</span></div>
   <div class="sfx-block" data-audio="p4_sfx_shloop_2" data-sfx="shloop"><span class="ring"></span><span>shloop</span></div>
-  <div class="audio-block" data-audio="p4_nar_03">And then, gentle and quick, he took Etta's own word, in the middle. Like this.</div>
+  <div class="audio-block" data-audio="p4_nar_03">
+    <span class="ln">And then, gentle and quick, he took Etta's own word,</span>
+    <span class="ln">in the middle. Like this.</span>
+  </div>
   <div class="sfx-block" data-audio="p4_sfx_shloop_3" data-sfx="shloop"><span class="ring"></span><span>shloop</span></div>
-  <div class="audio-block" data-audio="p4_nar_04">And behind them, so soft that not one of them heard, he reached out once again. And he took, from the door, the small click that it made.</div>
+  <div class="audio-block" data-audio="p4_nar_04">
+    <span class="ln">And behind them, so soft that not one of them heard,</span>
+    <span class="ln">he reached out once again. And he took, from the door,</span>
+    <span class="ln">the small click that it made.</span>
+  </div>
   <div class="sfx-block" data-audio="p4_sfx_shloop_4" data-sfx="shloop_soft"><span class="ring"></span><span>shloop</span></div>
-  <div class="audio-block" data-audio="p4_nar_05">And the door was no more. For a door with no click isn't really a door. It's a wall. It's a wall. It's a wall. Nothing more.</div>
+  <div class="audio-block" data-audio="p4_nar_05">
+    <span class="ln">And the door was no more.</span>
+    <span class="ln stanza-gap">For a door with no click isn't really a door.</span>
+    <span class="ln">It's a wall. It's a wall. It's a wall. Nothing more.</span>
+  </div>
 </div>
 
 <!-- ══════════ SPREAD 5 ══════════ -->
-<div class="page" data-page="5">
-  <svg class="art" viewBox="0 0 540 260" role="img" aria-label="Etta facing the Hushabaloo, her word being lifted out of the air mid-sentence">
-    <ellipse cx="400" cy="150" rx="98" ry="80" fill="var(--hush)" opacity=".95"/>
-    <circle cx="368" cy="128" r="14" fill="var(--paper)"/><circle cx="372" cy="131" r="6" fill="var(--ink)"/>
-    <circle cx="426" cy="128" r="14" fill="var(--paper)"/><circle cx="430" cy="131" r="6" fill="var(--ink)"/>
-    <path d="M372 182 q28 10 56 0" stroke="var(--paper)" stroke-width="4" fill="none" stroke-linecap="round" opacity=".6"/>
-    <circle cx="110" cy="164" r="34" fill="var(--etta)"/>
-    <rect x="92" y="198" width="36" height="48" rx="10" fill="var(--etta)"/>
-    <g><rect x="158" y="106" width="112" height="42" rx="12" fill="none" stroke="var(--ink)" stroke-width="3"/>
-       <path d="M176 148 l-8 18 l22 -18" fill="none" stroke="var(--ink)" stroke-width="3"/>
-       <text x="176" y="134" font-family="system-ui" font-size="18" fill="var(--ink)">safe...</text></g>
-    <g fill="var(--glow)"><circle cx="296" cy="98" r="8"/><circle cx="322" cy="84" r="5" opacity=".6"/></g>
-    <text x="286" y="70" font-family="system-ui" font-size="14" fill="var(--dim)" font-style="italic">(the word she needed)</text>
+<div class="page" data-page="5" style="--tint:#e0d6e6">
+  <svg class="art" viewBox="0 0 600 300" role="img" aria-label="Etta standing up to the Hushabaloo while the word she needs is lifted out of her speech bubble">
+    <ellipse cx="446" cy="168" rx="108" ry="90" fill="var(--hush)" opacity=".96"/>
+    <circle cx="412" cy="144" r="16" fill="#fffaf0"/><circle cx="416" cy="147" r="7" fill="var(--ink)"/>
+    <circle cx="476" cy="144" r="16" fill="#fffaf0"/><circle cx="480" cy="147" r="7" fill="var(--ink)"/>
+    <path d="M416 204 q30 12 60 0" stroke="#fffaf0" stroke-width="5" fill="none" stroke-linecap="round" opacity=".6"/>
+    <circle cx="112" cy="176" r="38" fill="var(--etta)"/>
+    <rect x="92" y="214" width="40" height="56" rx="12" fill="var(--etta)"/>
+    <g><rect x="172" y="112" width="140" height="52" rx="15" fill="#fffaf0" stroke="var(--ink)" stroke-width="4"/>
+      <path d="M192 164 l-10 22 l26 -22" fill="#fffaf0" stroke="var(--ink)" stroke-width="4"/>
+      <text x="192" y="146" font-family="system-ui" font-size="22" font-weight="700" fill="var(--ink)">safe&hellip;</text></g>
+    <g fill="var(--glow)"><circle cx="336" cy="102" r="10"/><circle cx="366" cy="84" r="6" opacity=".6"/><circle cx="390" cy="72" r="4" opacity=".4"/></g>
+    <text x="316" y="60" font-family="system-ui" font-size="16" font-style="italic" fill="var(--dim)">(the word she needed)</text>
   </svg>
-  <div class="audio-block" data-audio="p5_nar_01">Now Etta was five, which is old. And she knew that when somebody's taken a thing that's not theirs, you say give it back, please. So she said it. She did.</div>
-  <div class="audio-block" data-audio="p5_etta_01" data-voice="etta" data-speaker="Etta">Give them back. Give them back, please. They're ours.</div>
-  <div class="audio-block" data-audio="p5_hush_01" data-voice="hushabaloo" data-speaker="The Hushabaloo">But they're safe. Don't you see? They are safe here with me. Nothing's lost. Nothing ever is lost here. Not one. I have rain from a Tuesday two hundred years gone. It's still raining. In there. It has never been done.</div>
-  <div class="audio-block" data-audio="p5_etta_02" data-voice="etta" data-speaker="Etta">But a sound isn't safe when it's kept in a</div>
+  <div class="audio-block" data-audio="p5_nar_01">
+    <span class="ln">Now Etta was five, which is old. And she knew</span>
+    <span class="ln">that when somebody's taken a thing that's not theirs,</span>
+    <span class="ln">you say give it back, please. So she said it. She did.</span>
+  </div>
+  <div class="audio-block" data-audio="p5_etta_01" data-voice="etta" data-speaker="Etta">
+    <span class="ln">Give them back. Give them back, please. They're ours.</span>
+  </div>
+  <div class="audio-block" data-audio="p5_hush_01" data-voice="hushabaloo" data-speaker="The Hushabaloo">
+    <span class="ln">But they're safe. Don't you see? They are safe here with me.</span>
+    <span class="ln">Nothing's lost. Nothing ever is lost here. Not one.</span>
+    <span class="ln">I have rain from a Tuesday two hundred years gone.</span>
+    <span class="ln">It's still raining. In there. It has never been done.</span>
+  </div>
+  <div class="audio-block" data-audio="p5_etta_02" data-voice="etta" data-speaker="Etta">
+    <span class="ln">But a sound isn't safe when it's kept in a</span>
+  </div>
   <div class="sfx-block" data-audio="p5_sfx_shloop" data-sfx="shloop"><span class="ring"></span><span>shloop</span></div>
-  <div class="audio-block" data-audio="p5_nar_02">And the word that she needed went off in a jar. And she opened her mouth. And there wasn't a sound.</div>
+  <div class="audio-block" data-audio="p5_nar_02">
+    <span class="ln">And the word that she needed went off in a jar.</span>
+    <span class="ln">And she opened her mouth.</span>
+    <span class="ln stanza-gap">And there wasn't a sound.</span>
+  </div>
 </div>
 
 <!-- ══════════ SPREAD 6 ══════════ -->
-<div class="page" data-page="6">
-  <svg class="art" viewBox="0 0 540 320" role="img" aria-label="Kip climbing the shelves as a jar pops open and rain rushes out toward a window">
-    <g stroke="var(--shelf)" stroke-width="7">
-      <line x1="20" y1="70" x2="360" y2="70"/><line x1="20" y1="146" x2="360" y2="146"/><line x1="20" y1="222" x2="360" y2="222"/>
-    </g>
-    <g fill="none" stroke="var(--ink)" stroke-width="3" opacity=".55">
-      <rect x="44" y="34" width="34" height="34" rx="5"/><rect x="96" y="34" width="34" height="34" rx="5"/>
-      <rect x="44" y="110" width="34" height="34" rx="5"/><rect x="200" y="110" width="34" height="34" rx="5"/>
-      <rect x="44" y="186" width="34" height="34" rx="5"/><rect x="252" y="186" width="34" height="34" rx="5"/>
-    </g>
-    <!-- Kip mid-climb -->
-    <circle cx="176" cy="128" r="15" fill="var(--kip)"/>
-    <rect x="166" y="144" width="20" height="30" rx="8" fill="var(--kip)"/>
-    <path d="M164 146 q-18 -14 -22 -34 M188 146 q18 -10 30 -26" stroke="var(--kip)" stroke-width="7" fill="none" stroke-linecap="round"/>
-    <!-- the popped jar + rain going home -->
-    <g><path d="M290 96 l14 -20 l16 18" fill="none" stroke="var(--ink)" stroke-width="3"/>
-       <rect x="286" y="96" width="40" height="34" rx="5" fill="none" stroke="var(--ink)" stroke-width="3"/></g>
-    <g stroke="var(--mo)" stroke-width="5" stroke-linecap="round">
-      <path d="M336 92 q60 -22 118 -6"/><path d="M340 112 q64 -12 116 12"/><path d="M334 132 q56 4 110 30"/>
-    </g>
-    <rect x="452" y="52" width="72" height="94" rx="4" fill="none" stroke="var(--ink)" stroke-width="4"/>
-    <line x1="488" y1="52" x2="488" y2="146" stroke="var(--ink)" stroke-width="3"/>
-    <text x="446" y="176" font-family="system-ui" font-size="14" fill="var(--dim)">home</text>
-    <g><circle cx="76" cy="284" r="17" fill="var(--etta)"/><circle cx="112" cy="292" r="12" fill="var(--mo)"/></g>
-    <text x="150" y="296" font-family="system-ui" font-size="16" fill="var(--glow)" font-weight="700">pop!</text>
+<div class="page" data-page="6" style="--tint:#c9e8dd">
+  <svg class="art" viewBox="0 0 600 340" role="img" aria-label="Kip climbing high up the shelves as a jar bursts open and all the rain rushes out through a window">
+    <g stroke="var(--shelf)" stroke-width="8" stroke-linecap="round">
+      <line x1="20" y1="74" x2="392" y2="74"/><line x1="20" y1="156" x2="392" y2="156"/><line x1="20" y1="238" x2="392" y2="238"/></g>
+    <g fill="none" stroke="var(--ink)" stroke-width="3.5" opacity=".6">
+      <rect x="44" y="34" width="38" height="38" rx="6"/><rect x="102" y="34" width="38" height="38" rx="6"/>
+      <rect x="44" y="116" width="38" height="38" rx="6"/><rect x="214" y="116" width="38" height="38" rx="6"/>
+      <rect x="44" y="198" width="38" height="38" rx="6"/><rect x="272" y="198" width="38" height="38" rx="6"/></g>
+    <circle cx="190" cy="138" r="17" fill="var(--kip)"/>
+    <rect x="178" y="156" width="24" height="34" rx="9" fill="var(--kip)"/>
+    <path d="M176 158 q-20 -16 -24 -38 M204 158 q20 -12 34 -30" stroke="var(--kip)" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <text x="150" y="112" font-family="system-ui" font-size="16" font-weight="800" fill="var(--kip)">watch me!</text>
+    <g><path d="M312 102 l16 -24 l18 22" fill="none" stroke="var(--ink)" stroke-width="3.5"/>
+      <rect x="308" y="102" width="46" height="38" rx="6" fill="none" stroke="var(--ink)" stroke-width="3.5"/></g>
+    <text x="296" y="168" font-family="system-ui" font-size="20" font-weight="900" fill="var(--glow)">pop!</text>
+    <g stroke="var(--mo)" stroke-width="6" stroke-linecap="round" fill="none">
+      <path d="M366 98 q66 -24 130 -6"/><path d="M370 120 q70 -14 128 14"/><path d="M362 142 q62 4 122 32"/></g>
+    <rect x="496" y="54" width="80" height="104" rx="5" fill="none" stroke="var(--ink)" stroke-width="5"/>
+    <line x1="536" y1="54" x2="536" y2="158" stroke="var(--ink)" stroke-width="4"/>
+    <text x="490" y="188" font-family="system-ui" font-size="17" font-weight="800" fill="var(--mo)">home</text>
+    <g><circle cx="80" cy="300" r="20" fill="var(--etta)"/><circle cx="122" cy="308" r="14" fill="var(--mo)"/></g>
   </svg>
-  <div class="audio-block" data-audio="p6_nar_01">Then Kip sized the shelf up. Now, Kip is quite small. But of all of the things about Kip, above all</div>
-  <div class="audio-block" data-audio="p6_kip_01" data-voice="kip" data-speaker="Kip">I can get it.</div>
-  <div class="audio-block" data-audio="p6_nar_02">Kip climbs. And Kip climbed. And Kip went up a shelf, and another, and up, and he leant</div>
-  <div class="audio-block" data-audio="p6_kip_02" data-voice="kip" data-speaker="Kip">Watch me! Watch me!</div>
-  <div class="audio-block" data-audio="p6_nar_03">and he reached for a jar, and he stretched, and he wobbled, and grabbed, and</div>
-  <div class="audio-block" data-audio="p6_kip_03" data-voice="kip" data-speaker="Kip">Uh oh.</div>
+  <div class="audio-block" data-audio="p6_nar_01">
+    <span class="ln">Then Kip sized the shelf up. Now, Kip is quite small.</span>
+    <span class="ln">But of all of the things about Kip, above all</span>
+  </div>
+  <div class="audio-block" data-audio="p6_kip_01" data-voice="kip" data-speaker="Kip"><span class="ln">I can get it.</span></div>
+  <div class="audio-block" data-audio="p6_nar_02">
+    <span class="ln">Kip climbs. And Kip climbed. And Kip went</span>
+    <span class="ln">up a shelf, and another, and up, and he leant</span>
+  </div>
+  <div class="audio-block" data-audio="p6_kip_02" data-voice="kip" data-speaker="Kip"><span class="ln">Watch me! Watch me!</span></div>
+  <div class="audio-block" data-audio="p6_nar_03">
+    <span class="ln">and he reached for a jar, and he stretched, and he wobbled, and grabbed, and</span>
+  </div>
+  <div class="audio-block" data-audio="p6_kip_03" data-voice="kip" data-speaker="Kip"><span class="ln">Uh oh.</span></div>
   <div class="sfx-block" data-audio="p6_sfx_pop" data-sfx="pop"><span class="ring"></span><span>pop</span></div>
-  <div class="audio-block" data-audio="p6_nar_04">And the jar came down hard, and the jar came apart, and out came the rain! All the rain! From the start! And it went up, and out, and it went through the wall, to the window it came from, right down the long hall.</div>
-  <div class="audio-block" data-audio="p6_etta_01" data-voice="etta" data-speaker="Etta">It went HOME. Did you see it? It broke and went home!</div>
+  <div class="sfx-block" data-audio="p6_sfx_rain" data-sfx="rain"><span class="ring"></span><span>rain, going home</span></div>
+  <div class="audio-block" data-audio="p6_nar_04">
+    <span class="ln">And the jar came down hard, and the jar came apart,</span>
+    <span class="ln">and out came the rain! All the rain! From the start!</span>
+    <span class="ln">And it went up, and out, and it went through the wall,</span>
+    <span class="ln">to the window it came from, right down the long hall.</span>
+  </div>
+  <div class="audio-block" data-audio="p6_etta_01" data-voice="etta" data-speaker="Etta">
+    <span class="ln">It went HOME. Did you see it? It broke and went home!</span>
+  </div>
 </div>
 
 <!-- ══════════ SPREAD 7 ══════════ -->
-<div class="page" data-page="7">
-  <svg class="art" viewBox="0 0 540 280" role="img" aria-label="Darkness, three small children sitting close together, and one empty jar glowing above them">
-    <rect width="540" height="280" fill="var(--ink)" opacity=".9" rx="10"/>
-    <g opacity=".16" stroke="var(--paper)" stroke-width="4"><line x1="30" y1="70" x2="510" y2="70"/><line x1="30" y1="130" x2="510" y2="130"/></g>
-    <g fill="none" stroke="var(--paper)" stroke-width="2" opacity=".2">
-      <rect x="60" y="36" width="26" height="30" rx="4"/><rect x="120" y="36" width="26" height="30" rx="4"/>
-      <rect x="180" y="36" width="26" height="30" rx="4"/><rect x="380" y="96" width="26" height="30" rx="4"/>
-    </g>
-    <!-- the one empty jar -->
-    <g><rect x="256" y="90" width="42" height="46" rx="6" fill="none" stroke="var(--glow)" stroke-width="4"/>
-       <rect x="262" y="80" width="30" height="10" rx="3" fill="var(--glow)"/>
-       <circle cx="277" cy="113" r="24" fill="var(--glow)" opacity=".13"/></g>
-    <text x="316" y="118" font-family="system-ui" font-size="15" fill="var(--glow)" font-style="italic">empty</text>
-    <!-- three, close together -->
-    <g><circle cx="248" cy="222" r="21" fill="var(--etta)" opacity=".92"/>
-       <circle cx="288" cy="232" r="15" fill="var(--kip)" opacity=".92"/>
-       <circle cx="318" cy="232" r="15" fill="var(--mo)" opacity=".92"/></g>
-    <text x="150" y="264" font-family="system-ui" font-size="14" fill="var(--paper)" opacity=".4">and there wasn't a sound in the world</text>
+<div class="page" data-page="7" style="--tint:#b9bdd4">
+  <svg class="art" viewBox="0 0 600 300" role="img" aria-label="Darkness. Three small children sitting close together beneath one glowing empty jar">
+    <rect width="600" height="300" rx="14" fill="#231d2e"/>
+    <g opacity=".16" stroke="#fffaf0" stroke-width="5"><line x1="30" y1="72" x2="570" y2="72"/><line x1="30" y1="140" x2="570" y2="140"/></g>
+    <g fill="none" stroke="#fffaf0" stroke-width="2.5" opacity=".22">
+      <rect x="60" y="36" width="30" height="34" rx="5"/><rect x="126" y="36" width="30" height="34" rx="5"/>
+      <rect x="192" y="36" width="30" height="34" rx="5"/><rect x="430" y="104" width="30" height="34" rx="5"/>
+      <rect x="496" y="104" width="30" height="34" rx="5"/></g>
+    <g><circle cx="300" cy="122" r="42" fill="var(--glow)" opacity=".13"/>
+      <rect x="276" y="96" width="48" height="52" rx="7" fill="none" stroke="var(--glow)" stroke-width="5"/>
+      <rect x="283" y="85" width="34" height="12" rx="4" fill="var(--glow)"/></g>
+    <text x="346" y="128" font-family="system-ui" font-size="18" font-style="italic" fill="var(--glow)">empty</text>
+    <g><circle cx="268" cy="238" r="24" fill="var(--etta)" opacity=".95"/>
+      <circle cx="312" cy="250" r="17" fill="var(--kip)" opacity=".95"/>
+      <circle cx="346" cy="250" r="17" fill="var(--mo)" opacity=".95"/></g>
+    <text x="46" y="212" font-family="system-ui" font-size="15" font-style="italic" fill="#fffaf0" opacity=".45">and there wasn't a sound</text>
+    <text x="46" y="234" font-family="system-ui" font-size="15" font-style="italic" fill="#fffaf0" opacity=".45">in the world</text>
   </svg>
-  <div class="audio-block" data-audio="p7_nar_01">But the Hushabaloo sighed. And he lifted the shelf. And he put it up high, where a person can't climb. And he said it so softly, and mostly himself</div>
-  <div class="audio-block" data-audio="p7_hush_01" data-voice="hushabaloo" data-speaker="The Hushabaloo">Please don't break them. Please don't. I have had them a very long time.</div>
-  <div class="audio-block" data-audio="p7_nar_02">And it got very dark. And it got very still. And the three of them sat. And they sat. And they sat. And there wasn't a squeak. And there wasn't a drip. And there wasn't a sound in the world. Just like that.</div>
-  <div class="audio-block" data-audio="p7_kip_01" data-voice="kip" data-speaker="Kip">I want home.</div>
-  <div class="audio-block" data-audio="p7_mo_01" data-voice="mo" data-speaker="Mo">Me too.</div>
-  <div class="audio-block" data-audio="p7_nar_03">And Etta, who's five, and who plans, and who's brave, had no plan. And she said it out loud, very small</div>
-  <div class="audio-block" data-audio="p7_etta_01" data-voice="etta" data-speaker="Etta">I'm scared too.</div>
-  <div class="audio-block" data-audio="p7_nar_04">But then Mo, who hears things that the rest of us miss, put his hand on a jar. And he listened. Like this.</div>
-  <div class="audio-block" data-audio="p7_mo_02" data-voice="mo" data-speaker="Mo">Etta. This one empty.</div>
-  <div class="audio-block" data-audio="p7_etta_02" data-voice="etta" data-speaker="Etta">Empty? But he's got a jar for everything.</div>
-  <div class="audio-block" data-audio="p7_nar_05">And Etta's eyes went round and wide.</div>
-  <div class="audio-block" data-audio="p7_etta_03" data-voice="etta" data-speaker="Etta">He's got jars for the rain and the drip and the door, for the sounds that things MAKE. But he hasn't got more! He's got nothing at all for a sound that's not FOR anything! Nothing! He's not heard one before! Kip. Mo. On three. Do the rudest thing you know.</div>
+  <div class="audio-block" data-audio="p7_nar_01">
+    <span class="ln">But the Hushabaloo sighed. And he lifted the shelf.</span>
+    <span class="ln">And he put it up high, where a person can't climb.</span>
+    <span class="ln">And he said it so softly, and mostly himself</span>
+  </div>
+  <div class="audio-block" data-audio="p7_hush_01" data-voice="hushabaloo" data-speaker="The Hushabaloo">
+    <span class="ln">Please don't break them. Please don't.</span>
+    <span class="ln">I have had them a very long time.</span>
+  </div>
+  <div class="audio-block" data-audio="p7_nar_02">
+    <span class="ln">And it got very dark. And it got very still.</span>
+    <span class="ln">And the three of them sat. And they sat. And they sat.</span>
+    <span class="ln">And there wasn't a squeak. And there wasn't a drip.</span>
+    <span class="ln">And there wasn't a sound in the world.</span>
+    <span class="ln stanza-gap">Just like that.</span>
+  </div>
+  <div class="sfx-block" data-audio="p7_sfx_roomtone" data-sfx="room_tone"><span class="ring"></span><span>&hellip;nothing at all&hellip;</span></div>
+  <div class="audio-block" data-audio="p7_kip_01" data-voice="kip" data-speaker="Kip"><span class="ln">I want home.</span></div>
+  <div class="audio-block" data-audio="p7_mo_01" data-voice="mo" data-speaker="Mo"><span class="ln">Me too.</span></div>
+  <div class="audio-block" data-audio="p7_nar_03">
+    <span class="ln">And Etta, who's five, and who plans, and who's brave,</span>
+    <span class="ln">had no plan. And she said it out loud, very small</span>
+  </div>
+  <div class="audio-block" data-audio="p7_etta_01" data-voice="etta" data-speaker="Etta"><span class="ln">I'm scared too.</span></div>
+  <div class="audio-block" data-audio="p7_nar_04">
+    <span class="ln">But then Mo, who hears things that the rest of us miss,</span>
+    <span class="ln">put his hand on a jar. And he listened. Like this.</span>
+  </div>
+  <div class="audio-block" data-audio="p7_mo_02" data-voice="mo" data-speaker="Mo">
+    <span class="ln">Etta.</span>
+    <span class="ln">This one empty.</span>
+  </div>
+  <div class="audio-block" data-audio="p7_etta_02" data-voice="etta" data-speaker="Etta">
+    <span class="ln">Empty? But he's got a jar for everything.</span>
+  </div>
+  <div class="audio-block" data-audio="p7_nar_05"><span class="ln">And Etta's eyes went round and wide.</span></div>
+  <div class="audio-block" data-audio="p7_etta_03" data-voice="etta" data-speaker="Etta">
+    <span class="ln">He's got jars for the rain and the drip and the door,</span>
+    <span class="ln">for the sounds that things MAKE. But he hasn't got more!</span>
+    <span class="ln">He's got nothing at all for a sound that's not FOR</span>
+    <span class="ln">anything! Nothing! He's not heard one before!</span>
+    <span class="ln stanza-gap">Kip. Mo. On three.</span>
+    <span class="ln">Do the rudest thing you know.</span>
+  </div>
 </div>
 
 <!-- ══════════ SPREAD 8 ══════════ -->
-<div class="page" data-page="8">
-  <svg class="art" viewBox="0 0 540 320" role="img" aria-label="Every jar bursting open at once as sounds fly home in all directions">
+<div class="page" data-page="8" style="--tint:#ffd766">
+  <svg class="art" viewBox="0 0 600 340" role="img" aria-label="Every jar bursting open at once as all the sounds fly outward in every direction">
     <g id="burst"></g>
-    <g><circle cx="150" cy="212" r="24" fill="var(--etta)"/>
-       <circle cx="216" cy="226" r="19" fill="var(--kip)"/><circle cx="262" cy="226" r="19" fill="var(--mo)"/>
-       <path d="M232 244 q4 12 14 4 M278 244 q4 12 14 4" stroke="var(--paper)" stroke-width="4" fill="none" stroke-linecap="round"/></g>
-    <g stroke="var(--kip)" stroke-width="6" fill="none" stroke-linecap="round" opacity=".9">
-      <path d="M236 250 q30 22 66 18"/><path d="M282 250 q34 26 74 22"/>
-    </g>
-    <text x="316" y="284" font-family="system-ui" font-size="26" font-weight="800" fill="var(--glow)">PBBBBT!</text>
+    <g><circle cx="176" cy="224" r="28" fill="var(--etta)"/>
+      <circle cx="248" cy="240" r="22" fill="var(--kip)"/><circle cx="300" cy="240" r="22" fill="var(--mo)"/>
+      <path d="M266 262 q5 14 17 5 M318 262 q5 14 17 5" stroke="#fffaf0" stroke-width="5" fill="none" stroke-linecap="round"/></g>
+    <g stroke="var(--kip)" stroke-width="7" fill="none" stroke-linecap="round" opacity=".92">
+      <path d="M270 268 q34 26 74 20"/><path d="M322 268 q38 30 82 24"/></g>
+    <text x="352" y="306" font-family="system-ui" font-size="34" font-weight="900" fill="var(--etta)">PBBBBT!</text>
   </svg>
-  <div class="audio-block" data-audio="p8_nar_01">So Kip climbed. Because Kip climbs. And Mo found the jar, because Mo always finds them. That's just what Mo does. And Etta said</div>
-  <div class="audio-block" data-audio="p8_etta_01" data-voice="etta" data-speaker="Etta">THREE. TWO. ONE</div>
-  <div class="audio-block" data-audio="p8_nar_02">and the twins, who were two, did the one thing that two-year-old people do best.</div>
+  <div class="audio-block" data-audio="p8_nar_01">
+    <span class="ln">So Kip climbed. Because Kip climbs. And Mo found the jar,</span>
+    <span class="ln">because Mo always finds them. That's just what Mo does.</span>
+    <span class="ln">And Etta said</span>
+  </div>
+  <div class="audio-block" data-audio="p8_etta_01" data-voice="etta" data-speaker="Etta"><span class="ln">THREE. TWO. ONE</span></div>
+  <div class="audio-block" data-audio="p8_nar_02">
+    <span class="ln">and the twins, who were two,</span>
+    <span class="ln">did the one thing that two-year-old people do best.</span>
+  </div>
   <div class="wait-block" data-audio="p8_wait_01" data-wait="3.0">Your turn! Blow a raspberry!</div>
-  <div class="audio-block" data-audio="p8_kipmo_01" data-voice="kip" data-speaker="Kip &amp; Mo">PBBBBBBBBT!</div>
+  <div class="audio-block" data-audio="p8_kipmo_01" data-voice="kip" data-speaker="Kip &amp; Mo"><span class="ln">PBBBBBBBBT!</span></div>
   <div class="sfx-block" data-audio="p8_sfx_raspberry" data-sfx="raspberry_big"><span class="ring"></span><span>raspberry</span></div>
-  <div class="audio-block" data-audio="p8_nar_03">And it wasn't a squeak. And it wasn't a drip. And it wasn't the rain, and it wasn't a door. It was nothing! It meant nothing! It came from a lip and it went nowhere useful, a wonderful roar of a silly, wet, pointless, ridiculous noise that had no jar at all.</div>
-  <div class="audio-block" data-audio="p8_nar_04">And he looked for a jar. And he looked. And he looked. And he looked down the hall of ten thousand jars and there wasn't one. Not one. Not a label. Not one. Not at all. Not a jar.</div>
-  <div class="audio-block" data-audio="p8_nar_05">And a thing with no jar is a thing you can't keep.</div>
+  <div class="audio-block" data-audio="p8_nar_03">
+    <span class="ln">And it wasn't a squeak. And it wasn't a drip.</span>
+    <span class="ln">And it wasn't the rain, and it wasn't a door.</span>
+    <span class="ln">It was nothing! It meant nothing! It came from a lip</span>
+    <span class="ln">and it went nowhere useful, a wonderful roar</span>
+    <span class="ln">of a silly, wet, pointless, ridiculous noise</span>
+    <span class="ln">that had no jar at all.</span>
+  </div>
+  <div class="audio-block" data-audio="p8_nar_04">
+    <span class="ln">And he looked for a jar.</span>
+    <span class="ln">And he looked. And he looked. And he looked down the hall</span>
+    <span class="ln">of ten thousand jars and there wasn't one. Not one.</span>
+    <span class="ln">Not a label. Not one. Not at all. Not a jar.</span>
+  </div>
+  <div class="audio-block" data-audio="p8_nar_05">
+    <span class="ln">And a thing with no jar is a thing you can't keep.</span>
+  </div>
   <div class="sfx-block" data-audio="p8_sfx_cascade" data-sfx="pop_cascade"><span class="ring"></span><span>pop, pop, pop&hellip;</span></div>
-  <div class="audio-block" data-audio="p8_nar_06">And the empty jar popped. And the next. And the next. And the rain and the dog and the kettle and drip and the whumpf and the hum and the squeak of the stair went UP, and went OUT, and went HOME through the air.</div>
+  <div class="audio-block" data-audio="p8_nar_06">
+    <span class="ln">And the empty jar popped. And the next. And the next.</span>
+    <span class="ln">And the rain and the dog and the kettle and drip</span>
+    <span class="ln">and the whumpf and the hum and the squeak of the stair</span>
+    <span class="ln">went UP, and went OUT, and went HOME through the air.</span>
+  </div>
 </div>
 
 <!-- ══════════ SPREAD 9 ══════════ -->
-<div class="page" data-page="9">
-  <svg class="art" viewBox="0 0 540 300" role="img" aria-label="Etta blowing a raspberry back to the Hushabaloo, and the doorway home glowing behind them">
-    <ellipse cx="150" cy="176" rx="86" ry="72" fill="var(--hush)" opacity=".92"/>
-    <circle cx="122" cy="158" r="13" fill="var(--paper)"/><circle cx="126" cy="160" r="6" fill="var(--ink)"/>
-    <circle cx="176" cy="158" r="13" fill="var(--paper)"/><circle cx="180" cy="160" r="6" fill="var(--ink)"/>
-    <path d="M124 200 q26 20 52 0" stroke="var(--paper)" stroke-width="5" fill="none" stroke-linecap="round"/>
-    <circle cx="272" cy="200" r="20" fill="var(--etta)"/>
-    <g stroke="var(--etta)" stroke-width="5" fill="none" stroke-linecap="round" opacity=".9">
-      <path d="M254 208 q-22 -8 -40 -4"/><path d="M254 216 q-26 2 -44 12"/>
-    </g>
-    <!-- doorway home -->
-    <rect x="396" y="62" width="112" height="206" rx="5" fill="var(--glow)" opacity=".2"/>
-    <rect x="396" y="62" width="112" height="206" rx="5" fill="none" stroke="var(--glow)" stroke-width="5"/>
-    <circle cx="410" cy="176" r="8" fill="var(--glow)"/>
-    <text x="404" y="292" font-family="system-ui" font-size="17" fill="var(--glow)" font-weight="700">click.</text>
-    <g><circle cx="342" cy="232" r="13" fill="var(--kip)"/><circle cx="370" cy="238" r="13" fill="var(--mo)"/></g>
+<div class="page" data-page="9" style="--tint:#ffd9b0">
+  <svg class="art" viewBox="0 0 600 320" role="img" aria-label="Etta blowing a raspberry back to the Hushabaloo as a glowing doorway home opens behind them">
+    <ellipse cx="150" cy="186" rx="92" ry="78" fill="var(--hush)" opacity=".95"/>
+    <circle cx="120" cy="166" r="15" fill="#fffaf0"/><circle cx="124" cy="168" r="7" fill="var(--ink)"/>
+    <circle cx="180" cy="166" r="15" fill="#fffaf0"/><circle cx="184" cy="168" r="7" fill="var(--ink)"/>
+    <path d="M120 212 q30 24 60 0" stroke="#fffaf0" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <circle cx="296" cy="212" r="23" fill="var(--etta)"/>
+    <g stroke="var(--etta)" stroke-width="6" fill="none" stroke-linecap="round" opacity=".92">
+      <path d="M275 220 q-24 -10 -44 -4"/><path d="M275 230 q-28 4 -48 14"/></g>
+    <text x="238" y="278" font-family="system-ui" font-size="15" font-style="italic" fill="var(--dim)">a gift, not a weapon</text>
+    <rect x="436" y="62" width="128" height="228" rx="6" fill="var(--glow)" opacity=".22"/>
+    <rect x="436" y="62" width="128" height="228" rx="6" fill="none" stroke="var(--glow)" stroke-width="6"/>
+    <circle cx="452" cy="188" r="9" fill="var(--glow)"/>
+    <text x="444" y="316" font-family="system-ui" font-size="22" font-weight="900" fill="var(--glow)">click.</text>
+    <g><circle cx="376" cy="248" r="15" fill="var(--kip)"/><circle cx="406" cy="254" r="15" fill="var(--mo)"/></g>
   </svg>
-  <div class="audio-block" data-audio="p9_nar_01">And in all of that noise, in that whole rushing flood, there was one little sound that was smaller than most.</div>
-  <div class="audio-block" data-audio="p9_mo_01" data-voice="mo" data-speaker="Mo">Listen. There.</div>
-  <div class="audio-block" data-audio="p9_nar_02">And Mo heard it. Of course. Because that's what Mo does. And he pointed. And there, in the dark, was a</div>
+  <div class="audio-block" data-audio="p9_nar_01">
+    <span class="ln">And in all of that noise, in that whole rushing flood,</span>
+    <span class="ln">there was one little sound that was smaller than most.</span>
+  </div>
+  <div class="audio-block" data-audio="p9_mo_01" data-voice="mo" data-speaker="Mo">
+    <span class="ln">Listen.</span>
+    <span class="ln">There.</span>
+  </div>
+  <div class="audio-block" data-audio="p9_nar_02">
+    <span class="ln">And Mo heard it. Of course. Because that's what Mo does.</span>
+    <span class="ln">And he pointed. And there, in the dark, was a</span>
+  </div>
   <div class="sfx-block" data-audio="p9_sfx_click" data-sfx="click"><span class="ring"></span><span>click</span></div>
-  <div class="audio-block" data-audio="p9_nar_03">click. And a door with a click is a door once again.</div>
-  <div class="audio-block" data-audio="p9_nar_04">But they stood in the doorway. And turned. And they saw that the Hushabaloo hadn't got anything more. He had shelves. He had jars. He had none of them full. And he sat down. And he was extremely small.</div>
-  <div class="audio-block" data-audio="p9_etta_01" data-voice="etta" data-speaker="Etta">Wait.</div>
-  <div class="audio-block" data-audio="p9_nar_05">And she walked all the way back, and stood by his knee.</div>
-  <div class="audio-block" data-audio="p9_etta_02" data-voice="etta" data-speaker="Etta">You can keep it. That one. That one's from me.</div>
-  <div class="audio-block" data-audio="p9_nar_06">And she blew him a raspberry, right through the air.</div>
+  <div class="audio-block" data-audio="p9_nar_03">
+    <span class="ln">click. And a door with a click is a door once again.</span>
+  </div>
+  <div class="audio-block" data-audio="p9_nar_04">
+    <span class="ln">But they stood in the doorway. And turned. And they saw</span>
+    <span class="ln">that the Hushabaloo hadn't got anything more.</span>
+    <span class="ln">He had shelves. He had jars. He had none of them full.</span>
+    <span class="ln">And he sat down. And he was extremely small.</span>
+  </div>
+  <div class="audio-block" data-audio="p9_etta_01" data-voice="etta" data-speaker="Etta"><span class="ln">Wait.</span></div>
+  <div class="audio-block" data-audio="p9_nar_05">
+    <span class="ln">And she walked all the way back, and stood by his knee.</span>
+  </div>
+  <div class="audio-block" data-audio="p9_etta_02" data-voice="etta" data-speaker="Etta">
+    <span class="ln">You can keep it. That one. That one's from me.</span>
+  </div>
+  <div class="audio-block" data-audio="p9_nar_06">
+    <span class="ln">And she blew him a raspberry, right through the air.</span>
+  </div>
   <div class="sfx-block" data-audio="p9_sfx_raspberry" data-sfx="raspberry_small"><span class="ring"></span><span>raspberry</span></div>
-  <div class="audio-block" data-audio="p9_nar_07">And he caught it. And held it. And kept it. Right there. And he put it in nothing. No jar and no lid. Just held it, which is, I suppose, what you do with a sound that was given and not taken. He did. And he smiled. If a Hushabaloo can. And he knew.</div>
-  <div class="audio-block" data-audio="p9_nar_08">So they went down the hall to the house that was theirs, where the kettle had a song, and a squeak had the stairs, where the pipes gave a knock, and the tap gave a drip, and the dog gave a whumpf</div>
+  <div class="audio-block" data-audio="p9_nar_07">
+    <span class="ln">And he caught it. And held it. And kept it. Right there.</span>
+    <span class="ln">And he put it in nothing. No jar and no lid.</span>
+    <span class="ln">Just held it, which is, I suppose, what you do</span>
+    <span class="ln">with a sound that was given and not taken.</span>
+    <span class="ln stanza-gap">He did.</span>
+    <span class="ln">And he smiled. If a Hushabaloo can. And he knew.</span>
+  </div>
+  <div class="audio-block" data-audio="p9_nar_08">
+    <span class="ln">So they went down the hall to the house that was theirs,</span>
+    <span class="ln">where the kettle had a song, and a squeak had the stairs,</span>
+    <span class="ln">where the pipes gave a knock, and the tap gave a drip,</span>
+    <span class="ln">and the dog gave a whumpf</span>
+  </div>
   <div class="sfx-block" data-audio="p9_sfx_click_home" data-sfx="click"><span class="ring"></span><span>click</span></div>
-  <div class="audio-block" data-audio="p9_nar_09">and the door gave a click.</div>
+  <div class="audio-block" data-audio="p9_nar_09"><span class="ln">and the door gave a click.</span></div>
 </div>
 
 <!-- ══════════ FINAL ══════════ -->
-<div class="page" data-page="10">
-  <svg class="art" viewBox="0 0 540 200" role="img" aria-label="A single small jar, open, with nothing inside and a raspberry drifting out of it">
-    <rect x="238" y="76" width="64" height="72" rx="8" fill="none" stroke="var(--glow)" stroke-width="5"/>
-    <rect x="248" y="60" width="44" height="14" rx="4" fill="var(--glow)"/>
-    <g stroke="var(--etta)" stroke-width="5" fill="none" stroke-linecap="round">
-      <path d="M306 96 q34 -12 62 -4"/><path d="M306 110 q38 4 66 18"/>
-    </g>
-    <circle cx="270" cy="112" r="34" fill="var(--glow)" opacity=".12"/>
-    <text x="270" y="184" text-anchor="middle" font-family="system-ui" font-size="15"
-          letter-spacing="3" fill="var(--dim)">NO JAR. NO LID. JUST HELD.</text>
+<div class="page" data-page="10" style="--tint:#ffeec4">
+  <svg class="art small" viewBox="0 0 400 220" role="img" aria-label="One small open jar with nothing inside it and a raspberry drifting gently out">
+    <circle cx="180" cy="118" r="52" fill="var(--glow)" opacity=".14"/>
+    <rect x="148" y="80" width="72" height="82" rx="9" fill="none" stroke="var(--glow)" stroke-width="6"/>
+    <rect x="160" y="62" width="48" height="16" rx="5" fill="var(--glow)"/>
+    <g stroke="var(--etta)" stroke-width="6" fill="none" stroke-linecap="round">
+      <path d="M228 104 q38 -14 70 -4"/><path d="M228 120 q42 4 74 20"/></g>
+    <text x="200" y="204" text-anchor="middle" font-family="system-ui" font-size="16"
+          font-weight="700" letter-spacing="3" fill="var(--dim)">NO JAR. NO LID. JUST HELD.</text>
   </svg>
-  <div class="audio-block" data-audio="final_nar_01">For everybody small who was ever once told to be quiet, be quiet, be quiet, be still here's a story where noise is the thing that saves all.</div>
-  <div class="audio-block" data-audio="final_nar_02">Go on. Make the sound. You know the one.</div>
+  <div class="audio-block" data-audio="final_nar_01">
+    <span class="ln">For everybody small who was ever once told</span>
+    <span class="ln">to be quiet, be quiet, be quiet, be still</span>
+    <span class="ln stanza-gap">here's a story where noise is the thing that saves all.</span>
+  </div>
+  <div class="audio-block" data-audio="final_nar_02">
+    <span class="ln">Go on.</span>
+    <span class="ln">Make the sound. You know the one.</span>
+  </div>
   <div class="wait-block" data-audio="final_wait_01" data-wait="4.0">Go on&hellip;</div>
   <div class="sfx-block" data-audio="final_sfx_raspberry" data-sfx="raspberry_big"><span class="ring"></span><span>raspberry</span></div>
 </div>
@@ -500,15 +724,13 @@ const SFX_BASE   = './audio/sfx/';
 const TIMESTAMPS_URL = './audio/timestamps.json';
 
 /* Standalone builds inject every MP3 and the timings as one global before this
-   script runs. A declared seam, not a regex rewrite of the built file -- DATATRAX's
-   builder string-matched its own player source, so any edit to the player silently
-   produced a standalone that fell back to fetching files that weren't there. */
+   script runs. A declared seam, not a regex rewrite of the built file. */
 const INLINE = window.__HUSHABALOO_INLINE__ || null;
 const srcFor = (kind, key) =>
   INLINE ? INLINE.audio[`${kind}/${key}`]
          : (kind === 'sfx' ? SFX_BASE : AUDIO_BASE) + key + '.mp3';
 
-let WORDS = {};                          /* block id -> [{word,start,end}] */
+let WORDS = {};
 const pages = [...document.querySelectorAll('.page')];
 const lastPage = pages.length - 1;
 
@@ -518,67 +740,81 @@ const $ = id => document.getElementById(id);
 const btnPlay = $('btnPlay'), playLabel = $('playLabel'), fill = $('fill'), where = $('where');
 const overlay = $('startOverlay'), errBox = $('err');
 
-/* ── decorate SVG scenes that are cheaper generated than hand-written ── */
+/* ── generated art ──────────────────────────────────────────────
+   Two scenes are repetitive enough that drawing them by hand would be
+   hundreds of near-identical nodes: the wall of labelled jars, and the
+   burst where all of them let go at once. */
 (function decorate(){
   const jars = document.getElementById('jars');
   if (jars) {
-    const labels = ['RAIN','DOG','STAIRS','SNORE','SHEEP','KETTLE','TAP','BIRD','CLOCK','HUM'];
-    for (let r = 0; r < 4; r++) for (let c = 0; c < 10; c++) {
-      if (r >= 2 && c > 5) continue;                       /* leave room for the creature */
-      const x = 32 + c * 48, y = 24 + r * 72;
+    const labels = ['RAIN','DOG','STAIRS','SNORE','SHEEP','KETTLE','TAP','BIRD','CLOCK','HUM',
+                    'CREAK','DRIP','KNOCK','WIND','PURR','BELL','SPLASH','GIGGLE'];
+    let n = 0;
+    for (let r = 0; r < 4; r++) for (let c = 0; c < 11; c++) {
+      if (r >= 2 && c > 5) continue;                    /* leave the creature room */
+      const x = 30 + c * 50, y = 26 + r * 82;
       jars.insertAdjacentHTML('beforeend',
-        `<rect x="${x}" y="${y}" width="34" height="34" rx="5" fill="none"
-               stroke="var(--ink)" stroke-width="2.5" opacity=".7"/>
-         <rect x="${x+7}" y="${y-6}" width="20" height="7" rx="2" fill="var(--ink)" opacity=".5"/>
-         <text x="${x+17}" y="${y+22}" text-anchor="middle" font-family="system-ui"
-               font-size="7" fill="var(--dim)">${labels[(r*10+c) % labels.length]}</text>`);
+        `<rect x="${x}" y="${y}" width="38" height="38" rx="6" fill="#fffaf0"
+               stroke="var(--ink)" stroke-width="2.5" opacity=".8"/>
+         <rect x="${x+8}" y="${y-7}" width="22" height="8" rx="3" fill="var(--shelf)"/>
+         <text x="${x+19}" y="${y+24}" text-anchor="middle" font-family="system-ui"
+               font-size="7.5" font-weight="700" fill="var(--dim)">${labels[n++ % labels.length]}</text>`);
     }
   }
   const burst = document.getElementById('burst');
   if (burst) {
-    for (let i = 0; i < 26; i++) {
-      const a = (i / 26) * Math.PI * 2, cx = 300, cy = 150;
-      const x = cx + Math.cos(a) * (110 + (i % 4) * 26);
-      const y = cy + Math.sin(a) * (74 + (i % 3) * 22);
+    const cols = ['var(--glow)','var(--etta)','var(--kip)','var(--mo)','var(--hush)'];
+    for (let i = 0; i < 34; i++) {
+      const a = (i / 34) * Math.PI * 2, cx = 300, cy = 160;
+      const x = (cx + Math.cos(a) * (120 + (i % 4) * 30)).toFixed(0);
+      const y = (cy + Math.sin(a) * (86 + (i % 3) * 26)).toFixed(0);
       burst.insertAdjacentHTML('beforeend',
-        `<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${4 + (i % 3) * 2}"
-                 fill="var(--glow)" opacity="${0.35 + (i % 4) * 0.16}"/>
-         <line x1="${cx}" y1="${cy}" x2="${x.toFixed(0)}" y2="${y.toFixed(0)}"
-               stroke="var(--glow)" stroke-width="1.5" opacity=".18"/>`);
+        `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="${cols[i % 5]}"
+               stroke-width="2" opacity=".22"/>
+         <circle cx="${x}" cy="${y}" r="${5 + (i % 3) * 3}" fill="${cols[i % 5]}"
+                 opacity="${(0.4 + (i % 4) * 0.15).toFixed(2)}"/>`);
     }
   }
 })();
 
-/* ── word wrapping ── */
+/* ── word wrapping ──────────────────────────────────────────────
+   Walks text nodes and wraps words in place, PRESERVING the surrounding
+   markup. An earlier version rebuilt each block from its textContent,
+   which flattened every <span class="ln"> and turned the verse back into
+   prose -- the line breaks are the meter, so they have to survive. */
 function wrapWords(el){
   if (el.dataset.wrapped) return;
   el.dataset.wrapped = '1';
-  let n = 0;
-  const parts = el.textContent.split(/(\s+)/);
-  el.textContent = '';
-  for (const p of parts){
-    if (!p) continue;
-    if (/^\s+$/.test(p)) { el.appendChild(document.createTextNode(p)); continue; }
-    const s = document.createElement('span');
-    s.setAttribute('data-word', n++);
-    s.textContent = p;
-    el.appendChild(s);
+
+  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
+    acceptNode: n => n.textContent.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT
+  });
+  const textNodes = [];
+  for (let n; (n = walker.nextNode()); ) textNodes.push(n);
+
+  let i = 0;
+  for (const node of textNodes){
+    const frag = document.createDocumentFragment();
+    for (const part of node.textContent.split(/(\s+)/)){
+      if (!part) continue;
+      if (/^\s+$/.test(part)){ frag.appendChild(document.createTextNode(part)); continue; }
+      const s = document.createElement('span');
+      s.setAttribute('data-word', i++);
+      s.textContent = part;
+      frag.appendChild(s);
+    }
+    node.parentNode.replaceChild(frag, node);
   }
 }
 
-/* ── karaoke ──────────────────────────────────────────────────────
-   Each word is in exactly one of three states, re-evaluated every frame against
-   audio.currentTime:
+/* ── karaoke ────────────────────────────────────────────────────
+   Each word sits in exactly one of three states, re-derived every frame:
+     ahead of the voice -> no classes
+     being said now     -> .word-active  (instant, full glow)
+     already said       -> .word-spoken  (fades over .6s)
 
-     ahead of the voice  -> no classes
-     being said now      -> .word-active   (instant, full glow)
-     already said        -> .word-spoken   (fades out over .6s)
-
-   LEAD is a 50ms head start. Without it the highlight consistently reads as late:
-   the timing marks the acoustic onset, but a reader's eye needs to already be on
-   the word when the sound of it arrives. Re-deriving all three states every frame
-   (rather than only moving forward) is what makes scrubbing and replaying land in
-   the right place instead of leaving stale highlights behind. */
+   LEAD is a 50ms head start: the timing marks the acoustic onset, but the
+   eye needs to already be on the word when the sound of it arrives. */
 const LEAD = 0.05;
 
 function highlight(el, audio){
@@ -593,11 +829,9 @@ function highlight(el, audio){
     for (let i = 0; i < n; i++){
       const s = spans[i];
       if (t >= times[i].end){
-        s.classList.remove('word-active');
-        s.classList.add('word-spoken');
+        s.classList.remove('word-active'); s.classList.add('word-spoken');
       } else if (t >= times[i].start - LEAD){
-        s.classList.add('word-active');
-        s.classList.remove('word-spoken');
+        s.classList.add('word-active'); s.classList.remove('word-spoken');
       } else {
         s.classList.remove('word-active', 'word-spoken');
       }
@@ -634,7 +868,7 @@ function resetStates(){
 
 /* ── playback ── */
 function play(i){
-  if (i >= blocks.length){                       /* end of spread */
+  if (i >= blocks.length){
     if (page < lastPage){
       timer = setTimeout(() => { next(); if (playing) timer = setTimeout(() => play(0), 700); }, 1200);
     } else { setPlaying(false); }
@@ -656,8 +890,7 @@ function play(i){
   }
 
   const isSfx = el.classList.contains('sfx-block');
-  const src = isSfx ? srcFor('sfx', el.dataset.sfx)
-                    : srcFor('lines', el.dataset.audio);
+  const src = isSfx ? srcFor('sfx', el.dataset.sfx) : srcFor('lines', el.dataset.audio);
   if (!src){
     showError(`Missing audio: ${el.dataset.audio}`);
     if (playing) timer = setTimeout(() => play(i + 1), 900);
@@ -764,11 +997,10 @@ $('book').addEventListener('touchend', e => {
 }, {passive:true});
 
 /* ── test seam ──────────────────────────────────────────────────
-   The suite drives the book the way a reader does -- clicking, waiting -- but
-   needs to jump to a spread and read internal state to assert on it. Top-level
-   `let` is script-scoped and never lands on window, so expose it deliberately
-   rather than letting tests reach for globals that silently read undefined and
-   pass anyway. */
+   The suite drives the book the way a reader does, but needs to jump to a
+   spread and read internal state. Top-level `let` is script-scoped and never
+   lands on window, so expose it deliberately rather than letting tests reach
+   for globals that silently read undefined and pass anyway. */
 window.__book = {
   showPage, play, setPlaying,
   get page()    { return page; },
@@ -776,14 +1008,13 @@ window.__book = {
   get words()   { return WORDS; },
   get blocks()  { return blocks; },
   blockAt: id => blocks.findIndex(b => b.dataset.audio === id),
-  ready: null,   /* resolves once timings are in and the cover is up */
+  ready: null,
 };
 
 /* ── init ──────────────────────────────────────────────────────
    Timings load asynchronously and the cover is only raised once they land.
-   Anything that drives the book before then gets silently undone by that
-   final showPage(0) -- so publish the promise instead of leaving callers to
-   guess when it is safe to touch anything. */
+   Anything driving the book before then gets silently undone by that final
+   showPage(0) -- so publish the promise rather than leaving callers to guess. */
 window.__book.ready =
   (INLINE
     ? Promise.resolve(INLINE.timestamps)
