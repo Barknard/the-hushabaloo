@@ -205,6 +205,7 @@ body{
 .progress{flex:1;height:12px;border-radius:6px;background:var(--glow-soft);overflow:hidden;cursor:pointer}
 .fill{height:100%;width:0;background:var(--glow);transition:width .25s linear}
 .where{font-family:system-ui,sans-serif;font-size:.8rem;font-weight:700;color:var(--dim);min-width:78px;text-align:right;flex:none}
+.build{display:block;font-size:.58rem;font-weight:600;opacity:.65;letter-spacing:.06em}
 .err{
   position:fixed;left:50%;transform:translateX(-50%);bottom:94px;z-index:60;
   background:#c0392b;color:#fff;padding:.55rem 1rem;border-radius:.6rem;
@@ -881,7 +882,7 @@ body{
   <button class="ctrl play" id="btnPlay" title="Play or pause the story" aria-label="Play the story">&#9654;</button>
   <div class="ctrl-label" id="playLabel">Play<br>story</div>
   <div class="progress" id="progress" title="Jump through the story"><div class="fill" id="fill"></div></div>
-  <div class="where" id="where">Cover</div>
+  <div class="where"><span id="where">Cover</span><span class="build" id="build"></span></div>
   <button class="ctrl" id="btnNext" title="Next page" aria-label="Next page">&#9654;</button>
 </div>
 
@@ -894,16 +895,24 @@ body{
    disagree -- the silent-desync trap DATATRAX left open.
    ──────────────────────────────────────────────────────────────── */
 
+/* Audio filenames are stable across rebuilds -- p7_hush_01.mp3 has been
+   regenerated repeatedly at the same URL. Without a version on the request a
+   browser keeps serving whatever it cached first, so a fixed recording never
+   reaches a returning reader. BUILD is rewritten with the commit SHA by the
+   deploy workflow, giving every asset a fresh URL whenever the content changes. */
+const BUILD = '__BUILD__';
+const V = BUILD.startsWith('__') ? '' : `?v=${BUILD}`;
+
 const AUDIO_BASE = './audio/lines/';
 const SFX_BASE   = './audio/sfx/';
-const TIMESTAMPS_URL = './audio/timestamps.json';
+const TIMESTAMPS_URL = './audio/timestamps.json' + V;
 
 /* Standalone builds inject every MP3 and the timings as one global before this
    script runs. A declared seam, not a regex rewrite of the built file. */
 const INLINE = window.__HUSHABALOO_INLINE__ || null;
 const srcFor = (kind, key) =>
   INLINE ? INLINE.audio[`${kind}/${key}`]
-         : (kind === 'sfx' ? SFX_BASE : AUDIO_BASE) + key + '.mp3';
+         : (kind === 'sfx' ? SFX_BASE : AUDIO_BASE) + key + '.mp3' + V;
 
 /* ── ambient beds ────────────────────────────────────────────────
    A quiet loop runs UNDER the narration for the whole spread, on its own
@@ -1226,7 +1235,10 @@ $('book').addEventListener('touchend', e => {
    spread and read internal state. Top-level `let` is script-scoped and never
    lands on window, so expose it deliberately rather than letting tests reach
    for globals that silently read undefined and pass anyway. */
+document.getElementById('build').textContent = V ? BUILD.slice(0, 7) : 'dev';
+
 window.__book = {
+  build: BUILD,
   showPage, play, setPlaying,
   get page()    { return page; },
   get playing() { return playing; },

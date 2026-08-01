@@ -40,6 +40,11 @@ jobs:
         run: |
           mkdir -p _site
           cp player/index.html _site/index.html
+          # Audio filenames are stable across rebuilds, so without a version on
+          # the URL a returning reader keeps hearing whatever they cached first.
+          sed -i "s/__BUILD__/${GITHUB_SHA}/g" _site/index.html
+          grep -q "__BUILD__" _site/index.html && { echo "::error::BUILD placeholder not replaced"; exit 1; } || true
+          echo "stamped build ${GITHUB_SHA}"
           cp -r audio _site/audio
           rm -f _site/audio/provenance.json
           echo "Built $(date -u +%FT%TZ)" > _site/.build

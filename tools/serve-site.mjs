@@ -8,7 +8,8 @@
  * "/audio/x.mp3" resolve fine locally and 404 for every real visitor.
  */
 import { createServer } from 'node:http';
-import { readFile, mkdir, cp, rm, access } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, cp, rm, access } from 'node:fs/promises';
+import { execSync } from 'node:child_process';
 import { join, extname, resolve, normalize } from 'node:path';
 
 const ROOT = resolve(import.meta.dirname, '..');
@@ -26,7 +27,13 @@ const TYPES = {
 async function assemble() {
   await rm(SITE, { recursive: true, force: true });
   await mkdir(SITE, { recursive: true });
-  await cp(join(ROOT, 'player', 'index.html'), join(SITE, 'index.html'));
+  // Stamp the build the same way the deploy workflow does, so the suite tests
+  // the URL shape that actually ships -- versioned audio included.
+  let sha = 'localdev';
+  try { sha = execSync('git rev-parse HEAD', { cwd: ROOT }).toString().trim(); } catch {}
+  const html = (await readFile(join(ROOT, 'player', 'index.html'), 'utf8'))
+    .replaceAll('__BUILD__', sha);
+  await writeFile(join(SITE, 'index.html'), html);
   await cp(join(ROOT, 'audio'), join(SITE, 'audio'), { recursive: true });
   await rm(join(SITE, 'audio', 'provenance.json'), { force: true });
 }

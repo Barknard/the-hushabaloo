@@ -60,10 +60,11 @@ test.describe('The Hushabaloo read-along', () => {
     await open(page);
     const bad = await page.evaluate(async () => {
       const urls = new Set();
+      const v = window.__book.build.startsWith('__') ? '' : `?v=${window.__book.build}`;
       document.querySelectorAll('.audio-block[data-audio]')
-        .forEach(e => urls.add('./audio/lines/' + e.dataset.audio + '.mp3'));
+        .forEach(e => urls.add('./audio/lines/' + e.dataset.audio + '.mp3' + v));
       document.querySelectorAll('.sfx-block[data-sfx]')
-        .forEach(e => urls.add('./audio/sfx/' + e.dataset.sfx + '.mp3'));
+        .forEach(e => urls.add('./audio/sfx/' + e.dataset.sfx + '.mp3' + v));
       const failures = [];
       for (const u of urls) {
         const r = await fetch(u, { method: 'HEAD' });
@@ -223,6 +224,26 @@ test.describe('The Hushabaloo read-along', () => {
     // Art on the left page, verse on the right -- side by side, not stacked.
     expect(art.x + art.width).toBeLessThanOrEqual(text.x + 4);
     expect(Math.abs(art.y - text.y)).toBeLessThan(60);
+  });
+
+  test('audio URLs are versioned so a fixed recording actually reaches a reader', async ({ page }) => {
+    await open(page);
+    // Filenames are stable across rebuilds. Without a version the browser keeps
+    // serving whatever it cached first -- which meant a corrected recording
+    // never reached anyone who had already opened the book.
+    const build = await page.evaluate(() => window.__book.build);
+    expect(build).not.toContain('__');          // placeholder must be stamped
+    expect(build.length).toBeGreaterThan(6);
+
+    const src = await page.evaluate(() => {
+      const a = document.querySelector('.audio-block[data-audio]');
+      window.__book.setPlaying(false);
+      return window.__book.blocks.length ? a.dataset.audio : null;
+    });
+    expect(src).toBeTruthy();
+
+    // The stamp is visible, so "am I looking at the new one?" is answerable.
+    await expect(page.locator('#build')).toHaveText(build.slice(0, 7));
   });
 
   test('controls say what they do', async ({ page }) => {
