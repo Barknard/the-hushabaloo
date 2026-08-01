@@ -4,14 +4,15 @@
 !.env.example
 *.key
 
-# Generated audio (large, regenerable from script + API)
-audio/lines/
-audio/sfx/
-audio/_silence/
-audio/*.mp3
-audio/_concat_list.txt
+# Generated audio IS committed. It has to be: GitHub Pages serves these files
+# directly, so a deploy that regenerated them would need the API key as a CI secret
+# and would burn credits on every push — and worse, would produce subtly different
+# takes each time, so the book you tested is not the book that ships.
+# Committed audio makes a deploy byte-for-byte what was reviewed.
+# audio/provenance.json tracks what produced each file; change the text and
+# tools/generate.py regenerates just that block.
 
-# Standalone build output (13MB+ base64-inlined HTML)
+# Standalone build output (base64-inlined, ~30MB — rebuildable from committed audio)
 dist/
 
 # Python
@@ -26,3 +27,8 @@ node_modules/
 # OS
 Thumbs.db
 .DS_Store
+
+# Local test scaffolding
+.site/
+test-results/
+playwright-report/

@@ -1,0 +1,72 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  # The audit runs before anything deploys. Its whole job is catching the failures
+  # that are invisible at read time -- a block with no text to highlight, or text
+  # that drifted a word out of step with its audio.
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: Audit block contract and generated audio
+        run: python tools/audit.py --audio
+
+  deploy:
+    needs: audit
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Assemble the site
+        run: |
+          mkdir -p _site
+          cp player/index.html _site/index.html
+          cp -r audio _site/audio
+          rm -f _site/audio/provenance.json
+          echo "Built $(date -u +%FT%TZ)" > _site/.build
+
+      # The site is served from a subpath (…github.io/the-hushabaloo/), so every
+      # asset reference must be relative. An absolute "/audio/…" resolves to the
+      # user root and 404s for every visitor while working perfectly on localhost.
+      - name: Reject absolute asset paths
+        run: |
+          if grep -nE '(src|href)="/[^/]' _site/index.html; then
+            echo "::error::Absolute asset path found — this 404s under the Pages subpath."
+            exit 1
+          fi
+          echo "All asset references are relative."
+
+      - name: Verify audio actually shipped
+        run: |
+          lines=$(ls _site/audio/lines/*.mp3 2>/dev/null | wc -l)
+          sfx=$(ls _site/audio/sfx/*.mp3 2>/dev/null | wc -l)
+          echo "lines=$lines sfx=$sfx"
+          if [ "$lines" -lt 60 ] || [ "$sfx" -lt 7 ]; then
+            echo "::error::Audio missing from the deploy bundle."
+            exit 1
+          fi
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: _site }
+      - id: deployment
+        uses: actions/deploy-pages@v4

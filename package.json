@@ -1,0 +1,19 @@
+{
+  "name": "the-hushabaloo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A read-along picture book for three small listeners.",
+  "scripts": {
+    "serve": "node tools/serve-site.mjs",
+    "test": "playwright test",
+    "test:headed": "playwright test --headed --project=desktop",
+    "audit": "python tools/audit.py --audio",
+    "generate": "python tools/generate.py",
+    "build": "python tools/build_standalone.py",
+    "check": "python tools/audit.py --audio && playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0"
+  }
+}

@@ -66,12 +66,17 @@ SFX = {
                "escaping sounds, rising steadily over four seconds, warm not harsh",
         seconds=5.0, peak_dbfs=-11.0,
     ),
+    # Describe the SOUND, never the person making it. An earlier prompt here said
+    # "two small children blowing raspberries" and came back HTTP 403,
+    # request_blocked_due_to_moderation -- the same policy family that rejected the
+    # voice descriptions. The acoustic description is also the more useful brief.
     "raspberry_big": dict(
-        prompt="two small children blowing loud wet raspberries together, joyful and silly",
+        prompt="two loud wet raspberry sounds blown together at once, overlapping, "
+               "comic and silly, close-mic'd",
         seconds=2.0, peak_dbfs=-11.0,
     ),
     "raspberry_small": dict(
-        prompt="one small gentle wet raspberry blown softly, close and sweet",
+        prompt="one gentle wet raspberry blown softly, close and sweet",
         seconds=1.2, peak_dbfs=-16.0,
     ),
 }
