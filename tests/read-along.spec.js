@@ -1,5 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { MUTE_ALL_AUDIO } from './mute.js';
 
 /**
  * These tests run against the assembled site served from a SUBPATH
@@ -24,10 +25,13 @@ async function goToPage(page, pageId) {
 
 /** Load the book and wait until it is safe to drive. */
 async function open(page) {
+  await page.addInitScript(MUTE_ALL_AUDIO);     // never play out loud in tests
   await page.goto(BASE);
   await page.waitForFunction(() => window.__book && window.__book.ready);
   await page.evaluate(() => window.__book.ready);
 }
+
+test.beforeEach(async ({ page }) => { await page.addInitScript(MUTE_ALL_AUDIO); });
 
 test.describe('The Hushabaloo read-along', () => {
 
@@ -461,6 +465,35 @@ test.describe('The Hushabaloo read-along', () => {
     await page.waitForTimeout(3800);
     expect(await page.evaluate(
       () => document.body.classList.contains('immersive'))).toBe(false);
+  });
+
+  test('short landscape reclaims screen and tracks the dynamic viewport', async ({ page }) => {
+    // The shell is sized in dvh, not vh. vh is the LARGE viewport -- the height
+    // as if the browser chrome were already gone -- so sizing in vh put content
+    // under a visible URL bar. dvh follows the chrome as it collapses.
+    await page.setViewportSize({ width: 844, height: 390 });
+    await open(page);
+    await page.evaluate(() => document.getElementById('startOverlay').classList.add('hidden'));
+    const short = await page.evaluate(() => ({
+      ctrl: parseFloat(getComputedStyle(document.querySelector('.controls')).height),
+      book: Math.round(document.getElementById('book').getBoundingClientRect().height),
+    }));
+    // Furniture shrinks where pixels are scarce.
+    expect(short.ctrl).toBeLessThan(70);
+    expect(short.book).toBeGreaterThan(320);
+
+    // ...and stays full size where they are not.
+    await page.setViewportSize({ width: 1180, height: 820 });
+    await page.waitForTimeout(200);
+    const tall = await page.evaluate(() =>
+      parseFloat(getComputedStyle(document.querySelector('.controls')).height));
+    expect(tall).toBeGreaterThan(75);
+
+    // The shell must be declared in dvh, or the layout ignores the chrome moving.
+    const usesDvh = await page.evaluate(() =>
+      [...document.styleSheets[0].cssRules].some(r =>
+        (r.cssText || '').includes('dvh')));
+    expect(usesDvh).toBe(true);
   });
 
   test('controls say what they do', async ({ page }) => {

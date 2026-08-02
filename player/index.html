@@ -31,7 +31,7 @@
 :root[data-theme="light"]{ --paper:#fffaf0; --ink:#2a2118; --dim:#9a8b74; --glow:#ffc93c; --glow-soft:#ffeeb8; }
 
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow:hidden}
+html,body{height:100%;height:100dvh;overflow:hidden;overscroll-behavior:none}
 body{
   background:var(--paper); color:var(--ink);
   font-family:'Iowan Old Style','Palatino Linotype',Georgia,serif;
@@ -65,7 +65,7 @@ body{
 .start-hint{color:#8d7d64;font-size:.95rem;font-family:system-ui,sans-serif}
 
 /* ── book ───────────────────────────────────────────────────── */
-.book{position:fixed;inset:0;bottom:82px;overflow:hidden}
+.book{position:fixed;inset:0;bottom:82px;height:auto;overflow:hidden}
 .page{
   position:absolute; inset:0; overflow-y:auto; overflow-x:hidden;
   padding:clamp(1.2rem,4vw,2.4rem) clamp(1rem,5vw,3rem) 3rem;
@@ -88,6 +88,7 @@ body{
   /* Stacked layout: the picture may never take more than this much of the
      screen, or the verse starts below the fold on a short landscape phone. */
   max-height:min(44vh, 340px);
+  max-height:min(44dvh, 340px);
   background:linear-gradient(to bottom,
     var(--paper) 0%, var(--paper) 90%, transparent 100%);}
 .text-pane{width:100%;display:flex;flex-direction:column;align-items:center;gap:1.1rem}
@@ -98,7 +99,8 @@ body{
   .page{flex-direction:row;align-items:flex-start;gap:clamp(1rem,3vw,2.5rem);
         padding-top:clamp(1rem,3vw,2rem)}
   .art-pane{flex:0 0 44%;max-width:44%;position:sticky;top:0;background:none;
-            padding-top:.5rem;max-height:calc(100vh - 96px)}
+            padding-top:.5rem;max-height:calc(100vh - 96px);
+            max-height:calc(100dvh - 96px)}
   .text-pane{flex:1;min-width:0;align-items:flex-start}
   .audio-block,.sfx-block,.wait-block{width:100%}
 }
@@ -268,6 +270,16 @@ body.immersive .book{bottom:0}
   pointer-events:none;max-width:90vw;
 }
 .err.show{opacity:1}
+/* Short landscape: every pixel counts, so the furniture shrinks. */
+@media (orientation:landscape) and (max-height:460px){
+  .controls{height:62px}
+  .book{bottom:62px}
+  .ctrl{width:40px;height:40px;font-size:1rem}
+  .ctrl.play{width:50px;height:50px;font-size:1.2rem}
+  .ctrl-label{display:none}
+  .audio-block{font-size:clamp(1.15rem,3.4vw,1.5rem);line-height:1.4}
+}
+
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition-duration:.01ms!important}
   .art{opacity:1!important;filter:none!important;transform:none!important}

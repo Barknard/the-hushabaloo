@@ -19,6 +19,10 @@ export default defineConfig({
   use: {
     baseURL: 'http://127.0.0.1:4173',
     trace: 'on-first-retry',
+    // The suite drives REAL playback, which means a test run blasts the book
+    // through the machine's speakers. Chromium can be muted at launch; WebKit
+    // has no such flag, so tests/mute.js handles every engine.
+    launchOptions: { args: ['--mute-audio'] },
   },
 
   projects: [
